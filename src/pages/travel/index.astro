@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RatingBadge from '../../components/shared/RatingBadge.astro';
+import AdSlot from '../../components/shared/AdSlot.astro';
+import destinations from '../../data/travel/destinations.json';
+import creditCards from '../../data/finance/credit-cards.json';
+
+const title = "Travel Guides 2026 — Coastal Destinations, Sailing & Island Escapes";
+const description = "Explore the world's best coastal destinations, sailing hotspots, and island getaways. Expert guides, travel tips, and the best credit cards to fund your adventures.";
+
+const travelCards = creditCards.filter(c => ['Travel', 'Premium Travel'].includes(c.category));
+const featured = destinations.slice(0, 3);
+const topRated = [...destinations].sort((a, b) => b.rating - a.rating);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Travel Guides — Cornerstone Financial",
+  "description": description
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-[#0a4f6e] to-[#1e3a5f] text-white py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <p class="text-accent text-sm font-semibold uppercase tracking-wider mb-3">Shores & Sails</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Travel the World Smarter</h1>
+      <p class="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-8">
+        Coastal escapes, sailing routes, and island adventures — plus the financial tools to get you there without breaking the bank.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="#destinations" class="bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors">Browse Destinations</a>
+        <a href="/travel/travel-cards" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Best Travel Cards</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Destinations -->
+  <section id="destinations" class="max-w-6xl mx-auto px-4 py-16">
+    <h2 class="text-2xl font-bold mb-2">Featured Destinations</h2>
+    <p class="text-text-muted mb-8">Handpicked coastal and island destinations worth every mile</p>
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+      {featured.map(dest => (
+        <a href={`/travel/destinations/${dest.slug}`} class="group bg-surface border border-border rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+          <div class="bg-gradient-to-br from-[#0a4f6e] to-[#1e8a8a] h-40 flex items-end p-4">
+            <div>
+              <span class="text-xs text-white/70 uppercase tracking-wide">{dest.region}</span>
+              <h3 class="text-white font-bold text-xl">{dest.name}</h3>
+            </div>
+          </div>
+          <div class="p-4">
+            <p class="text-sm text-text-muted mb-3 line-clamp-2">{dest.tagline}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-xs bg-surface-alt px-2 py-1 rounded">{dest.budgetLevel}</span>
+              <RatingBadge rating={dest.rating} size="sm" />
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <AdSlot format="horizontal" slot="travel-mid" />
+
+  <!-- All Destinations by Rating -->
+  <section class="bg-surface py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="text-2xl font-bold mb-2">Top Rated Destinations</h2>
+      <p class="text-text-muted mb-8">Ranked by our editors based on scenery, value, and experience</p>
+      <div class="space-y-3">
+        {topRated.map((dest, i) => (
+          <a href={`/travel/destinations/${dest.slug}`} class="flex items-center gap-4 bg-white border border-border rounded-lg p-4 hover:shadow-md transition-shadow">
+            <span class="text-xl font-bold text-text-muted w-8">#{i + 1}</span>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-semibold">{dest.name}</span>
+                <RatingBadge rating={dest.rating} size="sm" />
+                <span class="text-xs bg-surface px-2 py-0.5 rounded hidden sm:inline">{dest.type}</span>
+              </div>
+              <p class="text-sm text-text-muted">{dest.tagline}</p>
+            </div>
+            <div class="hidden md:flex flex-col items-end gap-1 text-sm">
+              <span class="text-text-muted">{dest.bestSeason}</span>
+              <span class="text-accent font-medium">{dest.budgetLevel}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Travel Cards CTA -->
+  <section class="py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-2xl font-bold">Best Travel Credit Cards</h2>
+          <p class="text-text-muted">Earn points and miles on every trip — offset your travel costs</p>
+        </div>
+        <a href="/travel/travel-cards" class="text-accent hover:text-accent-dark font-medium text-sm">View All</a>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+        {travelCards.slice(0, 3).map(card => (
+          <a href={`/review/${card.slug}`} class="bg-surface border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs bg-surface-alt px-2 py-0.5 rounded">{card.category}</span>
+              <RatingBadge rating={card.rating} size="sm" />
+            </div>
+            <h3 class="font-semibold mb-1">{card.name}</h3>
+            <p class="text-sm text-text-muted mb-2">{card.annualFee}/yr</p>
+            <p class="text-xs text-text-muted line-clamp-2">{card.bestFor}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <AdSlot format="horizontal" slot="travel-bottom" />
+
+  <!-- Editorial Note -->
+  <section class="max-w-4xl mx-auto px-4 py-8 text-center">
+    <h2 class="text-xl font-bold mb-3">About Our Travel Guides</h2>
+    <p class="text-text-muted text-sm">
+      Our travel section is inspired by years of coastal exploration — from sailing the BVI to island hopping the Aegean.
+      We combine destination expertise with financial know-how to help you travel smarter: which cards earn the most miles,
+      how to offset resort costs, and where your dollar goes furthest.
+    </p>
+  </section>
+</BaseLayout>

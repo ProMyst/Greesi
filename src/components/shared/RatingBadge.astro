@@ -1,0 +1,18 @@
+---
+interface Props {
+  rating: number;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { rating, size = 'md' } = Astro.props;
+const sizeClasses = {
+  sm: 'text-sm px-2 py-0.5',
+  md: 'text-base px-3 py-1',
+  lg: 'text-lg px-4 py-2'
+};
+const bgColor = rating >= 4.5 ? 'bg-success' : rating >= 4.0 ? 'bg-accent' : rating >= 3.5 ? 'bg-warning' : 'bg-danger';
+---
+
+<span class={`inline-flex items-center gap-1 ${bgColor} text-white font-bold rounded-full ${sizeClasses[size]}`}>
+  {rating.toFixed(1)}
+</span>

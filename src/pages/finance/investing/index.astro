@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+import investing from '../../../data/finance/investing.json';
+
+const sorted = [...investing].sort((a, b) => b.rating - a.rating);
+const title = "Best Investing Platforms 2026: Compare Brokers & Robo-Advisors";
+const description = "Compare the best investing platforms and brokers of 2026. Side-by-side analysis of fees, features, and tools to find where to invest your money.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <nav class="text-sm text-text-muted mb-6">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/finance" class="hover:text-accent">Finance</a>
+      <span class="mx-2">/</span>
+      <span>Best Investing Platforms</span>
+    </nav>
+
+    <h1 class="text-3xl md:text-4xl font-bold mb-4">Best Investing Platforms of 2026</h1>
+    <p class="text-lg text-text-muted mb-8">We've tested and compared the top brokers and investing apps to help you find the best platform for your goals.</p>
+
+    <AdSlot format="horizontal" slot="top-investing" />
+
+    <div class="space-y-4 mb-8">
+      {sorted.map((platform, i) => (
+        <div class="bg-white border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
+          <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <div class="flex items-center gap-3 md:w-8">
+              <span class="text-2xl font-bold text-text-muted">#{i + 1}</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <a href={`/finance/review/${platform.slug}`} class="text-xl font-semibold hover:text-accent transition-colors">{platform.name}</a>
+                <RatingBadge rating={platform.rating} size="sm" />
+                <span class="text-xs bg-surface px-2 py-0.5 rounded">{platform.type}</span>
+              </div>
+              <p class="text-sm text-text-muted mb-3">{platform.bestFor}</p>
+              <div class="flex flex-wrap gap-4 text-sm">
+                <span><strong>{platform.stockCommission}</strong> Stock Trades</span>
+                <span><strong>{platform.optionsPerContract}</strong>/Options Contract</span>
+                <span>Fractional Shares: <strong>{platform.fractionalShares ? 'Yes' : 'No'}</strong></span>
+                <span>Research: <strong>{platform.research}</strong></span>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 md:w-40">
+              <a href={`/finance/review/${platform.slug}`} class="text-center bg-accent hover:bg-accent-dark text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors">Read Review</a>
+              <a href={`/finance/compare/${platform.slug}-vs-${sorted[0].slug === platform.slug ? sorted[1].slug : sorted[0].slug}`} class="text-center border border-border hover:bg-surface text-sm py-2 px-4 rounded-lg transition-colors">Compare</a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <AdSlot format="horizontal" slot="bottom-investing" />
+
+    <section class="prose max-w-none">
+      <h2 class="text-2xl font-bold mb-4">How to Choose an Investing Platform</h2>
+      <p class="text-text-muted mb-4">The best investing platform depends on your experience level and goals. Beginners benefit from platforms with educational resources and simple interfaces. Active traders need advanced charting and low options fees. Long-term investors should prioritize low-cost index funds and retirement account options.</p>
+    </section>
+  </div>
+</BaseLayout>

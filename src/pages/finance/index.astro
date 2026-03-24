@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RatingBadge from '../../components/shared/RatingBadge.astro';
+import AdSlot from '../../components/shared/AdSlot.astro';
+import banks from '../../data/finance/banks.json';
+import creditCards from '../../data/finance/credit-cards.json';
+import investing from '../../data/finance/investing.json';
+
+const title = "Personal Finance Guides 2026 — Banks, Credit Cards & Investing";
+const description = "Compare the best banks, credit cards, and investing platforms. Unbiased reviews, side-by-side comparisons, and free calculators to help you make smarter financial decisions.";
+
+const topBanks = [...banks].sort((a, b) => b.rating - a.rating).slice(0, 3);
+const topCards = [...creditCards].sort((a, b) => b.rating - a.rating).slice(0, 3);
+const topInvesting = [...investing].sort((a, b) => b.rating - a.rating).slice(0, 3);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Finance Guides — Folvr",
+  "description": description
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <section class="bg-primary text-white py-16">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Personal Finance Guides</h1>
+      <p class="text-lg text-white/70 max-w-2xl mx-auto mb-8">
+        Unbiased comparisons, honest reviews, and free tools to help you choose the right banks, credit cards, and investment platforms.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/finance/banking" class="bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors">Compare Banks</a>
+        <a href="/finance/credit-cards" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Credit Cards</a>
+        <a href="/finance/investing" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Investing</a>
+        <a href="/finance/calculators/compound-interest" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Calculators</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="max-w-6xl mx-auto px-4 py-16">
+    <div class="grid md:grid-cols-3 gap-8">
+      <!-- Banks -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold">Best Banks</h2>
+          <a href="/finance/banking" class="text-accent text-sm hover:text-accent-dark">View All</a>
+        </div>
+        <div class="space-y-3">
+          {topBanks.map((bank, i) => (
+            <a href={`/finance/review/${bank.slug}`} class="flex items-center gap-3 bg-surface border border-border rounded-lg p-3 hover:shadow-sm transition-shadow">
+              <span class="text-sm font-bold text-text-muted w-5">#{i+1}</span>
+              <div class="flex-1">
+                <p class="font-medium text-sm">{bank.name}</p>
+                <p class="text-xs text-accent font-semibold">{bank.savingsApy} APY</p>
+              </div>
+              <RatingBadge rating={bank.rating} size="sm" />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Credit Cards -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold">Best Credit Cards</h2>
+          <a href="/finance/credit-cards" class="text-accent text-sm hover:text-accent-dark">View All</a>
+        </div>
+        <div class="space-y-3">
+          {topCards.map((card, i) => (
+            <a href={`/finance/review/${card.slug}`} class="flex items-center gap-3 bg-surface border border-border rounded-lg p-3 hover:shadow-sm transition-shadow">
+              <span class="text-sm font-bold text-text-muted w-5">#{i+1}</span>
+              <div class="flex-1">
+                <p class="font-medium text-sm">{card.name}</p>
+                <p class="text-xs text-text-muted">{card.annualFee}/yr</p>
+              </div>
+              <RatingBadge rating={card.rating} size="sm" />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Investing -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold">Best Brokers</h2>
+          <a href="/finance/investing" class="text-accent text-sm hover:text-accent-dark">View All</a>
+        </div>
+        <div class="space-y-3">
+          {topInvesting.map((platform, i) => (
+            <a href={`/finance/review/${platform.slug}`} class="flex items-center gap-3 bg-surface border border-border rounded-lg p-3 hover:shadow-sm transition-shadow">
+              <span class="text-sm font-bold text-text-muted w-5">#{i+1}</span>
+              <div class="flex-1">
+                <p class="font-medium text-sm">{platform.name}</p>
+                <p class="text-xs text-text-muted">{platform.type}</p>
+              </div>
+              <RatingBadge rating={platform.rating} size="sm" />
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <AdSlot format="horizontal" slot="finance-hub-mid" />
+
+  <section class="bg-surface py-16">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <h2 class="text-2xl font-bold mb-2">Free Financial Calculators</h2>
+      <p class="text-text-muted mb-8">Plan your financial future with our free tools</p>
+      <div class="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+        <a href="/finance/calculators/compound-interest" class="bg-white border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
+          <h3 class="font-semibold mb-2">Compound Interest Calculator</h3>
+          <p class="text-sm text-text-muted">See how your savings grow over time</p>
+        </a>
+        <a href="/finance/calculators/loan" class="bg-white border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
+          <h3 class="font-semibold mb-2">Loan Payment Calculator</h3>
+          <p class="text-sm text-text-muted">Calculate monthly payments and total cost</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

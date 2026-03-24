@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RatingBadge from '../../components/shared/RatingBadge.astro';
+import ProsCons from '../../components/finance/ProsCons.astro';
+import AdSlot from '../../components/shared/AdSlot.astro';
+import creditCards from '../../data/finance/credit-cards.json';
+
+const travelCards = creditCards
+  .filter(c => ['Travel', 'Premium Travel'].includes(c.category))
+  .sort((a, b) => b.rating - a.rating);
+
+const title = "Best Travel Credit Cards 2026: Earn Miles, Points & Free Flights";
+const description = "Compare the best travel credit cards of 2026. Find the top cards for earning miles, points, and travel perks — and fund your next trip for less.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": description,
+  "datePublished": "2026-01-15",
+  "dateModified": "2026-03-15",
+  "author": { "@type": "Organization", "name": "Cornerstone Financial" }
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <nav class="text-sm text-text-muted mb-6">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/travel" class="hover:text-accent">Travel</a>
+      <span class="mx-2">/</span>
+      <span>Best Travel Credit Cards</span>
+    </nav>
+
+    <h1 class="text-3xl md:text-4xl font-bold mb-4">Best Travel Credit Cards 2026</h1>
+    <p class="text-lg text-text-muted mb-2">Earn points and miles on everyday spending — then redeem for flights, hotels, and upgrades.</p>
+    <p class="text-xs text-text-muted mb-8">Last updated: March 2026</p>
+
+    <AdSlot format="horizontal" slot="top-travel-cards" />
+
+    <div class="space-y-6 mb-8">
+      {travelCards.map((card, i) => (
+        <div class="bg-white border border-border rounded-xl p-6 hover:shadow-md transition-shadow">
+          <div class="flex items-start justify-between mb-4">
+            <div>
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-sm font-medium text-text-muted">#{i + 1}</span>
+                <a href={`/finance/review/${card.slug}`} class="text-xl font-bold hover:text-accent transition-colors">{card.name}</a>
+                <RatingBadge rating={card.rating} size="sm" />
+              </div>
+              <p class="text-sm text-text-muted">{card.bestFor}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 text-sm">
+            <div class="bg-surface rounded-lg p-3">
+              <p class="text-text-muted text-xs mb-1">Annual Fee</p>
+              <p class="font-semibold">{card.annualFee}</p>
+            </div>
+            <div class="bg-surface rounded-lg p-3">
+              <p class="text-text-muted text-xs mb-1">Sign-Up Bonus</p>
+              <p class="font-semibold text-accent">{card.signupBonus.split(' after')[0]}</p>
+            </div>
+            <div class="bg-surface rounded-lg p-3">
+              <p class="text-text-muted text-xs mb-1">Foreign Transaction</p>
+              <p class="font-semibold">{card.foreignTransactionFee}</p>
+            </div>
+            <div class="bg-surface rounded-lg p-3">
+              <p class="text-text-muted text-xs mb-1">Credit Needed</p>
+              <p class="font-semibold">{card.creditScore.split(' (')[0]}</p>
+            </div>
+          </div>
+
+          <p class="text-sm text-text-muted mb-4"><strong>Rewards:</strong> {card.rewardsRate}</p>
+
+          <div class="flex flex-wrap gap-2">
+            <a href={`/finance/review/${card.slug}`} class="bg-accent hover:bg-accent-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Read Full Review</a>
+            {card.affiliateUrl !== '#' && (
+              <a href={card.affiliateUrl} class="border border-accent text-accent hover:bg-accent/5 text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Apply Now</a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <AdSlot format="horizontal" slot="bottom-travel-cards" />
+
+    <section class="prose max-w-none mb-8">
+      <h2 class="text-2xl font-bold mb-4">How to Choose a Travel Credit Card</h2>
+      <p class="text-text-muted mb-4">
+        The right travel credit card depends on how you travel. If you fly frequently with a specific airline, a co-branded card offers the best rewards for that ecosystem.
+        If you want flexibility, a transferable points card (Chase Sapphire, Amex, Capital One) lets you move points to dozens of airline and hotel partners.
+      </p>
+
+      <h2 class="text-2xl font-bold mb-4">Points vs Miles vs Cash Back for Travel</h2>
+      <p class="text-text-muted mb-4">
+        Transferable points (Chase Ultimate Rewards, Amex Membership Rewards, Capital One Miles) are the most flexible and often the most valuable —
+        you can transfer to airlines and hotels or redeem through the card portal.
+        Airline miles are great if you're loyal to one carrier. Cash back is simpler but rarely beats the value of well-redeemed points.
+      </p>
+
+      <h2 class="text-2xl font-bold mb-4">The No Foreign Transaction Fee Rule</h2>
+      <p class="text-text-muted">
+        Any time you travel internationally, use a card with no foreign transaction fee. Cards that charge 3% add up fast —
+        a $5,000 trip costs you an extra $150 in fees alone. All the top travel cards above waive this fee entirely.
+      </p>
+    </section>
+
+    <section class="border-t border-border pt-8">
+      <h3 class="text-lg font-semibold mb-4">Related</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="/travel" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Travel Destinations</a>
+        <a href="/finance/credit-cards" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">All Credit Cards</a>
+        <a href="/finance/banking" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Best Banks</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

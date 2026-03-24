@@ -1,0 +1,180 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ComparisonTable from '../../../components/finance/ComparisonTable.astro';
+import ProsCons from '../../../components/finance/ProsCons.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+import banks from '../../../data/finance/banks.json';
+import creditCards from '../../../data/finance/credit-cards.json';
+import investing from '../../../data/finance/investing.json';
+import { generatePairs } from '../../../utils/helpers';
+
+export function getStaticPaths() {
+  const bankFields = [
+    { key: 'type', label: 'Bank Type' },
+    { key: 'savingsApy', label: 'Savings APY' },
+    { key: 'checkingFee', label: 'Checking Fee' },
+    { key: 'minDeposit', label: 'Minimum Deposit' },
+    { key: 'atmNetwork', label: 'ATM Network' },
+    { key: 'mobileBanking', label: 'Mobile Banking' },
+    { key: 'fdic', label: 'FDIC Insured' },
+    { key: 'signupBonus', label: 'Sign-Up Bonus' },
+  ];
+
+  const cardFields = [
+    { key: 'category', label: 'Card Category' },
+    { key: 'annualFee', label: 'Annual Fee' },
+    { key: 'apr', label: 'APR' },
+    { key: 'signupBonus', label: 'Sign-Up Bonus' },
+    { key: 'rewardsRate', label: 'Rewards Rate' },
+    { key: 'foreignTransactionFee', label: 'Foreign Transaction Fee' },
+    { key: 'creditScore', label: 'Credit Score Needed' },
+  ];
+
+  const investFields = [
+    { key: 'type', label: 'Platform Type' },
+    { key: 'stockCommission', label: 'Stock Commission' },
+    { key: 'optionsPerContract', label: 'Options Per Contract' },
+    { key: 'accountMinimum', label: 'Account Minimum' },
+    { key: 'fractionalShares', label: 'Fractional Shares' },
+    { key: 'roboAdvisor', label: 'Robo-Advisor' },
+    { key: 'roboFee', label: 'Robo-Advisor Fee' },
+    { key: 'research', label: 'Research Quality' },
+  ];
+
+  type CompareItem = {
+    slug: string;
+    name: string;
+    rating: number;
+    pros: string[];
+    cons: string[];
+    bestFor: string;
+    affiliateUrl: string;
+    [key: string]: any;
+  };
+
+  const paths: { params: { slug: string }; props: any }[] = [];
+
+  for (const [a, b] of generatePairs(banks as CompareItem[])) {
+    paths.push({ params: { slug: `${a.slug}-vs-${b.slug}` }, props: { itemA: a, itemB: b, category: 'banks', fields: bankFields, categoryLabel: 'Banks', categoryPath: '/finance/banking' } });
+  }
+  for (const [a, b] of generatePairs(creditCards as CompareItem[])) {
+    paths.push({ params: { slug: `${a.slug}-vs-${b.slug}` }, props: { itemA: a, itemB: b, category: 'credit-cards', fields: cardFields, categoryLabel: 'Credit Cards', categoryPath: '/finance/credit-cards' } });
+  }
+  for (const [a, b] of generatePairs(investing as CompareItem[])) {
+    paths.push({ params: { slug: `${a.slug}-vs-${b.slug}` }, props: { itemA: a, itemB: b, category: 'investing', fields: investFields, categoryLabel: 'Investing Platforms', categoryPath: '/finance/investing' } });
+  }
+
+  return paths;
+}
+
+const { itemA, itemB, category, fields, categoryLabel, categoryPath } = Astro.props;
+const title = `${itemA.name} vs ${itemB.name}: Which Is Better in 2026?`;
+const description = `Detailed comparison of ${itemA.name} and ${itemB.name}. Compare fees, features, pros & cons to find the best ${categoryLabel.toLowerCase()} for your needs.`;
+const winner = itemA.rating >= itemB.rating ? itemA : itemB;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": title,
+  "description": description,
+  "datePublished": "2026-01-15",
+  "dateModified": "2026-03-15",
+  "author": { "@type": "Organization", "name": "Folvr" },
+  "publisher": { "@type": "Organization", "name": "Folvr" }
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <article class="max-w-4xl mx-auto px-4 py-8">
+    <nav class="text-sm text-text-muted mb-6">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/finance" class="hover:text-accent">Finance</a>
+      <span class="mx-2">/</span>
+      <a href={categoryPath} class="hover:text-accent">{categoryLabel}</a>
+      <span class="mx-2">/</span>
+      <span>{itemA.name} vs {itemB.name}</span>
+    </nav>
+
+    <h1 class="text-3xl md:text-4xl font-bold mb-4">{itemA.name} vs {itemB.name}</h1>
+    <p class="text-lg text-text-muted mb-2">Comprehensive comparison to help you choose the right option</p>
+    <p class="text-xs text-text-muted mb-8">Last updated: March 2026</p>
+
+    <div class="bg-accent/10 border border-accent/30 rounded-lg p-6 mb-8">
+      <h2 class="text-lg font-semibold mb-2">Quick Verdict</h2>
+      <p class="text-sm">
+        <strong>{winner.name}</strong> takes the edge with a rating of <strong>{winner.rating}/5</strong>.
+        It's best for <em>{winner.bestFor.toLowerCase()}</em>. However, {winner === itemA ? itemB.name : itemA.name} is
+        the better choice if you're looking for <em>{(winner === itemA ? itemB : itemA).bestFor.toLowerCase()}</em>.
+      </p>
+    </div>
+
+    <AdSlot format="horizontal" slot="top-comparison" />
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Side-by-Side Comparison</h2>
+      <ComparisonTable itemA={itemA} itemB={itemB} fields={fields} type={category} />
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">{itemA.name}: Pros & Cons</h2>
+      <ProsCons pros={itemA.pros} cons={itemA.cons} name={itemA.name} />
+      <p class="text-sm text-text-muted mt-2"><strong>Best for:</strong> {itemA.bestFor}</p>
+    </section>
+
+    <AdSlot format="rectangle" slot="mid-comparison" />
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">{itemB.name}: Pros & Cons</h2>
+      <ProsCons pros={itemB.pros} cons={itemB.cons} name={itemB.name} />
+      <p class="text-sm text-text-muted mt-2"><strong>Best for:</strong> {itemB.bestFor}</p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Detailed Analysis</h2>
+      <h3 class="text-xl font-semibold mb-2 mt-6">Who Should Choose {itemA.name}?</h3>
+      <p class="text-text-muted mb-4">
+        {itemA.name} is the better choice if you're looking for {itemA.bestFor.toLowerCase()}.
+        Its strongest advantages include {itemA.pros.slice(0, 2).join(' and ').toLowerCase()}.
+        With a rating of {itemA.rating}/5, it {itemA.rating >= 4.5 ? 'stands out as one of the best options available' : itemA.rating >= 4.0 ? 'is a solid choice in the market' : 'offers decent value despite some drawbacks'}.
+      </p>
+      <h3 class="text-xl font-semibold mb-2 mt-6">Who Should Choose {itemB.name}?</h3>
+      <p class="text-text-muted mb-4">
+        {itemB.name} is ideal for those who want {itemB.bestFor.toLowerCase()}.
+        Key strengths include {itemB.pros.slice(0, 2).join(' and ').toLowerCase()}.
+        Rated {itemB.rating}/5, it {itemB.rating >= 4.5 ? 'is among the top picks we recommend' : itemB.rating >= 4.0 ? 'delivers strong value for most users' : 'works well for specific use cases'}.
+      </p>
+    </section>
+
+    <AdSlot format="horizontal" slot="bottom-comparison" />
+
+    <section class="mb-8 bg-surface rounded-lg p-6">
+      <h2 class="text-2xl font-bold mb-4">Final Verdict</h2>
+      <div class="flex items-center gap-4 mb-4">
+        <div class="text-center">
+          <RatingBadge rating={itemA.rating} size="lg" />
+          <p class="text-sm font-medium mt-1">{itemA.name}</p>
+        </div>
+        <span class="text-2xl font-bold text-text-muted">vs</span>
+        <div class="text-center">
+          <RatingBadge rating={itemB.rating} size="lg" />
+          <p class="text-sm font-medium mt-1">{itemB.name}</p>
+        </div>
+      </div>
+      <p class="text-text-muted">
+        Both {itemA.name} and {itemB.name} are {category === 'banks' ? 'reputable financial institutions' : category === 'credit-cards' ? 'solid credit card options' : 'legitimate investing platforms'}.
+        Choose <strong>{itemA.name}</strong> if you value {itemA.pros[0].toLowerCase()}.
+        Choose <strong>{itemB.name}</strong> if you prioritize {itemB.pros[0].toLowerCase()}.
+      </p>
+    </section>
+
+    <section class="border-t border-border pt-8">
+      <h3 class="text-lg font-semibold mb-4">Related</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href={`/finance/review/${itemA.slug}`} class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">{itemA.name} Review</a>
+        <a href={`/finance/review/${itemB.slug}`} class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">{itemB.name} Review</a>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

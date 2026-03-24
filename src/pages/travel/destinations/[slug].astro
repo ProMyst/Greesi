@@ -1,0 +1,166 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import ProsCons from '../../../components/finance/ProsCons.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+import destinations from '../../../data/travel/destinations.json';
+import creditCards from '../../../data/finance/credit-cards.json';
+
+export function getStaticPaths() {
+  return destinations.map(dest => ({
+    params: { slug: dest.slug },
+    props: { dest }
+  }));
+}
+
+const { dest } = Astro.props;
+
+const relatedCards = creditCards.filter(c => dest.relatedCards.includes(c.slug));
+const otherDestinations = destinations.filter(d => d.slug !== dest.slug).slice(0, 4);
+
+const title = `${dest.name} Travel Guide 2026: Tips, Best Time to Visit & Travel Cards`;
+const description = `Complete ${dest.name} travel guide. Best time to visit, top highlights, insider tips, and the best credit cards to maximise your trip.`;
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "TouristDestination",
+  "name": dest.name,
+  "description": description,
+  "url": `https://folvr.com/travel/destinations/${dest.slug}`,
+  "touristType": dest.bestFor
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <article class="max-w-4xl mx-auto px-4 py-8">
+    <nav class="text-sm text-text-muted mb-6">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/travel" class="hover:text-accent">Travel</a>
+      <span class="mx-2">/</span>
+      <span>{dest.name}</span>
+    </nav>
+
+    <div class="bg-gradient-to-br from-[#0a4f6e] to-[#1e8a8a] rounded-xl p-8 text-white mb-8">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-white/60 text-sm uppercase tracking-wide mb-1">{dest.region} · {dest.type}</p>
+          <h1 class="text-3xl md:text-4xl font-bold mb-2">{dest.name}</h1>
+          <p class="text-white/80 text-lg">{dest.tagline}</p>
+        </div>
+        <RatingBadge rating={dest.rating} size="lg" />
+      </div>
+      <div class="mt-6 flex flex-wrap gap-4 text-sm">
+        <div class="bg-white/10 rounded-lg px-3 py-2">
+          <p class="text-white/60 text-xs">Best Season</p>
+          <p class="font-medium">{dest.bestSeason}</p>
+        </div>
+        <div class="bg-white/10 rounded-lg px-3 py-2">
+          <p class="text-white/60 text-xs">Budget Level</p>
+          <p class="font-medium">{dest.budgetLevel}</p>
+        </div>
+        <div class="bg-white/10 rounded-lg px-3 py-2">
+          <p class="text-white/60 text-xs">Avg. Nightly Rate</p>
+          <p class="font-medium">{dest.avgNightlyRate}</p>
+        </div>
+        <div class="bg-white/10 rounded-lg px-3 py-2">
+          <p class="text-white/60 text-xs">Currency</p>
+          <p class="font-medium">{dest.currency}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-surface rounded-lg p-6 mb-8">
+      <h2 class="font-semibold mb-2">Best For</h2>
+      <p class="text-text-muted">{dest.bestFor}</p>
+    </div>
+
+    <AdSlot format="horizontal" slot="top-destination" />
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Top Highlights</h2>
+      <ul class="space-y-2">
+        {dest.highlights.map((h: string) => (
+          <li class="flex items-start gap-3 p-3 bg-surface rounded-lg">
+            <span class="text-accent mt-0.5">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </span>
+            <span class="text-text-muted">{h}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="mb-8 bg-surface rounded-lg p-6">
+      <h2 class="text-xl font-bold mb-3">Getting There</h2>
+      <p class="text-text-muted">{dest.flightFrom}</p>
+      <p class="text-sm text-text-muted mt-2">Language: {dest.language}</p>
+    </section>
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Pros & Cons</h2>
+      <ProsCons pros={dest.pros} cons={dest.cons} name={dest.name} />
+    </section>
+
+    <AdSlot format="rectangle" slot="mid-destination" />
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Insider Tips</h2>
+      <ul class="space-y-3">
+        {dest.tips.map((tip: string, i: number) => (
+          <li class="flex items-start gap-3">
+            <span class="bg-accent text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">{i + 1}</span>
+            <p class="text-text-muted">{tip}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="border border-accent/30 bg-accent/5 rounded-xl p-6 mb-8">
+      <h2 class="text-xl font-bold mb-2">Smart Travel Finance: Cards for {dest.name}</h2>
+      <p class="text-text-muted text-sm mb-4">{dest.travelCardTip}</p>
+      <div class="grid gap-3">
+        {relatedCards.map(card => (
+          <a href={`/finance/review/${card.slug}`} class="flex items-center justify-between bg-white border border-border rounded-lg p-3 hover:shadow-sm transition-shadow">
+            <div>
+              <span class="font-medium text-sm">{card.name}</span>
+              <p class="text-xs text-text-muted">{card.bestFor}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <RatingBadge rating={card.rating} size="sm" />
+              <span class="text-xs text-text-muted">{card.annualFee}/yr</span>
+            </div>
+          </a>
+        ))}
+      </div>
+      <a href="/travel/travel-cards" class="block text-center mt-4 text-sm text-accent hover:text-accent-dark font-medium">See all travel credit cards →</a>
+    </section>
+
+    <AdSlot format="horizontal" slot="bottom-destination" />
+
+    {dest.affiliateUrl !== '#' && (
+      <section class="bg-primary text-white rounded-xl p-6 mb-8 text-center">
+        <h2 class="text-xl font-bold mb-2">Ready to Book {dest.name}?</h2>
+        <p class="text-white/70 text-sm mb-4">Find the best hotel deals and accommodation</p>
+        <a href={dest.affiliateUrl} class="bg-accent hover:bg-accent-dark text-white font-semibold px-6 py-3 rounded-lg inline-block transition-colors">
+          Search Hotels & Resorts →
+        </a>
+      </section>
+    )}
+
+    <section class="border-t border-border pt-8">
+      <h3 class="text-lg font-semibold mb-4">More Destinations</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {otherDestinations.map(d => (
+          <a href={`/travel/destinations/${d.slug}`} class="bg-surface border border-border rounded-lg p-3 hover:bg-surface-alt transition-colors text-sm">
+            <p class="font-medium">{d.name}</p>
+            <p class="text-xs text-text-muted">{d.type}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  </article>
+</BaseLayout>

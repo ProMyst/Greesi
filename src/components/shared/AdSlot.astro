@@ -1,0 +1,19 @@
+---
+interface Props {
+  slot?: string;
+  format?: 'horizontal' | 'vertical' | 'rectangle';
+}
+
+const { slot = 'default', format = 'horizontal' } = Astro.props;
+
+const heightMap = {
+  horizontal: 'h-24',
+  vertical: 'h-64',
+  rectangle: 'h-64 max-w-sm'
+};
+---
+
+<!-- Ad Slot: Replace with actual ad code (AdSense/Mediavine) when approved -->
+<div class={`w-full ${heightMap[format]} bg-surface-alt border border-border rounded flex items-center justify-center text-text-muted text-xs my-6`} data-ad-slot={slot}>
+  <span>Advertisement</span>
+</div>

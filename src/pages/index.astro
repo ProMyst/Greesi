@@ -1,0 +1,227 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import RatingBadge from '../components/shared/RatingBadge.astro';
+import banks from "../data/finance/banks.json";
+import creditCards from "../data/finance/credit-cards.json";
+import investing from "../data/finance/investing.json";
+import destinations from "../data/travel/destinations.json";
+
+const title = "Cornerstone Financial — Finance, Travel & Smart Money Guides";
+const description = "Compare banks, credit cards, and investing platforms. Explore the world's best coastal destinations and learn how to fund your travels with the right rewards cards.";
+
+const topBanks = [...banks].sort((a, b) => b.rating - a.rating).slice(0, 4);
+const topCards = [...creditCards].sort((a, b) => b.rating - a.rating).slice(0, 4);
+const topInvesting = [...investing].sort((a, b) => b.rating - a.rating).slice(0, 4);
+const topDestinations = [...destinations].sort((a, b) => b.rating - a.rating).slice(0, 4);
+const travelCards = creditCards.filter(c => ['Travel', 'Premium Travel'].includes(c.category)).slice(0, 3);
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Cornerstone Financial",
+  "url": "https://folvr.com",
+  "description": description
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <!-- Hero -->
+  <section class="bg-primary text-white py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Finance Your Life. Travel the World.</h1>
+      <p class="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-8">
+        Unbiased comparisons for banks, credit cards, and brokers — plus expert coastal travel guides to help you get more miles out of every dollar.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="/finance/banking" class="bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors">Compare Banks</a>
+        <a href="/travel" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Explore Destinations</a>
+        <a href="/finance/calculators/compound-interest" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Calculators</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Popular Comparisons -->
+  <section class="max-w-6xl mx-auto px-4 py-16">
+    <h2 class="text-2xl font-bold mb-2">Popular Comparisons</h2>
+    <p class="text-text-muted mb-8">Our most-read head-to-head comparisons</p>
+    <div class="grid md:grid-cols-3 gap-4">
+      {[
+        { a: banks[1], b: banks[4] },
+        { a: creditCards[0], b: creditCards[1] },
+        { a: investing[0], b: investing[1] },
+        { a: banks[0], b: banks[1] },
+        { a: creditCards[2], b: creditCards[7] },
+        { a: investing[3], b: investing[4] },
+      ].map(({ a, b }) => (
+        <a href={`/finance/compare/${a.slug}-vs-${b.slug}`} class="block bg-surface hover:bg-surface-alt border border-border rounded-lg p-4 transition-colors">
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-sm">{a.name}</span>
+            <span class="text-text-muted text-xs">vs</span>
+            <span class="font-medium text-sm">{b.name}</span>
+          </div>
+          <div class="flex items-center justify-between mt-2">
+            <RatingBadge rating={a.rating} size="sm" />
+            <RatingBadge rating={b.rating} size="sm" />
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Top Banks -->
+  <section class="bg-surface py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-2xl font-bold">Best Banks 2026</h2>
+          <p class="text-text-muted">Top-rated banks based on APY, fees, and features</p>
+        </div>
+        <a href="/finance/banking" class="text-accent hover:text-accent-dark font-medium text-sm">View All</a>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topBanks.map((bank, i) => (
+          <a href={`/finance/review/${bank.slug}`} class="bg-white border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-medium text-text-muted">#{i + 1}</span>
+              <RatingBadge rating={bank.rating} size="sm" />
+            </div>
+            <h3 class="font-semibold mb-1">{bank.name}</h3>
+            <p class="text-sm text-text-muted mb-3">{bank.type}</p>
+            <div class="text-sm">
+              <span class="text-accent font-semibold">{bank.savingsApy}</span>
+              <span class="text-text-muted"> savings APY</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Top Credit Cards -->
+  <section class="py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-2xl font-bold">Best Credit Cards 2026</h2>
+          <p class="text-text-muted">Top picks for rewards, cash back, and travel</p>
+        </div>
+        <a href="/finance/credit-cards" class="text-accent hover:text-accent-dark font-medium text-sm">View All</a>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topCards.map((card, i) => (
+          <a href={`/finance/review/${card.slug}`} class="bg-surface border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-medium text-text-muted">#{i + 1}</span>
+              <RatingBadge rating={card.rating} size="sm" />
+            </div>
+            <h3 class="font-semibold mb-1">{card.name}</h3>
+            <p class="text-sm text-text-muted mb-3">{card.category} | {card.annualFee}/yr</p>
+            <p class="text-xs text-text-muted line-clamp-2">{card.bestFor}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Top Investing -->
+  <section class="bg-surface py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h2 class="text-2xl font-bold">Best Investing Platforms 2026</h2>
+          <p class="text-text-muted">Top brokers for stocks, ETFs, and retirement</p>
+        </div>
+        <a href="/finance/investing" class="text-accent hover:text-accent-dark font-medium text-sm">View All</a>
+      </div>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topInvesting.map((platform, i) => (
+          <a href={`/finance/review/${platform.slug}`} class="bg-white border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-medium text-text-muted">#{i + 1}</span>
+              <RatingBadge rating={platform.rating} size="sm" />
+            </div>
+            <h3 class="font-semibold mb-1">{platform.name}</h3>
+            <p class="text-sm text-text-muted mb-3">{platform.type}</p>
+            <p class="text-xs text-text-muted line-clamp-2">{platform.bestFor}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Travel Destinations -->
+  <section class="py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-2xl font-bold">Top Coastal Destinations</h2>
+        <a href="/travel" class="text-accent hover:text-accent-dark font-medium text-sm">View All</a>
+      </div>
+      <p class="text-text-muted mb-8">Shores, sails, and island escapes — ranked by our editors</p>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topDestinations.map((dest, i) => (
+          <a href={`/travel/destinations/${dest.slug}`} class="group bg-surface border border-border rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+            <div class="bg-gradient-to-br from-[#0a4f6e] to-[#1e8a8a] h-28 flex items-end p-3">
+              <div>
+                <span class="text-xs text-white/60 uppercase tracking-wide">{dest.region}</span>
+                <p class="text-white font-semibold text-sm">{dest.name}</p>
+              </div>
+            </div>
+            <div class="p-4">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-medium text-text-muted">#{i + 1}</span>
+                <RatingBadge rating={dest.rating} size="sm" />
+              </div>
+              <p class="text-xs text-text-muted">{dest.budgetLevel} · {dest.bestSeason.split(' ')[0]}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Travel + Finance Crossover -->
+  <section class="bg-gradient-to-br from-[#0a4f6e] to-[#1e3a5f] py-16">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-bold text-white mb-2">Fund Your Next Trip with the Right Card</h2>
+        <p class="text-white/60">Earn points on everyday spending and redeem for flights, hotels, and upgrades</p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4 mb-6">
+        {travelCards.map(card => (
+          <a href={`/finance/review/${card.slug}`} class="bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg p-5 text-white transition-colors">
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs text-white/50 uppercase">{card.category}</span>
+              <RatingBadge rating={card.rating} size="sm" />
+            </div>
+            <h3 class="font-semibold mb-1">{card.name}</h3>
+            <p class="text-xs text-white/50 mb-2">{card.annualFee}/yr · No foreign transaction fee</p>
+            <p class="text-xs text-white/70 line-clamp-2">{card.bestFor}</p>
+          </a>
+        ))}
+      </div>
+      <div class="text-center">
+        <a href="/travel/travel-cards" class="bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-lg font-semibold inline-block transition-colors">
+          Compare All Travel Cards →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculators CTA -->
+  <section class="py-16">
+    <div class="max-w-6xl mx-auto px-4 text-center">
+      <h2 class="text-2xl font-bold mb-2">Free Financial Calculators</h2>
+      <p class="text-text-muted mb-8">Plan your financial future with our free tools</p>
+      <div class="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+        <a href="/finance/calculators/compound-interest" class="bg-surface border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
+          <h3 class="font-semibold mb-2">Compound Interest Calculator</h3>
+          <p class="text-sm text-text-muted">See how your savings grow over time</p>
+        </a>
+        <a href="/finance/calculators/loan" class="bg-surface border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
+          <h3 class="font-semibold mb-2">Loan Payment Calculator</h3>
+          <p class="text-sm text-text-muted">Calculate monthly payments and total cost</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,167 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+
+const title = "Loan Calculator 2026 — Calculate Monthly Payments & Total Cost";
+const description = "Free loan calculator. Calculate monthly payments, total interest, and amortization schedule for any loan amount, rate, and term.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Loan Calculator",
+  "description": description,
+  "applicationCategory": "FinanceApplication",
+  "offers": { "@type": "Offer", "price": "0" }
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <nav class="text-sm text-text-muted mb-6">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/finance" class="hover:text-accent">Finance</a>
+      <span class="mx-2">/</span>
+      <span>Loan Calculator</span>
+    </nav>
+
+    <h1 class="text-3xl md:text-4xl font-bold mb-4">Loan Payment Calculator</h1>
+    <p class="text-lg text-text-muted mb-8">Calculate your monthly payment and see the true cost of any loan.</p>
+
+    <div class="grid md:grid-cols-2 gap-8 mb-8">
+      <div class="bg-surface rounded-lg p-6">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-1" for="loanAmount">Loan Amount</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted">$</span>
+              <input id="loanAmount" type="number" value="250000" min="0" step="1000" class="w-full pl-8 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent outline-none" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1" for="loanRate">Annual Interest Rate</label>
+            <div class="relative">
+              <input id="loanRate" type="number" value="6.5" min="0" max="30" step="0.1" class="w-full pr-8 pl-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent outline-none" />
+              <span class="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted">%</span>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1" for="loanTerm">Loan Term (Years)</label>
+            <input id="loanTerm" type="number" value="30" min="1" max="50" class="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent outline-none" />
+          </div>
+          <button id="calcLoan" class="w-full bg-accent hover:bg-accent-dark text-white font-semibold py-2.5 rounded-lg transition-colors">
+            Calculate
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div id="loanResults" class="bg-primary text-white rounded-lg p-6 mb-4">
+          <h3 class="text-sm uppercase tracking-wide text-white/60 mb-4">Monthly Payment</h3>
+          <p id="monthlyPayment" class="text-4xl font-bold mb-4">$1,580</p>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <p class="text-sm text-white/60">Total Paid</p>
+              <p id="totalPaid" class="text-xl font-semibold">$568,861</p>
+            </div>
+            <div>
+              <p class="text-sm text-white/60">Total Interest</p>
+              <p id="loanTotalInterest" class="text-xl font-semibold text-accent">$318,861</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-surface rounded-lg p-4">
+          <div class="flex items-center gap-2 text-xs mb-2">
+            <span class="w-3 h-3 bg-primary rounded"></span> Principal
+            <span class="w-3 h-3 bg-accent rounded ml-2"></span> Interest
+          </div>
+          <div class="w-full h-8 bg-border rounded-full overflow-hidden flex">
+            <div id="principalBar" class="bg-primary h-full transition-all duration-500" style="width: 44%"></div>
+            <div id="loanInterestBar" class="bg-accent h-full transition-all duration-500" style="width: 56%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <AdSlot format="horizontal" slot="mid-loan-calc" />
+
+    <section class="mb-8">
+      <h2 class="text-2xl font-bold mb-4">Amortization Schedule</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-sm">
+          <thead>
+            <tr class="bg-primary text-white">
+              <th class="p-3 text-left">Year</th>
+              <th class="p-3 text-right">Principal Paid</th>
+              <th class="p-3 text-right">Interest Paid</th>
+              <th class="p-3 text-right">Remaining Balance</th>
+            </tr>
+          </thead>
+          <tbody id="amortTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="bottom-loan-calc" />
+
+    <section class="prose max-w-none mb-8">
+      <h2 class="text-2xl font-bold mb-4">How Loan Payments Are Calculated</h2>
+      <p class="text-text-muted mb-4">Monthly loan payments are calculated using the standard amortization formula. Each payment consists of both principal and interest. In the early years, most of your payment goes toward interest. Over time, more goes toward principal.</p>
+    </section>
+
+    <section class="border-t border-border pt-8">
+      <h3 class="text-lg font-semibold mb-4">Related Tools</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="/finance/calculators/compound-interest" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Compound Interest Calculator</a>
+        <a href="/finance/banking" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Best Banks</a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function calcLoan() {
+      const P = parseFloat((document.getElementById('loanAmount') as HTMLInputElement).value) || 0;
+      const annualRate = (parseFloat((document.getElementById('loanRate') as HTMLInputElement).value) || 0) / 100;
+      const years = parseInt((document.getElementById('loanTerm') as HTMLInputElement).value) || 1;
+      const r = annualRate / 12;
+      const n = years * 12;
+
+      const monthly = r > 0 ? P * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1) : P / n;
+      const totalPaid = monthly * n;
+      const totalInterest = totalPaid - P;
+
+      document.getElementById('monthlyPayment')!.textContent = `$${monthly.toLocaleString('en-US', {maximumFractionDigits: 0})}`;
+      document.getElementById('totalPaid')!.textContent = `$${totalPaid.toLocaleString('en-US', {maximumFractionDigits: 0})}`;
+      document.getElementById('loanTotalInterest')!.textContent = `$${totalInterest.toLocaleString('en-US', {maximumFractionDigits: 0})}`;
+
+      const principalPct = (P / totalPaid) * 100;
+      (document.getElementById('principalBar') as HTMLElement).style.width = `${principalPct}%`;
+      (document.getElementById('loanInterestBar') as HTMLElement).style.width = `${100 - principalPct}%`;
+
+      const tbody = document.getElementById('amortTable')!;
+      tbody.innerHTML = '';
+      let balance = P;
+      for (let year = 1; year <= years; year++) {
+        let yearPrincipal = 0, yearInterest = 0;
+        for (let m = 0; m < 12; m++) {
+          const interest = balance * r;
+          const principal = monthly - interest;
+          yearPrincipal += principal;
+          yearInterest += interest;
+          balance -= principal;
+        }
+        if (balance < 0) balance = 0;
+        const row = document.createElement('tr');
+        row.className = year % 2 === 0 ? 'bg-surface' : 'bg-white';
+        row.innerHTML = `<td class="p-3">${year}</td><td class="p-3 text-right">$${yearPrincipal.toLocaleString('en-US', {maximumFractionDigits: 0})}</td><td class="p-3 text-right text-accent">$${yearInterest.toLocaleString('en-US', {maximumFractionDigits: 0})}</td><td class="p-3 text-right font-semibold">$${balance.toLocaleString('en-US', {maximumFractionDigits: 0})}</td>`;
+        tbody.appendChild(row);
+      }
+    }
+
+    document.getElementById('calcLoan')!.addEventListener('click', calcLoan);
+    ['loanAmount', 'loanRate', 'loanTerm'].forEach(id => {
+      document.getElementById(id)!.addEventListener('change', calcLoan);
+    });
+    calcLoan();
+  </script>
+</BaseLayout>

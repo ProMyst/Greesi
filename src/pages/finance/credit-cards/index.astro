@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+import creditCards from '../../../data/finance/credit-cards.json';
+
+const sorted = [...creditCards].sort((a, b) => b.rating - a.rating);
+const title = "Best Credit Cards 2026: Compare Rewards, Cash Back & Travel Cards";
+const description = "Compare the best credit cards of 2026. Side-by-side comparison of rewards rates, annual fees, sign-up bonuses, and perks to find your perfect card.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <nav class="text-sm text-text-muted mb-6">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/finance" class="hover:text-accent">Finance</a>
+      <span class="mx-2">/</span>
+      <span>Best Credit Cards</span>
+    </nav>
+
+    <h1 class="text-3xl md:text-4xl font-bold mb-4">Best Credit Cards of 2026</h1>
+    <p class="text-lg text-text-muted mb-8">Compare rewards rates, annual fees, and sign-up bonuses to find the best credit card for your spending habits.</p>
+
+    <AdSlot format="horizontal" slot="top-cards" />
+
+    <div class="space-y-4 mb-8">
+      {sorted.map((card, i) => (
+        <div class="bg-white border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
+          <div class="flex flex-col md:flex-row md:items-center gap-4">
+            <div class="flex items-center gap-3 md:w-8">
+              <span class="text-2xl font-bold text-text-muted">#{i + 1}</span>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-3 mb-2">
+                <a href={`/finance/review/${card.slug}`} class="text-xl font-semibold hover:text-accent transition-colors">{card.name}</a>
+                <RatingBadge rating={card.rating} size="sm" />
+                <span class="text-xs bg-surface px-2 py-0.5 rounded">{card.category}</span>
+              </div>
+              <p class="text-sm text-text-muted mb-3">{card.bestFor}</p>
+              <div class="flex flex-wrap gap-4 text-sm">
+                <span><strong>{card.annualFee}</strong> Annual Fee</span>
+                <span><strong class="text-accent">{card.rewardsRate.split(',')[0]}</strong></span>
+                {card.signupBonus && <span class="text-success font-medium">{card.signupBonus.split(' after')[0]}</span>}
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 md:w-40">
+              <a href={`/finance/review/${card.slug}`} class="text-center bg-accent hover:bg-accent-dark text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors">Read Review</a>
+              <a href={`/finance/compare/${card.slug}-vs-${sorted[0].slug === card.slug ? sorted[1].slug : sorted[0].slug}`} class="text-center border border-border hover:bg-surface text-sm py-2 px-4 rounded-lg transition-colors">Compare</a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <AdSlot format="horizontal" slot="bottom-cards" />
+
+    <section class="prose max-w-none">
+      <h2 class="text-2xl font-bold mb-4">How to Choose the Right Credit Card</h2>
+      <p class="text-text-muted mb-4">The best credit card depends on your spending habits. If you spend heavily on dining and groceries, cards with bonus categories in those areas will earn you more. If you want simplicity, a flat-rate 2% cash back card is hard to beat. For travelers, points cards with transfer partners offer the best value.</p>
+
+      <h2 class="text-2xl font-bold mb-4">Cash Back vs Points vs Miles</h2>
+      <p class="text-text-muted">Cash back cards offer straightforward value — you earn a percentage back on purchases. Points cards (Chase, Amex) offer flexible value through transfer partners, potentially worth more per point. Miles cards are best for frequent flyers who can use airline-specific redemptions.</p>
+    </section>
+  </div>
+</BaseLayout>

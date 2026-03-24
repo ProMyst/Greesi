@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Disclaimer";
+const description = "Important disclaimers about the financial information and affiliate relationships on Cornerstone Financial.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-3xl mx-auto px-4 py-12">
+    <h1 class="text-3xl font-bold mb-2">Disclaimer</h1>
+    <p class="text-text-muted mb-8">Last updated: March 2026</p>
+
+    <div class="prose max-w-none text-text-muted space-y-4">
+      <h2 class="text-xl font-semibold text-text mt-8 mb-3">General Disclaimer</h2>
+      <p>The information provided on Cornerstone Financial (cornerstonens.com) is for general informational purposes only. It should not be considered financial advice. Always consult with a qualified financial advisor before making financial decisions.</p>
+
+      <h2 class="text-xl font-semibold text-text mt-8 mb-3">Affiliate Disclosure</h2>
+      <p>Cornerstone Financial participates in affiliate programs with various financial product providers. This means we may earn a commission when you click on links to products and services and subsequently make a purchase or sign up. This comes at no additional cost to you.</p>
+      <p>Our affiliate relationships do not influence our editorial content, rankings, or reviews. We are committed to providing honest, unbiased information to help you make informed financial decisions.</p>
+
+      <h2 class="text-xl font-semibold text-text mt-8 mb-3">Accuracy of Information</h2>
+      <p>While we strive to keep all information accurate and up to date, financial products, rates, fees, and terms change frequently. We recommend verifying all details directly with the financial institution before making any decisions. We are not responsible for any inaccuracies or changes made by product providers after our review.</p>
+
+      <h2 class="text-xl font-semibold text-text mt-8 mb-3">Not Financial Advice</h2>
+      <p>Nothing on this website constitutes financial, investment, legal, or tax advice. The comparisons, reviews, and tools provided are for educational and informational purposes. Your financial situation is unique, and decisions should be made based on your individual circumstances with appropriate professional guidance.</p>
+    </div>
+  </div>
+</BaseLayout>

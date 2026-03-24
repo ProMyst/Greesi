@@ -1,0 +1,120 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  schema?: object;
+}
+
+const { title, description, canonical, ogImage, schema } = Astro.props;
+const siteUrl = 'https://folvr.com';
+const fullTitle = title.includes('Cornerstone') ? title : `${title} | Cornerstone Financial`;
+const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
+const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
+---
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImageUrl} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Cornerstone Financial" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImageUrl} />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  {schema && (
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  )}
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="bg-primary text-white">
+    <nav class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="text-xl font-bold tracking-tight">
+        Cornerstone <span class="text-accent font-light">Financial</span>
+      </a>
+      <div class="hidden md:flex items-center gap-6 text-sm">
+        <a href="/finance" class="hover:text-accent transition-colors">Finance</a>
+        <a href="/finance/banking" class="hover:text-accent transition-colors">Banking</a>
+        <a href="/finance/credit-cards" class="hover:text-accent transition-colors">Credit Cards</a>
+        <a href="/travel" class="hover:text-accent transition-colors">Travel</a>
+        <a href="/finance/calculators/compound-interest" class="hover:text-accent transition-colors">Calculators</a>
+      </div>
+      <button id="mobile-menu-btn" class="md:hidden text-white" aria-label="Menu">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+    </nav>
+    <div id="mobile-menu" class="hidden md:hidden px-4 pb-4">
+      <a href="/finance" class="block py-2 hover:text-accent">Finance</a>
+      <a href="/finance/banking" class="block py-2 hover:text-accent">Banking</a>
+      <a href="/finance/credit-cards" class="block py-2 hover:text-accent">Credit Cards</a>
+      <a href="/travel" class="block py-2 hover:text-accent">Travel</a>
+      <a href="/finance/calculators/compound-interest" class="block py-2 hover:text-accent">Calculators</a>
+    </div>
+  </header>
+
+  <main class="flex-1">
+    <slot />
+  </main>
+
+  <footer class="bg-primary text-white/70 mt-16">
+    <div class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+      <div>
+        <h3 class="text-white font-semibold mb-3">Cornerstone Financial</h3>
+        <p>Unbiased comparisons and tools to help you make smarter financial decisions.</p>
+      </div>
+      <div>
+        <h3 class="text-white font-semibold mb-3">Categories</h3>
+        <ul class="space-y-2">
+          <li><a href="/finance/banking" class="hover:text-white transition-colors">Banking</a></li>
+          <li><a href="/finance/credit-cards" class="hover:text-white transition-colors">Credit Cards</a></li>
+          <li><a href="/finance/investing" class="hover:text-white transition-colors">Investing</a></li>
+          <li><a href="/travel" class="hover:text-white transition-colors">Travel</a></li>
+          <li><a href="/finance/calculators/compound-interest" class="hover:text-white transition-colors">Calculators</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="text-white font-semibold mb-3">Legal</h3>
+        <ul class="space-y-2">
+          <li><a href="/about" class="hover:text-white transition-colors">About Us</a></li>
+          <li><a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>
+          <li><a href="/disclaimer" class="hover:text-white transition-colors">Disclaimer</a></li>
+        </ul>
+        <p class="mt-4 text-xs text-white/50">&copy; {new Date().getFullYear()} Cornerstone Financial. All rights reserved.</p>
+      </div>
+    </div>
+    <div class="border-t border-white/10 py-4">
+      <p class="text-center text-xs text-white/40">
+        Affiliate Disclosure: Some links on this site are affiliate links. We may earn a commission at no extra cost to you.
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
+      document.getElementById('mobile-menu')?.classList.toggle('hidden');
+    });
+  </script>
+</body>
+</html>
