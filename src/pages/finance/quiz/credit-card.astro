@@ -1,0 +1,315 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = "Which Credit Card Is Right for Me? | Free Quiz | Folvr";
+const description = "Answer 5 quick questions about your spending habits and goals to get a personalized credit card recommendation. Free, unbiased, takes under 2 minutes.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-2xl mx-auto px-4 py-12">
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <nav class="text-sm text-text-muted mb-4">
+        <a href="/finance" class="hover:text-accent">Finance</a>
+        <span class="mx-2">/</span>
+        <a href="/finance/compare" class="hover:text-accent">Compare</a>
+        <span class="mx-2">/</span>
+        <span>Credit Card Quiz</span>
+      </nav>
+      <div class="text-4xl mb-3">🃏</div>
+      <h1 class="text-3xl font-bold mb-2">Find Your Best Credit Card</h1>
+      <p class="text-text-muted">Answer 5 quick questions — we'll match you with the card that fits your lifestyle.</p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="quiz-progress-wrap mb-8">
+      <div class="quiz-progress-bar" id="quiz-progress" style="width: 0%"></div>
+    </div>
+    <p class="text-sm text-text-muted text-center mb-6" id="quiz-step-label">Question 1 of 5</p>
+
+    <!-- Quiz steps -->
+    <div id="quiz-container">
+
+      <!-- Step 1 -->
+      <div class="quiz-step" id="step-0">
+        <h2 class="quiz-question">What's your primary credit card goal?</h2>
+        <div class="quiz-options">
+          <button class="quiz-option" data-q="0" data-v="travel">
+            <span class="quiz-opt-icon">✈️</span>
+            <span class="quiz-opt-title">Travel rewards & miles</span>
+            <span class="quiz-opt-sub">Points, transfers, lounge access</span>
+          </button>
+          <button class="quiz-option" data-q="0" data-v="cashback">
+            <span class="quiz-opt-icon">💵</span>
+            <span class="quiz-opt-title">Cash back on everyday spending</span>
+            <span class="quiz-opt-sub">Simple, flexible money back</span>
+          </button>
+          <button class="quiz-option" data-q="0" data-v="dining">
+            <span class="quiz-opt-icon">🍽️</span>
+            <span class="quiz-opt-title">Maximize dining & groceries</span>
+            <span class="quiz-opt-sub">Bonus categories for food spend</span>
+          </button>
+          <button class="quiz-option" data-q="0" data-v="premium">
+            <span class="quiz-opt-icon">👑</span>
+            <span class="quiz-opt-title">Premium perks & status</span>
+            <span class="quiz-opt-sub">Lounge access, elite benefits</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="quiz-step hidden" id="step-1">
+        <h2 class="quiz-question">How much do you spend on a card monthly?</h2>
+        <div class="quiz-options">
+          <button class="quiz-option" data-q="1" data-v="low">
+            <span class="quiz-opt-icon">💡</span>
+            <span class="quiz-opt-title">Under $1,000</span>
+            <span class="quiz-opt-sub">Light to moderate usage</span>
+          </button>
+          <button class="quiz-option" data-q="1" data-v="mid">
+            <span class="quiz-opt-icon">📊</span>
+            <span class="quiz-opt-title">$1,000 – $2,500</span>
+            <span class="quiz-opt-sub">Regular, everyday spending</span>
+          </button>
+          <button class="quiz-option" data-q="1" data-v="high">
+            <span class="quiz-opt-icon">🚀</span>
+            <span class="quiz-opt-title">$2,500 – $5,000</span>
+            <span class="quiz-opt-sub">Heavy spender, maximizing rewards</span>
+          </button>
+          <button class="quiz-option" data-q="1" data-v="very-high">
+            <span class="quiz-opt-icon">💎</span>
+            <span class="quiz-opt-title">More than $5,000</span>
+            <span class="quiz-opt-sub">Business-level or luxury spending</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="quiz-step hidden" id="step-2">
+        <h2 class="quiz-question">How do you feel about annual fees?</h2>
+        <div class="quiz-options quiz-options-3">
+          <button class="quiz-option" data-q="2" data-v="no-fee">
+            <span class="quiz-opt-icon">🚫</span>
+            <span class="quiz-opt-title">No annual fee only</span>
+            <span class="quiz-opt-sub">Free cards or bust</span>
+          </button>
+          <button class="quiz-option" data-q="2" data-v="mid-fee">
+            <span class="quiz-opt-icon">⚖️</span>
+            <span class="quiz-opt-title">Up to ~$100</span>
+            <span class="quiz-opt-sub">Fine if rewards justify it</span>
+          </button>
+          <button class="quiz-option" data-q="2" data-v="high-fee">
+            <span class="quiz-opt-icon">🌟</span>
+            <span class="quiz-opt-title">$200+ for premium perks</span>
+            <span class="quiz-opt-sub">I'll pay for real value</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="quiz-step hidden" id="step-3">
+        <h2 class="quiz-question">Do you travel internationally?</h2>
+        <div class="quiz-options quiz-options-3">
+          <button class="quiz-option" data-q="3" data-v="frequent">
+            <span class="quiz-opt-icon">🌍</span>
+            <span class="quiz-opt-title">Yes, frequently</span>
+            <span class="quiz-opt-sub">Multiple international trips/year</span>
+          </button>
+          <button class="quiz-option" data-q="3" data-v="occasional">
+            <span class="quiz-opt-icon">🧳</span>
+            <span class="quiz-opt-title">Occasionally</span>
+            <span class="quiz-opt-sub">1–2 international trips/year</span>
+          </button>
+          <button class="quiz-option" data-q="3" data-v="never">
+            <span class="quiz-opt-icon">🏠</span>
+            <span class="quiz-opt-title">Rarely or never</span>
+            <span class="quiz-opt-sub">Mostly domestic or at home</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="quiz-step hidden" id="step-4">
+        <h2 class="quiz-question">What's your approximate credit score?</h2>
+        <div class="quiz-options">
+          <button class="quiz-option" data-q="4" data-v="excellent">
+            <span class="quiz-opt-icon">⭐</span>
+            <span class="quiz-opt-title">Excellent (750+)</span>
+            <span class="quiz-opt-sub">I qualify for the best cards</span>
+          </button>
+          <button class="quiz-option" data-q="4" data-v="good">
+            <span class="quiz-opt-icon">👍</span>
+            <span class="quiz-opt-title">Good (700–749)</span>
+            <span class="quiz-opt-sub">Solid credit history</span>
+          </button>
+          <button class="quiz-option" data-q="4" data-v="fair">
+            <span class="quiz-opt-icon">🔨</span>
+            <span class="quiz-opt-title">Fair (650–699)</span>
+            <span class="quiz-opt-sub">Building or rebuilding</span>
+          </button>
+          <button class="quiz-option" data-q="4" data-v="unknown">
+            <span class="quiz-opt-icon">❓</span>
+            <span class="quiz-opt-title">Not sure</span>
+            <span class="quiz-opt-sub">I haven't checked recently</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results (hidden until quiz complete) -->
+    <div id="quiz-result" class="hidden">
+      <div class="text-center mb-8">
+        <div class="text-4xl mb-2">🎯</div>
+        <h2 class="text-2xl font-bold">Your Best Match</h2>
+        <p class="text-text-muted mt-1">Based on your answers, here's what we recommend.</p>
+      </div>
+
+      <div id="result-top" class="quiz-result-top mb-6"></div>
+
+      <div id="result-also" class="mb-8">
+        <h3 class="text-lg font-semibold mb-4">Also Consider</h3>
+        <div id="result-also-cards" class="space-y-3"></div>
+      </div>
+
+      <div class="text-center">
+        <button id="quiz-restart" class="border border-border hover:bg-surface text-sm py-2 px-6 rounded-lg transition-colors">Retake Quiz</button>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script>
+  const cards = [
+    { slug: 'chase-sapphire-preferred', name: 'Chase Sapphire Preferred', fee: '$95/yr', highlight: 'Best travel card under $100', rating: 4.7,
+      scores: { goal: { travel: 5, cashback: 2, dining: 3, premium: 3 }, fee: { 'no-fee': 0, 'mid-fee': 5, 'high-fee': 3 }, travel: { frequent: 5, occasional: 4, never: 1 }, credit: { excellent: 5, good: 5, fair: 0, unknown: 3 } } },
+    { slug: 'amex-gold', name: 'American Express Gold Card', fee: '$250/yr', highlight: 'Best for dining & groceries', rating: 4.6,
+      scores: { goal: { travel: 3, cashback: 2, dining: 5, premium: 4 }, fee: { 'no-fee': 0, 'mid-fee': 1, 'high-fee': 5 }, travel: { frequent: 4, occasional: 3, never: 2 }, credit: { excellent: 5, good: 4, fair: 0, unknown: 2 } } },
+    { slug: 'citi-double-cash', name: 'Citi Double Cash', fee: '$0/yr', highlight: 'Best flat-rate cash back card', rating: 4.5,
+      scores: { goal: { travel: 1, cashback: 5, dining: 2, premium: 1 }, fee: { 'no-fee': 5, 'mid-fee': 3, 'high-fee': 0 }, travel: { frequent: 2, occasional: 3, never: 5 }, credit: { excellent: 5, good: 5, fair: 3, unknown: 4 } } },
+    { slug: 'chase-freedom-unlimited', name: 'Chase Freedom Unlimited', fee: '$0/yr', highlight: 'Best no-fee cash back card', rating: 4.4,
+      scores: { goal: { travel: 2, cashback: 5, dining: 3, premium: 1 }, fee: { 'no-fee': 5, 'mid-fee': 3, 'high-fee': 0 }, travel: { frequent: 2, occasional: 3, never: 5 }, credit: { excellent: 5, good: 5, fair: 3, unknown: 4 } } },
+    { slug: 'discover-it-cash-back', name: 'Discover it Cash Back', fee: '$0/yr', highlight: 'Best for building credit + rewards', rating: 4.5,
+      scores: { goal: { travel: 1, cashback: 5, dining: 2, premium: 1 }, fee: { 'no-fee': 5, 'mid-fee': 3, 'high-fee': 0 }, travel: { frequent: 1, occasional: 2, never: 5 }, credit: { excellent: 4, good: 5, fair: 5, unknown: 5 } } },
+    { slug: 'amex-platinum', name: 'American Express Platinum', fee: '$695/yr', highlight: 'Best for premium travel perks', rating: 4.3,
+      scores: { goal: { travel: 5, cashback: 1, dining: 2, premium: 5 }, fee: { 'no-fee': 0, 'mid-fee': 0, 'high-fee': 5 }, travel: { frequent: 5, occasional: 2, never: 0 }, credit: { excellent: 5, good: 2, fair: 0, unknown: 1 } } },
+    { slug: 'capital-one-venture-x', name: 'Capital One Venture X', fee: '$395/yr', highlight: 'Best premium travel card value', rating: 4.7,
+      scores: { goal: { travel: 5, cashback: 2, dining: 3, premium: 4 }, fee: { 'no-fee': 0, 'mid-fee': 1, 'high-fee': 5 }, travel: { frequent: 5, occasional: 4, never: 1 }, credit: { excellent: 5, good: 4, fair: 0, unknown: 2 } } },
+    { slug: 'wells-fargo-active-cash', name: 'Wells Fargo Active Cash', fee: '$0/yr', highlight: 'Best 2% flat-rate cash back', rating: 4.3,
+      scores: { goal: { travel: 1, cashback: 5, dining: 2, premium: 1 }, fee: { 'no-fee': 5, 'mid-fee': 3, 'high-fee': 0 }, travel: { frequent: 2, occasional: 3, never: 5 }, credit: { excellent: 5, good: 5, fair: 4, unknown: 4 } } }
+  ];
+
+  const answers: Record<number, string> = {};
+  let currentStep = 0;
+  const totalSteps = 5;
+
+  function updateProgress() {
+    const pct = (currentStep / totalSteps) * 100;
+    (document.getElementById('quiz-progress') as HTMLElement).style.width = pct + '%';
+    (document.getElementById('quiz-step-label') as HTMLElement).textContent =
+      currentStep < totalSteps ? `Question ${currentStep + 1} of ${totalSteps}` : 'Results';
+  }
+
+  function goToStep(n: number) {
+    document.querySelectorAll('.quiz-step').forEach((s, i) => {
+      s.classList.toggle('hidden', i !== n);
+    });
+    currentStep = n;
+    updateProgress();
+  }
+
+  function computeResults() {
+    const scored = cards.map(card => {
+      let total = 0;
+      const goal = answers[0];
+      const fee = answers[2];
+      const travel = answers[3];
+      const credit = answers[4];
+      if (goal && card.scores.goal[goal as keyof typeof card.scores.goal] !== undefined)
+        total += card.scores.goal[goal as keyof typeof card.scores.goal] * 3;
+      if (fee && card.scores.fee[fee as keyof typeof card.scores.fee] !== undefined)
+        total += card.scores.fee[fee as keyof typeof card.scores.fee] * 2;
+      if (travel && card.scores.travel[travel as keyof typeof card.scores.travel] !== undefined)
+        total += card.scores.travel[travel as keyof typeof card.scores.travel];
+      if (credit && card.scores.credit[credit as keyof typeof card.scores.credit] !== undefined)
+        total += card.scores.credit[credit as keyof typeof card.scores.credit] * 2;
+      return { ...card, total };
+    });
+    return scored.sort((a, b) => b.total - a.total);
+  }
+
+  function showResults() {
+    document.getElementById('quiz-container')?.classList.add('hidden');
+    document.getElementById('quiz-progress-wrap')?.classList.add('hidden');
+    document.getElementById('quiz-step-label')?.classList.add('hidden');
+    const results = computeResults();
+    const top = results[0];
+
+    document.getElementById('result-top')!.innerHTML = `
+      <div class="quiz-match-card">
+        <div class="quiz-match-badge">Top Pick</div>
+        <div class="quiz-match-name">${top.name}</div>
+        <div class="quiz-match-highlight">${top.highlight}</div>
+        <div class="quiz-match-fee">${top.fee} annual fee</div>
+        <div class="quiz-match-rating">
+          <span class="rating-badge-sm">${top.rating}</span>
+          <span class="text-text-muted text-sm">/ 5.0</span>
+        </div>
+        <div class="quiz-match-actions">
+          <a href="/finance/review/${top.slug}" class="btn-primary">Read Full Review →</a>
+        </div>
+      </div>
+    `;
+
+    const alsoHtml = results.slice(1, 3).map(c => `
+      <div class="quiz-also-card">
+        <div class="quiz-also-info">
+          <p class="font-semibold">${c.name}</p>
+          <p class="text-sm text-text-muted">${c.highlight} · ${c.fee}</p>
+        </div>
+        <a href="/finance/review/${c.slug}" class="ctable-btn">Review</a>
+      </div>
+    `).join('');
+    document.getElementById('result-also-cards')!.innerHTML = alsoHtml;
+
+    document.getElementById('quiz-result')?.classList.remove('hidden');
+    (document.getElementById('quiz-progress') as HTMLElement).style.width = '100%';
+    (document.getElementById('quiz-step-label') as HTMLElement).textContent = 'Results ready!';
+    document.getElementById('quiz-step-label')?.classList.remove('hidden');
+  }
+
+  // Option click handler
+  document.querySelectorAll('.quiz-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = parseInt((btn as HTMLElement).dataset.q!);
+      const v = (btn as HTMLElement).dataset.v!;
+      answers[q] = v;
+
+      // Visual selection
+      btn.closest('.quiz-options')?.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+      btn.classList.add('selected');
+
+      // Advance after short delay
+      setTimeout(() => {
+        if (q + 1 < totalSteps) goToStep(q + 1);
+        else showResults();
+      }, 300);
+    });
+  });
+
+  // Restart
+  document.getElementById('quiz-restart')?.addEventListener('click', () => {
+    Object.keys(answers).forEach(k => delete answers[parseInt(k)]);
+    currentStep = 0;
+    document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+    document.getElementById('quiz-result')?.classList.add('hidden');
+    document.getElementById('quiz-container')?.classList.remove('hidden');
+    document.getElementById('quiz-progress-wrap')?.classList.remove('hidden');
+    document.getElementById('quiz-step-label')?.classList.remove('hidden');
+    goToStep(0);
+  });
+
+  updateProgress();
+</script>

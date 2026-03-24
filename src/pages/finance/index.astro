@@ -32,6 +32,7 @@ const schema = {
         <a href="/finance/banking" class="bg-accent hover:bg-accent-dark text-white px-6 py-3 rounded-lg font-semibold transition-colors">Compare Banks</a>
         <a href="/finance/credit-cards" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Credit Cards</a>
         <a href="/finance/investing" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Investing</a>
+        <a href="/finance/compare" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Compare All</a>
         <a href="/finance/calculators/compound-interest" class="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-lg font-semibold transition-colors">Calculators</a>
       </div>
     </div>
@@ -104,18 +105,34 @@ const schema = {
   <AdSlot format="horizontal" slot="finance-hub-mid" />
 
   <section class="bg-surface py-16">
-    <div class="max-w-6xl mx-auto px-4 text-center">
-      <h2 class="text-2xl font-bold mb-2">Free Financial Calculators</h2>
-      <p class="text-text-muted mb-8">Plan your financial future with our free tools</p>
-      <div class="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-        <a href="/finance/calculators/compound-interest" class="bg-white border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
-          <h3 class="font-semibold mb-2">Compound Interest Calculator</h3>
-          <p class="text-sm text-text-muted">See how your savings grow over time</p>
+    <div class="max-w-6xl mx-auto px-4">
+      <h2 class="text-2xl font-bold mb-2 text-center">Free Tools & Quizzes</h2>
+      <p class="text-text-muted mb-8 text-center">Calculators, comparison tables, and personalized quizzes to make smarter decisions faster.</p>
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <a href="/finance/calculators/compound-interest" class="fi-tool-card">
+          <span class="fi-tool-icon">📈</span>
+          <h3 class="font-semibold mb-1">Compound Interest</h3>
+          <p class="text-xs text-text-muted">See how savings grow over time</p>
         </a>
-        <a href="/finance/calculators/loan" class="bg-white border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
-          <h3 class="font-semibold mb-2">Loan Payment Calculator</h3>
-          <p class="text-sm text-text-muted">Calculate monthly payments and total cost</p>
+        <a href="/finance/calculators/loan" class="fi-tool-card">
+          <span class="fi-tool-icon">🏠</span>
+          <h3 class="font-semibold mb-1">Loan Calculator</h3>
+          <p class="text-xs text-text-muted">Monthly payments & total cost</p>
         </a>
+        <a href="/finance/compare" class="fi-tool-card">
+          <span class="fi-tool-icon">⚖️</span>
+          <h3 class="font-semibold mb-1">Compare All</h3>
+          <p class="text-xs text-text-muted">Full side-by-side tables</p>
+        </a>
+        <a href="/finance/quiz/credit-card" class="fi-tool-card">
+          <span class="fi-tool-icon">🃏</span>
+          <h3 class="font-semibold mb-1">Card Quiz</h3>
+          <p class="text-xs text-text-muted">Find your best credit card</p>
+        </a>
+      </div>
+      <!-- Bank quiz CTA -->
+      <div class="mt-4 text-center">
+        <a href="/finance/quiz/bank-account" class="text-accent hover:text-accent-dark text-sm font-medium">Not sure which bank is right for you? Take our 4-question quiz →</a>
       </div>
     </div>
   </section>

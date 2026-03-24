@@ -1,0 +1,346 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+import banks from '../../../data/finance/banks.json';
+import creditCards from '../../../data/finance/credit-cards.json';
+import investing from '../../../data/finance/investing.json';
+
+const title = "Compare Banks, Credit Cards & Brokers Side-by-Side | Folvr";
+const description = "Full comparison tables for every bank, credit card, and investing platform we review. Sort by APY, fees, rewards, and more to find your best fit.";
+
+const popularPairs = [
+  { a: 'ally', b: 'marcus', label: 'Ally vs Marcus' },
+  { a: 'ally', b: 'sofi', label: 'Ally vs SoFi' },
+  { a: 'chase', b: 'ally', label: 'Chase vs Ally' },
+  { a: 'chase-sapphire-preferred', b: 'capital-one-venture-x', label: 'Chase Sapphire vs Venture X' },
+  { a: 'amex-gold', b: 'chase-sapphire-preferred', label: 'Amex Gold vs Chase Sapphire' },
+  { a: 'citi-double-cash', b: 'chase-freedom-unlimited', label: 'Citi Double Cash vs Freedom Unlimited' },
+  { a: 'fidelity', b: 'charles-schwab', label: 'Fidelity vs Schwab' },
+  { a: 'fidelity', b: 'vanguard', label: 'Fidelity vs Vanguard' },
+  { a: 'robinhood', b: 'webull', label: 'Robinhood vs Webull' },
+];
+
+const banksSorted = [...banks].sort((a, b) => b.rating - a.rating);
+const cardsSorted = [...creditCards].sort((a, b) => b.rating - a.rating);
+const investingSorted = [...investing].sort((a, b) => b.rating - a.rating);
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- Hero -->
+  <section class="bg-primary text-white py-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <nav class="text-sm text-white/50 mb-4">
+        <a href="/" class="hover:text-white">Home</a>
+        <span class="mx-2">/</span>
+        <a href="/finance" class="hover:text-white">Finance</a>
+        <span class="mx-2">/</span>
+        <span>Compare</span>
+      </nav>
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">Compare Everything Side-by-Side</h1>
+      <p class="text-white/70 max-w-2xl">Full comparison tables for every financial product we review. Sort any column, or jump straight to a popular head-to-head.</p>
+    </div>
+  </section>
+
+  <div class="max-w-6xl mx-auto px-4 py-10">
+
+    <!-- Category tabs -->
+    <div class="compare-tab-bar mb-8">
+      <button class="compare-tab compare-tab-active" data-panel="panel-banks">Banks</button>
+      <button class="compare-tab" data-panel="panel-cards">Credit Cards</button>
+      <button class="compare-tab" data-panel="panel-investing">Investing</button>
+    </div>
+
+    <!-- ── Banks Table ─────────────────────────────────────────── -->
+    <div id="panel-banks" class="compare-panel">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">All Banks Compared</h2>
+        <a href="/finance/banking" class="text-accent text-sm hover:text-accent-dark">See full rankings →</a>
+      </div>
+      <div class="ctable-wrap">
+        <table class="ctable" id="tbl-banks">
+          <thead>
+            <tr>
+              <th class="ctable-sticky" data-sort="name">Bank</th>
+              <th data-sort="type">Type</th>
+              <th data-sort="apy">Savings APY</th>
+              <th data-sort="fee">Monthly Fee</th>
+              <th data-sort="deposit">Min Deposit</th>
+              <th>ATM Network</th>
+              <th>Sign-Up Bonus</th>
+              <th data-sort="rating">Rating</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {banksSorted.map((bank, i) => (
+              <tr class={i % 2 === 0 ? 'ctable-even' : ''}>
+                <td class="ctable-sticky ctable-name">
+                  <a href={`/finance/review/${bank.slug}`} class="font-semibold hover:text-accent">{bank.name}</a>
+                </td>
+                <td><span class="ctable-badge">{bank.type}</span></td>
+                <td class="ctable-highlight">{bank.savingsApy}</td>
+                <td>{bank.checkingFee}</td>
+                <td>{bank.minDeposit}</td>
+                <td class="ctable-muted">{bank.atmNetwork}</td>
+                <td>{bank.signupBonus}</td>
+                <td><RatingBadge rating={bank.rating} size="sm" /></td>
+                <td>
+                  <a href={`/finance/review/${bank.slug}`} class="ctable-btn">Review</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Credit Cards Table ──────────────────────────────────── -->
+    <div id="panel-cards" class="compare-panel hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">All Credit Cards Compared</h2>
+        <a href="/finance/credit-cards" class="text-accent text-sm hover:text-accent-dark">See full rankings →</a>
+      </div>
+      <div class="ctable-wrap">
+        <table class="ctable" id="tbl-cards">
+          <thead>
+            <tr>
+              <th class="ctable-sticky" data-sort="name">Card</th>
+              <th>Category</th>
+              <th data-sort="fee">Annual Fee</th>
+              <th>Rewards Rate</th>
+              <th>Sign-Up Bonus</th>
+              <th data-sort="apr">APR</th>
+              <th>Foreign Fee</th>
+              <th data-sort="rating">Rating</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {cardsSorted.map((card, i) => (
+              <tr class={i % 2 === 0 ? 'ctable-even' : ''}>
+                <td class="ctable-sticky ctable-name">
+                  <a href={`/finance/review/${card.slug}`} class="font-semibold hover:text-accent">{card.name}</a>
+                </td>
+                <td><span class="ctable-badge">{card.category}</span></td>
+                <td class={card.annualFee === '$0' || card.annualFee === 'None' ? 'ctable-positive' : 'ctable-neutral'}>{card.annualFee}</td>
+                <td class="ctable-muted text-xs">{card.rewardsRate.split(',')[0]}</td>
+                <td class="text-xs">{card.signupBonus ? card.signupBonus.split(' after')[0] : '—'}</td>
+                <td class="ctable-muted">{card.apr}</td>
+                <td class={card.foreignTransactionFee === 'None' ? 'ctable-positive' : 'ctable-neutral'}>{card.foreignTransactionFee}</td>
+                <td><RatingBadge rating={card.rating} size="sm" /></td>
+                <td>
+                  <a href={`/finance/review/${card.slug}`} class="ctable-btn">Review</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Investing Table ─────────────────────────────────────── -->
+    <div id="panel-investing" class="compare-panel hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">All Investing Platforms Compared</h2>
+        <a href="/finance/investing" class="text-accent text-sm hover:text-accent-dark">See full rankings →</a>
+      </div>
+      <div class="ctable-wrap">
+        <table class="ctable" id="tbl-investing">
+          <thead>
+            <tr>
+              <th class="ctable-sticky" data-sort="name">Platform</th>
+              <th>Type</th>
+              <th data-sort="commission">Stock Trade</th>
+              <th>Options/Contract</th>
+              <th data-sort="minimum">Account Min</th>
+              <th>Fractional Shares</th>
+              <th>Robo Fee</th>
+              <th data-sort="rating">Rating</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {investingSorted.map((platform, i) => (
+              <tr class={i % 2 === 0 ? 'ctable-even' : ''}>
+                <td class="ctable-sticky ctable-name">
+                  <a href={`/finance/review/${platform.slug}`} class="font-semibold hover:text-accent">{platform.name}</a>
+                </td>
+                <td><span class="ctable-badge">{platform.type}</span></td>
+                <td class={platform.stockCommission === '$0' ? 'ctable-positive' : 'ctable-neutral'}>{platform.stockCommission}</td>
+                <td class="ctable-muted">{platform.optionsPerContract}</td>
+                <td class={platform.accountMinimum === '$0' ? 'ctable-positive' : 'ctable-neutral'}>{platform.accountMinimum}</td>
+                <td class={platform.fractionalShares === true ? 'ctable-positive' : 'ctable-neutral'}>{platform.fractionalShares === true ? 'Yes' : platform.fractionalShares === false ? 'No' : platform.fractionalShares}</td>
+                <td class="ctable-muted">{platform.roboFee || '—'}</td>
+                <td><RatingBadge rating={platform.rating} size="sm" /></td>
+                <td>
+                  <a href={`/finance/review/${platform.slug}`} class="ctable-btn">Review</a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <AdSlot format="horizontal" slot="compare-hub-mid" />
+
+    <!-- Popular Head-to-Head Comparisons -->
+    <section class="mt-10">
+      <h2 class="text-xl font-bold mb-5">Popular Head-to-Head Comparisons</h2>
+      <div class="popular-pairs-grid">
+        {popularPairs.map(pair => (
+          <a href={`/finance/compare/${pair.a}-vs-${pair.b}`} class="popular-pair-card reveal-item">
+            <span class="popular-pair-label">{pair.label}</span>
+            <span class="popular-pair-arrow">→</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Custom Comparison Picker -->
+    <section class="mt-10 bg-surface rounded-2xl p-8">
+      <h2 class="text-xl font-bold mb-2">Build Your Own Comparison</h2>
+      <p class="text-text-muted mb-6">Pick any two products in the same category to compare them side-by-side.</p>
+      <div class="custom-picker">
+        <div>
+          <label class="block text-sm font-medium mb-2">Category</label>
+          <select id="picker-category" class="picker-select">
+            <option value="banks">Banks</option>
+            <option value="cards">Credit Cards</option>
+            <option value="investing">Investing</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">First product</label>
+          <select id="picker-a" class="picker-select"></select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-2">Second product</label>
+          <select id="picker-b" class="picker-select"></select>
+        </div>
+        <div class="flex items-end">
+          <button id="picker-go" class="btn-primary w-full">Compare →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quiz CTA -->
+    <section class="mt-10 grid md:grid-cols-2 gap-4">
+      <a href="/finance/quiz/credit-card" class="quiz-cta-card reveal-item">
+        <div class="quiz-cta-icon">🃏</div>
+        <div>
+          <p class="font-bold text-lg">Which credit card is right for me?</p>
+          <p class="text-sm text-text-muted mt-1">Answer 5 quick questions. Get a personalized recommendation.</p>
+        </div>
+        <span class="quiz-cta-arrow">→</span>
+      </a>
+      <a href="/finance/quiz/bank-account" class="quiz-cta-card reveal-item" style="--delay: 0.05s">
+        <div class="quiz-cta-icon">🏦</div>
+        <div>
+          <p class="font-bold text-lg">Which bank account is right for me?</p>
+          <p class="text-sm text-text-muted mt-1">Answer 4 quick questions. Find your best-fit bank.</p>
+        </div>
+        <span class="quiz-cta-arrow">→</span>
+      </a>
+    </section>
+
+  </div>
+</BaseLayout>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.compare-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.compare-tab').forEach(t => t.classList.remove('compare-tab-active'));
+      document.querySelectorAll('.compare-panel').forEach(p => p.classList.add('hidden'));
+      tab.classList.add('compare-tab-active');
+      const panel = document.getElementById((tab as HTMLElement).dataset.panel!);
+      panel?.classList.remove('hidden');
+    });
+  });
+
+  // Column sort
+  document.querySelectorAll('.ctable th[data-sort]').forEach(th => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => {
+      const table = (th as HTMLElement).closest('table') as HTMLTableElement;
+      const col = (th as HTMLElement).dataset.sort!;
+      const asc = (th as HTMLElement).dataset.dir !== 'asc';
+      (th as HTMLElement).dataset.dir = asc ? 'asc' : 'desc';
+      // Reset other headers
+      table.querySelectorAll('th[data-sort]').forEach(h => {
+        if (h !== th) delete (h as HTMLElement).dataset.dir;
+        (h as HTMLElement).querySelector('.sort-indicator')?.remove();
+      });
+      const indicator = document.createElement('span');
+      indicator.className = 'sort-indicator';
+      indicator.textContent = asc ? ' ↑' : ' ↓';
+      th.appendChild(indicator);
+
+      const tbody = table.querySelector('tbody') as HTMLTableSectionElement;
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      rows.sort((a, b) => {
+        const aVal = (a.querySelector(`[data-${col}]`) as HTMLElement)?.dataset[col]
+          ?? a.cells[getColIndex(table, th as HTMLElement)]?.textContent?.trim() ?? '';
+        const bVal = (b.querySelector(`[data-${col}]`) as HTMLElement)?.dataset[col]
+          ?? b.cells[getColIndex(table, th as HTMLElement)]?.textContent?.trim() ?? '';
+        const aNum = parseFloat(aVal.replace(/[^0-9.]/g, ''));
+        const bNum = parseFloat(bVal.replace(/[^0-9.]/g, ''));
+        if (!isNaN(aNum) && !isNaN(bNum)) return asc ? aNum - bNum : bNum - aNum;
+        return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+      });
+      rows.forEach(r => tbody.appendChild(r));
+    });
+  });
+
+  function getColIndex(table: HTMLTableElement, th: HTMLElement): number {
+    return Array.from(th.closest('tr')!.cells).indexOf(th as HTMLTableCellElement);
+  }
+
+  // Custom comparison picker
+  const bankData = [
+    { slug: 'chase', name: 'Chase Bank' }, { slug: 'ally', name: 'Ally Bank' },
+    { slug: 'discover', name: 'Discover Bank' }, { slug: 'marcus', name: 'Marcus by Goldman Sachs' },
+    { slug: 'capital-one', name: 'Capital One 360' }, { slug: 'sofi', name: 'SoFi Bank' },
+    { slug: 'wells-fargo', name: 'Wells Fargo' }, { slug: 'bank-of-america', name: 'Bank of America' },
+    { slug: 'citi', name: 'Citi' }, { slug: 'wealthfront', name: 'Wealthfront Cash' }
+  ];
+  const cardData = [
+    { slug: 'chase-sapphire-preferred', name: 'Chase Sapphire Preferred' },
+    { slug: 'amex-gold', name: 'Amex Gold Card' },
+    { slug: 'citi-double-cash', name: 'Citi Double Cash' },
+    { slug: 'chase-freedom-unlimited', name: 'Chase Freedom Unlimited' },
+    { slug: 'discover-it-cash-back', name: 'Discover it Cash Back' },
+    { slug: 'amex-platinum', name: 'Amex Platinum' },
+    { slug: 'capital-one-venture-x', name: 'Capital One Venture X' },
+    { slug: 'wells-fargo-active-cash', name: 'Wells Fargo Active Cash' }
+  ];
+  const investData = [
+    { slug: 'fidelity', name: 'Fidelity' }, { slug: 'charles-schwab', name: 'Charles Schwab' },
+    { slug: 'vanguard', name: 'Vanguard' }, { slug: 'td-ameritrade', name: 'TD Ameritrade' },
+    { slug: 'robinhood', name: 'Robinhood' }, { slug: 'webull', name: 'Webull' },
+    { slug: 'etrade', name: 'E*TRADE' }, { slug: 'interactive-brokers', name: 'Interactive Brokers' },
+    { slug: 'betterment', name: 'Betterment' }, { slug: 'm1-finance', name: 'M1 Finance' }
+  ];
+  const datasets: Record<string, { slug: string; name: string }[]> = { banks: bankData, cards: cardData, investing: investData };
+
+  function populatePicker(cat: string) {
+    const data = datasets[cat];
+    ['picker-a', 'picker-b'].forEach((id, idx) => {
+      const sel = document.getElementById(id) as HTMLSelectElement;
+      sel.innerHTML = data.map(d => `<option value="${d.slug}">${d.name}</option>`).join('');
+      if (idx === 1 && data.length > 1) sel.selectedIndex = 1;
+    });
+  }
+
+  const catSel = document.getElementById('picker-category') as HTMLSelectElement;
+  catSel.addEventListener('change', () => populatePicker(catSel.value));
+  populatePicker('banks');
+
+  document.getElementById('picker-go')?.addEventListener('click', () => {
+    const a = (document.getElementById('picker-a') as HTMLSelectElement).value;
+    const b = (document.getElementById('picker-b') as HTMLSelectElement).value;
+    if (a && b && a !== b) window.location.href = `/finance/compare/${a}-vs-${b}`;
+  });
+</script>

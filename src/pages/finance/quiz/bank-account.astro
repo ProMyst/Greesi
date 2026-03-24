@@ -1,0 +1,275 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = "Which Bank Account Is Right for Me? | Free Quiz | Folvr";
+const description = "Answer 4 quick questions to find the best bank account for your lifestyle — whether you want the highest APY, no fees, branch access, or a sign-up bonus.";
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-2xl mx-auto px-4 py-12">
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <nav class="text-sm text-text-muted mb-4">
+        <a href="/finance" class="hover:text-accent">Finance</a>
+        <span class="mx-2">/</span>
+        <a href="/finance/compare" class="hover:text-accent">Compare</a>
+        <span class="mx-2">/</span>
+        <span>Bank Account Quiz</span>
+      </nav>
+      <div class="text-4xl mb-3">🏦</div>
+      <h1 class="text-3xl font-bold mb-2">Find Your Best Bank Account</h1>
+      <p class="text-text-muted">Answer 4 quick questions — we'll match you with the bank that fits your needs.</p>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="quiz-progress-wrap mb-8" id="quiz-progress-wrap">
+      <div class="quiz-progress-bar" id="quiz-progress" style="width: 0%"></div>
+    </div>
+    <p class="text-sm text-text-muted text-center mb-6" id="quiz-step-label">Question 1 of 4</p>
+
+    <!-- Quiz steps -->
+    <div id="quiz-container">
+
+      <!-- Step 1 -->
+      <div class="quiz-step" id="step-0">
+        <h2 class="quiz-question">What matters most to you in a bank?</h2>
+        <div class="quiz-options">
+          <button class="quiz-option" data-q="0" data-v="apy">
+            <span class="quiz-opt-icon">📈</span>
+            <span class="quiz-opt-title">Highest savings interest rate</span>
+            <span class="quiz-opt-sub">Make my money work harder</span>
+          </button>
+          <button class="quiz-option" data-q="0" data-v="no-fee">
+            <span class="quiz-opt-icon">🚫</span>
+            <span class="quiz-opt-title">Zero fees, always</span>
+            <span class="quiz-opt-sub">No monthly or hidden fees</span>
+          </button>
+          <button class="quiz-option" data-q="0" data-v="branch">
+            <span class="quiz-opt-icon">🏢</span>
+            <span class="quiz-opt-title">Branch & ATM access</span>
+            <span class="quiz-opt-sub">I want to walk in when I need to</span>
+          </button>
+          <button class="quiz-option" data-q="0" data-v="mobile">
+            <span class="quiz-opt-icon">📱</span>
+            <span class="quiz-opt-title">Best mobile banking app</span>
+            <span class="quiz-opt-sub">Seamless digital experience</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="quiz-step hidden" id="step-1">
+        <h2 class="quiz-question">How do you prefer to bank?</h2>
+        <div class="quiz-options quiz-options-3">
+          <button class="quiz-option" data-q="1" data-v="online">
+            <span class="quiz-opt-icon">💻</span>
+            <span class="quiz-opt-title">100% online</span>
+            <span class="quiz-opt-sub">I never need a branch</span>
+          </button>
+          <button class="quiz-option" data-q="1" data-v="hybrid">
+            <span class="quiz-opt-icon">🔄</span>
+            <span class="quiz-opt-title">Mix of online & in-person</span>
+            <span class="quiz-opt-sub">Mostly digital, occasionally branch</span>
+          </button>
+          <button class="quiz-option" data-q="1" data-v="branch">
+            <span class="quiz-opt-icon">🏦</span>
+            <span class="quiz-opt-title">I use branches regularly</span>
+            <span class="quiz-opt-sub">Physical presence is important</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="quiz-step hidden" id="step-2">
+        <h2 class="quiz-question">What's your typical account balance?</h2>
+        <div class="quiz-options quiz-options-3">
+          <button class="quiz-option" data-q="2" data-v="low">
+            <span class="quiz-opt-icon">💡</span>
+            <span class="quiz-opt-title">Usually under $1,000</span>
+            <span class="quiz-opt-sub">I need no minimum balance</span>
+          </button>
+          <button class="quiz-option" data-q="2" data-v="mid">
+            <span class="quiz-opt-icon">💰</span>
+            <span class="quiz-opt-title">$1,000 – $10,000</span>
+            <span class="quiz-opt-sub">Comfortable savings cushion</span>
+          </button>
+          <button class="quiz-option" data-q="2" data-v="high">
+            <span class="quiz-opt-icon">🏆</span>
+            <span class="quiz-opt-title">Usually over $10,000</span>
+            <span class="quiz-opt-sub">I want my balance working for me</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="quiz-step hidden" id="step-3">
+        <h2 class="quiz-question">How important is a sign-up bonus?</h2>
+        <div class="quiz-options quiz-options-3">
+          <button class="quiz-option" data-q="3" data-v="bonus-yes">
+            <span class="quiz-opt-icon">🎁</span>
+            <span class="quiz-opt-title">Very important</span>
+            <span class="quiz-opt-sub">I'd switch banks for a good bonus</span>
+          </button>
+          <button class="quiz-option" data-q="3" data-v="bonus-nice">
+            <span class="quiz-opt-icon">😊</span>
+            <span class="quiz-opt-title">Nice to have</span>
+            <span class="quiz-opt-sub">A bonus is a plus, not a dealbreaker</span>
+          </button>
+          <button class="quiz-option" data-q="3" data-v="bonus-no">
+            <span class="quiz-opt-icon">🤷</span>
+            <span class="quiz-opt-title">Doesn't matter</span>
+            <span class="quiz-opt-sub">I care about ongoing value only</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Results -->
+    <div id="quiz-result" class="hidden">
+      <div class="text-center mb-8">
+        <div class="text-4xl mb-2">🎯</div>
+        <h2 class="text-2xl font-bold">Your Best Match</h2>
+        <p class="text-text-muted mt-1">Based on your answers, here's the bank we recommend.</p>
+      </div>
+
+      <div id="result-top" class="quiz-result-top mb-6"></div>
+
+      <div id="result-also" class="mb-8">
+        <h3 class="text-lg font-semibold mb-4">Also Consider</h3>
+        <div id="result-also-cards" class="space-y-3"></div>
+      </div>
+
+      <div class="text-center">
+        <button id="quiz-restart" class="border border-border hover:bg-surface text-sm py-2 px-6 rounded-lg transition-colors">Retake Quiz</button>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script>
+  const banks = [
+    { slug: 'ally', name: 'Ally Bank', apy: '4.00% APY', highlight: 'Best overall online bank', fee: '$0/mo',  rating: 4.7,
+      scores: { priority: { apy: 5, 'no-fee': 5, branch: 0, mobile: 4 }, style: { online: 5, hybrid: 3, branch: 0 }, balance: { low: 5, mid: 4, high: 4 }, bonus: { 'bonus-yes': 0, 'bonus-nice': 3, 'bonus-no': 5 } } },
+    { slug: 'sofi', name: 'SoFi Bank', apy: '3.80% APY', highlight: 'Best all-in-one digital bank', fee: '$0/mo', rating: 4.6,
+      scores: { priority: { apy: 4, 'no-fee': 5, branch: 0, mobile: 5 }, style: { online: 5, hybrid: 3, branch: 0 }, balance: { low: 5, mid: 5, high: 4 }, bonus: { 'bonus-yes': 4, 'bonus-nice': 4, 'bonus-no': 3 } } },
+    { slug: 'marcus', name: 'Marcus by Goldman Sachs', apy: '3.90% APY', highlight: 'Best high-yield savings', fee: '$0/mo', rating: 4.3,
+      scores: { priority: { apy: 5, 'no-fee': 4, branch: 0, mobile: 3 }, style: { online: 5, hybrid: 3, branch: 0 }, balance: { low: 3, mid: 5, high: 5 }, bonus: { 'bonus-yes': 0, 'bonus-nice': 2, 'bonus-no': 5 } } },
+    { slug: 'wealthfront', name: 'Wealthfront Cash', apy: '4.00% APY', highlight: 'Best for investors who also save', fee: '$0/mo', rating: 4.4,
+      scores: { priority: { apy: 5, 'no-fee': 4, branch: 0, mobile: 4 }, style: { online: 5, hybrid: 2, branch: 0 }, balance: { low: 3, mid: 5, high: 5 }, bonus: { 'bonus-yes': 0, 'bonus-nice': 2, 'bonus-no': 5 } } },
+    { slug: 'discover', name: 'Discover Bank', apy: '3.75% APY', highlight: 'Best no-fee online bank with cashback', fee: '$0/mo', rating: 4.5,
+      scores: { priority: { apy: 4, 'no-fee': 5, branch: 0, mobile: 4 }, style: { online: 5, hybrid: 4, branch: 0 }, balance: { low: 5, mid: 4, high: 4 }, bonus: { 'bonus-yes': 3, 'bonus-nice': 4, 'bonus-no': 4 } } },
+    { slug: 'capital-one', name: 'Capital One 360', apy: '3.80% APY', highlight: 'Best hybrid: cafes + online rate', fee: '$0/mo', rating: 4.4,
+      scores: { priority: { apy: 4, 'no-fee': 5, branch: 3, mobile: 4 }, style: { online: 4, hybrid: 5, branch: 2 }, balance: { low: 5, mid: 4, high: 3 }, bonus: { 'bonus-yes': 2, 'bonus-nice': 4, 'bonus-no': 4 } } },
+    { slug: 'chase', name: 'Chase Bank', apy: '0.01% APY', highlight: 'Best branch network & sign-up bonus', fee: '$12/mo (waivable)', rating: 4.0,
+      scores: { priority: { apy: 0, 'no-fee': 1, branch: 5, mobile: 3 }, style: { online: 1, hybrid: 4, branch: 5 }, balance: { low: 3, mid: 4, high: 4 }, bonus: { 'bonus-yes': 5, 'bonus-nice': 4, 'bonus-no': 1 } } },
+    { slug: 'bank-of-america', name: 'Bank of America', apy: '0.01% APY', highlight: 'Best for Preferred Rewards members', fee: '$12/mo (waivable)', rating: 3.8,
+      scores: { priority: { apy: 0, 'no-fee': 1, branch: 5, mobile: 3 }, style: { online: 1, hybrid: 4, branch: 5 }, balance: { low: 2, mid: 3, high: 5 }, bonus: { 'bonus-yes': 3, 'bonus-nice': 3, 'bonus-no': 2 } } },
+    { slug: 'wells-fargo', name: 'Wells Fargo', apy: '0.01% APY', highlight: 'Largest US ATM network', fee: '$10/mo (waivable)', rating: 3.5,
+      scores: { priority: { apy: 0, 'no-fee': 1, branch: 5, mobile: 2 }, style: { online: 1, hybrid: 3, branch: 5 }, balance: { low: 2, mid: 3, high: 4 }, bonus: { 'bonus-yes': 4, 'bonus-nice': 3, 'bonus-no': 1 } } },
+    { slug: 'citi', name: 'Citi', apy: '0.01% APY', highlight: 'Best global banking network', fee: '$12/mo (waivable)', rating: 3.7,
+      scores: { priority: { apy: 1, 'no-fee': 1, branch: 4, mobile: 3 }, style: { online: 2, hybrid: 4, branch: 4 }, balance: { low: 2, mid: 3, high: 5 }, bonus: { 'bonus-yes': 4, 'bonus-nice': 4, 'bonus-no': 1 } } }
+  ];
+
+  const answers: Record<number, string> = {};
+  let currentStep = 0;
+  const totalSteps = 4;
+
+  function updateProgress() {
+    const pct = (currentStep / totalSteps) * 100;
+    (document.getElementById('quiz-progress') as HTMLElement).style.width = pct + '%';
+    (document.getElementById('quiz-step-label') as HTMLElement).textContent =
+      currentStep < totalSteps ? `Question ${currentStep + 1} of ${totalSteps}` : 'Results';
+  }
+
+  function goToStep(n: number) {
+    document.querySelectorAll('.quiz-step').forEach((s, i) => s.classList.toggle('hidden', i !== n));
+    currentStep = n;
+    updateProgress();
+  }
+
+  function computeResults() {
+    const scored = banks.map(bank => {
+      let total = 0;
+      const priority = answers[0];
+      const style = answers[1];
+      const balance = answers[2];
+      const bonus = answers[3];
+      if (priority) total += (bank.scores.priority[priority as keyof typeof bank.scores.priority] ?? 0) * 3;
+      if (style) total += (bank.scores.style[style as keyof typeof bank.scores.style] ?? 0) * 3;
+      if (balance) total += (bank.scores.balance[balance as keyof typeof bank.scores.balance] ?? 0) * 2;
+      if (bonus) total += (bank.scores.bonus[bonus as keyof typeof bank.scores.bonus] ?? 0);
+      return { ...bank, total };
+    });
+    return scored.sort((a, b) => b.total - a.total);
+  }
+
+  function showResults() {
+    document.getElementById('quiz-container')?.classList.add('hidden');
+    document.getElementById('quiz-progress-wrap')?.classList.add('hidden');
+    document.getElementById('quiz-step-label')?.classList.add('hidden');
+    const results = computeResults();
+    const top = results[0];
+
+    document.getElementById('result-top')!.innerHTML = `
+      <div class="quiz-match-card">
+        <div class="quiz-match-badge">Top Pick</div>
+        <div class="quiz-match-name">${top.name}</div>
+        <div class="quiz-match-highlight">${top.highlight}</div>
+        <div class="quiz-match-fee">${top.apy} savings rate &nbsp;·&nbsp; ${top.fee}</div>
+        <div class="quiz-match-rating">
+          <span class="rating-badge-sm">${top.rating}</span>
+          <span class="text-text-muted text-sm">/ 5.0</span>
+        </div>
+        <div class="quiz-match-actions">
+          <a href="/finance/review/${top.slug}" class="btn-primary">Read Full Review →</a>
+        </div>
+      </div>
+    `;
+
+    const alsoHtml = results.slice(1, 3).map(c => `
+      <div class="quiz-also-card">
+        <div class="quiz-also-info">
+          <p class="font-semibold">${c.name}</p>
+          <p class="text-sm text-text-muted">${c.highlight} · ${c.apy}</p>
+        </div>
+        <a href="/finance/review/${c.slug}" class="ctable-btn">Review</a>
+      </div>
+    `).join('');
+    document.getElementById('result-also-cards')!.innerHTML = alsoHtml;
+
+    document.getElementById('quiz-result')?.classList.remove('hidden');
+    (document.getElementById('quiz-progress') as HTMLElement).style.width = '100%';
+    document.getElementById('quiz-step-label')?.classList.remove('hidden');
+    (document.getElementById('quiz-step-label') as HTMLElement).textContent = 'Results ready!';
+  }
+
+  document.querySelectorAll('.quiz-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const q = parseInt((btn as HTMLElement).dataset.q!);
+      const v = (btn as HTMLElement).dataset.v!;
+      answers[q] = v;
+      btn.closest('.quiz-options')?.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+      btn.classList.add('selected');
+      setTimeout(() => {
+        if (q + 1 < totalSteps) goToStep(q + 1);
+        else showResults();
+      }, 300);
+    });
+  });
+
+  document.getElementById('quiz-restart')?.addEventListener('click', () => {
+    Object.keys(answers).forEach(k => delete answers[parseInt(k)]);
+    currentStep = 0;
+    document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+    document.getElementById('quiz-result')?.classList.add('hidden');
+    document.getElementById('quiz-container')?.classList.remove('hidden');
+    document.getElementById('quiz-progress-wrap')?.classList.remove('hidden');
+    document.getElementById('quiz-step-label')?.classList.remove('hidden');
+    goToStep(0);
+  });
+
+  updateProgress();
+</script>
