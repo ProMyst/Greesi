@@ -11,7 +11,7 @@ interface Props {
 
 const { title, description, canonical, ogImage, schema } = Astro.props;
 const siteUrl = 'https://folvr.com';
-const fullTitle = title.includes('Cornerstone') ? title : `${title} | Cornerstone Financial`;
+const fullTitle = title.includes('Folvr') ? title : `${title} | Folvr`;
 const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
 const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
 ---
@@ -31,7 +31,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:image" content={ogImageUrl} />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Cornerstone Financial" />
+  <meta property="og:site_name" content="Folvr" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -47,74 +47,391 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   )}
 </head>
 <body class="min-h-screen flex flex-col">
-  <header class="bg-primary text-white">
-    <nav class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/" class="text-xl font-bold tracking-tight">
-        Cornerstone <span class="text-accent font-light">Financial</span>
+
+  <!-- ── Navigation ─────────────────────────────────────────── -->
+  <header id="site-nav" class="nav-root nav-transparent">
+    <nav class="nav-inner">
+      <!-- Logo -->
+      <a href="/" class="nav-logo">
+        <span class="nav-logo-text">Folvr</span>
+        <span class="nav-logo-dot">·</span>
       </a>
-      <div class="hidden md:flex items-center gap-6 text-sm">
-        <a href="/finance" class="hover:text-accent transition-colors">Finance</a>
-        <a href="/finance/banking" class="hover:text-accent transition-colors">Banking</a>
-        <a href="/finance/credit-cards" class="hover:text-accent transition-colors">Credit Cards</a>
-        <a href="/travel" class="hover:text-accent transition-colors">Travel</a>
-        <a href="/finance/calculators/compound-interest" class="hover:text-accent transition-colors">Calculators</a>
+
+      <!-- Desktop Links -->
+      <div class="nav-links">
+        <a href="/finance" class="nav-link">Finance</a>
+        <a href="/finance/banking" class="nav-link">Banking</a>
+        <a href="/finance/credit-cards" class="nav-link">Credit Cards</a>
+        <a href="/travel" class="nav-link">Travel</a>
+        <a href="/finance/calculators/compound-interest" class="nav-link">Tools</a>
       </div>
-      <button id="mobile-menu-btn" class="md:hidden text-white" aria-label="Menu">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
+
+      <!-- Mobile Hamburger -->
+      <button id="mobile-menu-btn" class="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+        <span class="ham-line"></span>
+        <span class="ham-line"></span>
+        <span class="ham-line"></span>
       </button>
     </nav>
-    <div id="mobile-menu" class="hidden md:hidden px-4 pb-4">
-      <a href="/finance" class="block py-2 hover:text-accent">Finance</a>
-      <a href="/finance/banking" class="block py-2 hover:text-accent">Banking</a>
-      <a href="/finance/credit-cards" class="block py-2 hover:text-accent">Credit Cards</a>
-      <a href="/travel" class="block py-2 hover:text-accent">Travel</a>
-      <a href="/finance/calculators/compound-interest" class="block py-2 hover:text-accent">Calculators</a>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="nav-mobile" aria-hidden="true">
+      <a href="/finance" class="nav-mobile-link">Finance</a>
+      <a href="/finance/banking" class="nav-mobile-link">Banking</a>
+      <a href="/finance/credit-cards" class="nav-mobile-link">Credit Cards</a>
+      <a href="/finance/investing" class="nav-mobile-link">Investing</a>
+      <a href="/travel" class="nav-mobile-link">Travel</a>
+      <a href="/finance/calculators/compound-interest" class="nav-mobile-link">Tools</a>
     </div>
   </header>
 
+  <!-- ── Page Content ───────────────────────────────────────── -->
   <main class="flex-1">
     <slot />
   </main>
 
-  <footer class="bg-primary text-white/70 mt-16">
-    <div class="max-w-6xl mx-auto px-4 py-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
-      <div>
-        <h3 class="text-white font-semibold mb-3">Cornerstone Financial</h3>
-        <p>Unbiased comparisons and tools to help you make smarter financial decisions.</p>
+  <!-- ── Footer ─────────────────────────────────────────────── -->
+  <footer class="footer-root">
+    <div class="footer-grid section-container">
+
+      <!-- Brand Column -->
+      <div class="footer-brand">
+        <a href="/" class="footer-logo">Folvr</a>
+        <p class="footer-tagline">Finance smarter.<br />Travel farther.</p>
+        <div class="footer-socials">
+          <!-- Instagram -->
+          <a href="#" aria-label="Instagram" class="social-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <circle cx="12" cy="12" r="4"/>
+              <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+            </svg>
+          </a>
+          <!-- X / Twitter -->
+          <a href="#" aria-label="X" class="social-icon">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+        </div>
       </div>
-      <div>
-        <h3 class="text-white font-semibold mb-3">Categories</h3>
-        <ul class="space-y-2">
-          <li><a href="/finance/banking" class="hover:text-white transition-colors">Banking</a></li>
-          <li><a href="/finance/credit-cards" class="hover:text-white transition-colors">Credit Cards</a></li>
-          <li><a href="/finance/investing" class="hover:text-white transition-colors">Investing</a></li>
-          <li><a href="/travel" class="hover:text-white transition-colors">Travel</a></li>
-          <li><a href="/finance/calculators/compound-interest" class="hover:text-white transition-colors">Calculators</a></li>
-        </ul>
+
+      <!-- Finance Column -->
+      <div class="footer-col">
+        <h3 class="footer-col-heading">Banking</h3>
+        <a href="/finance/banking" class="footer-link">Best Banks 2026</a>
+        <a href="/finance/review/ally" class="footer-link">Ally Bank Review</a>
+        <a href="/finance/review/sofi" class="footer-link">SoFi Review</a>
+        <a href="/finance/review/marcus" class="footer-link">Marcus Review</a>
+        <a href="/finance/review/capital-one" class="footer-link">Capital One Review</a>
       </div>
-      <div>
-        <h3 class="text-white font-semibold mb-3">Legal</h3>
-        <ul class="space-y-2">
-          <li><a href="/about" class="hover:text-white transition-colors">About Us</a></li>
-          <li><a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a></li>
-          <li><a href="/disclaimer" class="hover:text-white transition-colors">Disclaimer</a></li>
-        </ul>
-        <p class="mt-4 text-xs text-white/50">&copy; {new Date().getFullYear()} Cornerstone Financial. All rights reserved.</p>
+
+      <!-- Credit Cards Column -->
+      <div class="footer-col">
+        <h3 class="footer-col-heading">Credit Cards</h3>
+        <a href="/finance/credit-cards" class="footer-link">Best Cards 2026</a>
+        <a href="/finance/review/chase-sapphire-preferred" class="footer-link">Chase Sapphire</a>
+        <a href="/finance/review/capital-one-venture-x" class="footer-link">Venture X</a>
+        <a href="/finance/review/amex-gold" class="footer-link">Amex Gold</a>
+        <a href="/travel/travel-cards" class="footer-link">Best Travel Cards</a>
+      </div>
+
+      <!-- Travel Column -->
+      <div class="footer-col">
+        <h3 class="footer-col-heading">Travel</h3>
+        <a href="/travel" class="footer-link">Destinations</a>
+        <a href="/travel/destinations/maldives" class="footer-link">Maldives</a>
+        <a href="/travel/destinations/british-virgin-islands" class="footer-link">BVI</a>
+        <a href="/travel/destinations/greek-islands" class="footer-link">Greek Islands</a>
+        <a href="/travel/destinations/amalfi-coast" class="footer-link">Amalfi Coast</a>
+      </div>
+
+      <!-- Legal Column -->
+      <div class="footer-col">
+        <h3 class="footer-col-heading">Legal</h3>
+        <a href="/about" class="footer-link">About Us</a>
+        <a href="/privacy" class="footer-link">Privacy Policy</a>
+        <a href="/disclaimer" class="footer-link">Disclaimer</a>
+        <a href="/finance/calculators/compound-interest" class="footer-link">Calculators</a>
+        <a href="/finance/investing" class="footer-link">Investing</a>
       </div>
     </div>
-    <div class="border-t border-white/10 py-4">
-      <p class="text-center text-xs text-white/40">
-        Affiliate Disclosure: Some links on this site are affiliate links. We may earn a commission at no extra cost to you.
+
+    <div class="footer-bottom section-container">
+      <p class="footer-disclosure">
+        <strong>Affiliate Disclosure:</strong> Some links on this site are affiliate links.
+        We may earn a commission at no extra cost to you. Our editorial opinions are independent.
       </p>
+      <p class="footer-copy">&copy; {new Date().getFullYear()} Folvr. All rights reserved.</p>
     </div>
   </footer>
 
-  <script>
-    document.getElementById('mobile-menu-btn')?.addEventListener('click', () => {
-      document.getElementById('mobile-menu')?.classList.toggle('hidden');
-    });
-  </script>
 </body>
 </html>
+
+<style>
+/* ── Nav ──────────────────────────────────────────────────────── */
+.nav-root {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  transition:
+    background   0.35s ease,
+    backdrop-filter 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow   0.35s ease;
+}
+.nav-transparent {
+  background: transparent;
+  border-bottom: 1px solid transparent;
+}
+.nav-scrolled {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(30, 58, 95, 0.09);
+  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.07);
+}
+
+.nav-inner {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.nav-logo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  transition: color 0.3s;
+}
+.nav-transparent .nav-logo { color: white; }
+.nav-scrolled   .nav-logo { color: var(--color-primary); }
+
+.nav-logo-dot {
+  color: var(--color-accent);
+  margin-left: 1px;
+}
+
+/* Desktop links */
+.nav-links {
+  display: none;
+  align-items: center;
+  gap: 32px;
+}
+@media (min-width: 768px) {
+  .nav-links { display: flex; }
+}
+
+.nav-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.25s;
+}
+.nav-transparent .nav-link { color: rgba(255, 255, 255, 0.82); }
+.nav-scrolled   .nav-link { color: var(--color-text); }
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nav-link:hover::after { width: 100%; }
+.nav-transparent .nav-link:hover { color: white; }
+.nav-scrolled   .nav-link:hover { color: var(--color-primary); }
+
+/* Hamburger */
+.nav-hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+@media (min-width: 768px) { .nav-hamburger { display: none; } }
+
+.ham-line {
+  display: block;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  transition: background 0.3s;
+}
+.nav-transparent .ham-line { background: white; }
+.nav-scrolled   .ham-line { background: var(--color-primary); }
+
+/* Mobile menu */
+.nav-mobile {
+  display: none;
+  flex-direction: column;
+  padding: 12px 24px 20px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.nav-mobile.open {
+  display: flex;
+  animation: fade-in 0.2s ease;
+}
+.nav-transparent .nav-mobile { background: rgba(30, 58, 95, 0.95); }
+.nav-scrolled   .nav-mobile {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  border-top-color: rgba(30,58,95,0.08);
+}
+
+.nav-mobile-link {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 0;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  transition: color 0.2s;
+}
+.nav-transparent .nav-mobile-link { color: rgba(255,255,255,0.85); }
+.nav-scrolled   .nav-mobile-link { color: var(--color-text); border-bottom-color: var(--color-border); }
+.nav-mobile-link:hover { color: var(--color-accent); }
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.footer-root {
+  background: #0d1f35;
+  color: rgba(255, 255, 255, 0.55);
+  padding-top: 64px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  padding-bottom: 48px;
+}
+@media (min-width: 640px) {
+  .footer-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
+}
+
+.footer-brand {}
+.footer-logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 12px;
+}
+.footer-tagline {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 20px;
+}
+.footer-socials {
+  display: flex;
+  gap: 12px;
+}
+.social-icon {
+  color: rgba(255,255,255,0.4);
+  transition: color 0.2s;
+}
+.social-icon:hover { color: white; }
+
+.footer-col-heading {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 16px;
+}
+.footer-link {
+  display: block;
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.6);
+  text-decoration: none;
+  padding: 5px 0;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: white; }
+
+.footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding: 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+@media (min-width: 768px) {
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+.footer-disclosure {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.3);
+  max-width: 520px;
+  line-height: 1.6;
+}
+.footer-copy {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+}
+</style>
+
+<script>
+  // ── Nav scroll behavior ──────────────────────────────────────
+  const nav = document.getElementById('site-nav');
+  let ticking = false;
+
+  function updateNav() {
+    if (!nav) return;
+    if (window.scrollY > 72) {
+      nav.classList.remove('nav-transparent');
+      nav.classList.add('nav-scrolled');
+    } else {
+      nav.classList.remove('nav-scrolled');
+      nav.classList.add('nav-transparent');
+    }
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => { updateNav(); ticking = false; });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // ── Mobile menu toggle ────────────────────────────────────────
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  menuBtn?.addEventListener('click', () => {
+    const isOpen = mobileMenu?.classList.contains('open');
+    mobileMenu?.classList.toggle('open', !isOpen);
+    menuBtn.setAttribute('aria-expanded', String(!isOpen));
+    mobileMenu?.setAttribute('aria-hidden', String(isOpen));
+  });
+</script>

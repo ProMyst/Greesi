@@ -1,26 +1,132 @@
 @import "tailwindcss";
 
+/* ─── Design Tokens ─────────────────────────────────────────── */
 @theme {
-  --color-primary: #1e3a5f;
+  --color-primary:       #1e3a5f;
+  --color-primary-dark:  #0d1f35;
   --color-primary-light: #2d5a8e;
-  --color-accent: #0ea5e9;
-  --color-accent-dark: #0284c7;
-  --color-surface: #f8fafc;
-  --color-surface-alt: #f1f5f9;
-  --color-text: #1e293b;
-  --color-text-muted: #64748b;
-  --color-border: #e2e8f0;
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+  --color-accent:        #0ea5e9;
+  --color-accent-dark:   #0284c7;
+  --color-surface:       #f8fafc;
+  --color-surface-alt:   #f1f5f9;
+  --color-text:          #1e293b;
+  --color-text-muted:    #64748b;
+  --color-border:        #e2e8f0;
+  --color-success:       #10b981;
+  --color-warning:       #f59e0b;
+  --color-danger:        #ef4444;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* ─── Base ───────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--color-text);
   background: white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ─── Animation Keyframes ───────────────────────────────────── */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    clip-path: inset(100% 0 0 0);
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(0% 0 0 0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes orb-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(3%, 2%) scale(1.04); }
+  66%       { transform: translate(-2%, 3%) scale(0.97); }
+}
+
+@keyframes counter-tick {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Scroll Reveal System ───────────────────────────────────── */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity  0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--delay, 0s);
+}
+.reveal-item.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─── Layout Utilities ───────────────────────────────────────── */
+.section-container {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  margin-bottom: 12px;
+}
+
+/* ─── Glass Morphism ─────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ─── Card Hover Lift ────────────────────────────────────────── */
+.card-lift {
+  transition: box-shadow 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-lift:hover {
+  box-shadow: 0 12px 40px rgba(30, 58, 95, 0.14);
+  transform: translateY(-3px);
+}
+
+/* ─── Accessible Motion Preference ──────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-item {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
