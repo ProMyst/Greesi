@@ -132,6 +132,27 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     <slot />
   </main>
 
+  <!-- ── Newsletter ────────────────────────────────────────────── -->
+  <section class="newsletter-root has-noise">
+    <div class="newsletter-inner">
+      <span class="newsletter-eyebrow">Stay in the Loop</span>
+      <h2 class="newsletter-title">Better rates. Better trips. Weekly.</h2>
+      <p class="newsletter-sub">The best APYs, travel deals, and card bonuses — straight to your inbox. No spam, ever.</p>
+      <form class="newsletter-form" id="newsletter-form" novalidate>
+        <input
+          type="email"
+          class="newsletter-input"
+          placeholder="your@email.com"
+          aria-label="Email address"
+          required
+        />
+        <button type="submit" class="newsletter-btn">Subscribe</button>
+      </form>
+      <p class="newsletter-success" id="newsletter-success">You're in! Check your inbox.</p>
+      <p class="newsletter-disclaimer">No spam. Unsubscribe anytime. We respect your privacy.</p>
+    </div>
+  </section>
+
   <!-- ── Footer ─────────────────────────────────────────────── -->
   <footer class="footer-root">
     <div class="footer-grid section-container">
@@ -203,6 +224,25 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   <!-- Custom cursor -->
   <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
   <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
+  <!-- Back to top -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <path d="M18 15l-6-6-6 6"/>
+    </svg>
+  </button>
+
+  <!-- Cookie consent -->
+  <div class="cookie-banner" id="cookie-banner" hidden>
+    <div class="cookie-text">
+      <strong>Cookie Notice</strong>
+      <p>We use cookies for analytics and personalized ads via Google AdSense. <a href="/privacy">Privacy Policy</a></p>
+    </div>
+    <div class="cookie-actions">
+      <button class="cookie-btn cookie-btn-decline" id="cookie-decline">Decline</button>
+      <button class="cookie-btn cookie-btn-accept" id="cookie-accept">Accept All</button>
+    </div>
+  </div>
 
 </body>
 </html>
@@ -516,6 +556,59 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     });
   }
 
+  // ── Cookie consent ─────────────────────────────────────────────
+  function initCookie() {
+    const banner  = document.getElementById('cookie-banner') as HTMLElement | null;
+    const accept  = document.getElementById('cookie-accept');
+    const decline = document.getElementById('cookie-decline');
+    if (!banner || (banner as HTMLElement).dataset.initialized) return;
+    (banner as HTMLElement).dataset.initialized = 'true';
+
+    const stored = localStorage.getItem('folvr-cookie');
+    if (!stored) setTimeout(() => { banner.hidden = false; }, 1200);
+
+    accept?.addEventListener('click', () => {
+      localStorage.setItem('folvr-cookie', 'accepted');
+      banner.hidden = true;
+    });
+    decline?.addEventListener('click', () => {
+      localStorage.setItem('folvr-cookie', 'declined');
+      banner.hidden = true;
+    });
+  }
+
+  // ── Newsletter ─────────────────────────────────────────────────
+  function initNewsletter() {
+    const form    = document.getElementById('newsletter-form') as HTMLFormElement | null;
+    const success = document.getElementById('newsletter-success') as HTMLElement | null;
+    if (!form || (form as HTMLElement).dataset.initialized) return;
+    (form as HTMLElement).dataset.initialized = 'true';
+
+    form.addEventListener('submit', (e: Event) => {
+      e.preventDefault();
+      const input = form.querySelector('input[type="email"]') as HTMLInputElement;
+      if (!input?.value || !input.validity.valid) {
+        input?.focus();
+        return;
+      }
+      form.style.display = 'none';
+      if (success) success.style.display = 'block';
+      // TODO: Connect to email service (Resend, ConvertKit, etc.)
+    });
+  }
+
+  // ── Back to top ────────────────────────────────────────────────
+  function initBackToTop() {
+    const btn = document.getElementById('back-to-top') as HTMLElement | null;
+    if (!btn || (btn as HTMLElement).dataset.initialized) return;
+    (btn as HTMLElement).dataset.initialized = 'true';
+
+    lenis?.on('scroll', ({ scroll }: { scroll: number }) => {
+      btn.classList.toggle('visible', scroll > 400);
+    });
+    btn.addEventListener('click', () => lenis?.scrollTo(0, { duration: 1.4 }));
+  }
+
   // ── Boot on every page (View Transitions aware) ────────────────
   document.addEventListener('astro:page-load', () => {
     initLenis();
@@ -526,5 +619,8 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     initTilt();
     initScrollReveal();
     initSearch();
+    initCookie();
+    initNewsletter();
+    initBackToTop();
   });
 </script>

@@ -58,7 +58,7 @@ const schema = {
 <BaseLayout title={title} description={description} schema={schema}>
 
   <!-- ── Hero ──────────────────────────────────────────────────────── -->
-  <section class="hero-root">
+  <section class="hero-root has-noise">
     <!-- Animated orbs -->
     <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
     <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
@@ -172,7 +172,7 @@ const schema = {
   </section>
 
   <!-- ── Stats Strip ────────────────────────────────────────────────── -->
-  <div class="stats-strip">
+  <div class="stats-strip has-noise">
     <div class="stats-inner section-container">
       {[
         { num: 25, suffix: '+', label: 'Financial Products' },
@@ -206,7 +206,7 @@ const schema = {
     <div id="tab-banks" class="tab-panel">
       <div class="picks-grid">
         {topBanks.map((bank, i) => (
-          <a href={`/finance/review/${bank.slug}`} class="pick-card reveal-item card-lift" style={`--delay:${i * 0.06}s`}>
+          <a href={`/finance/review/${bank.slug}`} class={`pick-card reveal-item card-lift${i === 0 ? ' pick-featured' : ''}`} style={`--delay:${i * 0.06}s`}>
             <div class="pick-rank">#{i + 1}</div>
             <RatingBadge rating={bank.rating} size="sm" />
             <h3 class="pick-name">{bank.name}</h3>
@@ -227,7 +227,7 @@ const schema = {
     <div id="tab-cards" class="tab-panel tab-hidden">
       <div class="picks-grid">
         {topCards.map((card, i) => (
-          <a href={`/finance/review/${card.slug}`} class="pick-card reveal-item card-lift" style={`--delay:${i * 0.06}s`}>
+          <a href={`/finance/review/${card.slug}`} class={`pick-card reveal-item card-lift${i === 0 ? ' pick-featured' : ''}`} style={`--delay:${i * 0.06}s`}>
             <div class="pick-rank">#{i + 1}</div>
             <RatingBadge rating={card.rating} size="sm" />
             <h3 class="pick-name">{card.name}</h3>
@@ -248,7 +248,7 @@ const schema = {
     <div id="tab-investing" class="tab-panel tab-hidden">
       <div class="picks-grid">
         {topInvesting.map((platform, i) => (
-          <a href={`/finance/review/${platform.slug}`} class="pick-card reveal-item card-lift" style={`--delay:${i * 0.06}s`}>
+          <a href={`/finance/review/${platform.slug}`} class={`pick-card reveal-item card-lift${i === 0 ? ' pick-featured' : ''}`} style={`--delay:${i * 0.06}s`}>
             <div class="pick-rank">#{i + 1}</div>
             <RatingBadge rating={platform.rating} size="sm" />
             <h3 class="pick-name">{platform.name}</h3>
@@ -264,7 +264,7 @@ const schema = {
   </section>
 
   <!-- ── Travel Destinations ────────────────────────────────────────── -->
-  <section class="travel-root">
+  <section class="travel-root has-noise">
     <div class="travel-inner section-container">
       <div class="travel-header reveal-item">
         <div>
@@ -275,23 +275,25 @@ const schema = {
         <a href="/travel" class="travel-viewall">View All →</a>
       </div>
 
-      <div class="travel-grid">
-        {topDestinations.map((dest, i) => (
-          <a href={`/travel/destinations/${dest.slug}`} class="dest-card reveal-item card-lift" style={`--delay:${i * 0.07}s`}>
-            <div class="dest-card-bg" style={`--hue:${185 + i * 12}deg`} aria-hidden="true"></div>
-            <div class="dest-card-body">
-              <div class="dest-top">
-                <span class="dest-rank">#{i + 1}</span>
-                <RatingBadge rating={dest.rating} size="sm" />
+      <div class="travel-grid-wrapper">
+        <div class="travel-grid">
+          {topDestinations.map((dest, i) => (
+            <a href={`/travel/destinations/${dest.slug}`} class="dest-card reveal-item card-lift" style={`--delay:${i * 0.07}s`}>
+              <div class="dest-card-bg" style={`--hue:${185 + i * 12}deg`} aria-hidden="true"></div>
+              <div class="dest-card-body">
+                <div class="dest-top">
+                  <span class="dest-rank">#{i + 1}</span>
+                  <RatingBadge rating={dest.rating} size="sm" />
+                </div>
+                <div class="dest-bottom">
+                  <span class="dest-region">{dest.region}</span>
+                  <h3 class="dest-name">{dest.name}</h3>
+                  <p class="dest-meta">{dest.budgetLevel} · {dest.bestSeason.split(' ')[0]}</p>
+                </div>
               </div>
-              <div class="dest-bottom">
-                <span class="dest-region">{dest.region}</span>
-                <h3 class="dest-name">{dest.name}</h3>
-                <p class="dest-meta">{dest.budgetLevel} · {dest.bestSeason.split(' ')[0]}</p>
-              </div>
-            </div>
-          </a>
-        ))}
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   </section>

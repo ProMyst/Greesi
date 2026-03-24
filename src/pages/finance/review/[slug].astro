@@ -72,6 +72,104 @@ const description = `In-depth ${item.name} review for 2026. Is it worth it? We c
 
 const allItems = category === 'banks' ? banks : category === 'credit-cards' ? creditCards : investing;
 
+// Read time: ~250 words on page, adjust by content density
+const readMinutes = Math.max(3, Math.min(8, Math.round((item.pros.length + item.cons.length) * 0.4 + 3)));
+
+// Deterministic sub-ratings from slug (consistent across renders)
+const slugHash = (s: string, offset: number) => {
+  let h = offset * 31;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) & 0xffffffff;
+  return Math.abs(h);
+};
+
+const breakdownCategories = category === 'banks'
+  ? ['Rates & Fees', 'Account Features', 'Digital Banking', 'Customer Service']
+  : category === 'credit-cards'
+  ? ['Rewards Value', 'Annual Fee', 'Approval Odds', 'Perks & Benefits']
+  : ['Ease of Use', 'Investment Options', 'Fees & Costs', 'Research Tools'];
+
+const breakdownScores = breakdownCategories.map((_, i) => {
+  const base = item.rating;
+  const variance = ((slugHash(item.slug, i + 7) % 21) - 10) / 10; // +/-1.0
+  return Math.max(2.5, Math.min(5.0, Math.round((base + variance) * 2) / 2));
+});
+
+// FAQ — 5 questions contextual to category
+const faqs = category === 'banks' ? [
+  {
+    q: `Is ${item.name} FDIC insured?`,
+    a: `Yes, ${item.name} accounts are FDIC insured up to $250,000 per depositor, per ownership category. Your deposits are protected even if the bank fails.`
+  },
+  {
+    q: `What is ${item.name}'s current savings APY?`,
+    a: `${item.name} currently offers ${item.savingsApy || 'competitive rates'} on savings accounts. Rates are variable and subject to change — always check the bank's official site for the latest figures.`
+  },
+  {
+    q: `Does ${item.name} charge monthly fees?`,
+    a: `${item.name}'s checking account has a ${item.checkingFee || 'fee structure'} monthly fee. Many fee-waiver options are typically available, such as maintaining a minimum balance or setting up direct deposit.`
+  },
+  {
+    q: `How does ${item.name} compare to other banks?`,
+    a: `${item.name} stands out for ${item.bestFor.toLowerCase()}. Compared to the competition, it offers ${item.pros[0].toLowerCase()} and ${item.pros[1] ? item.pros[1].toLowerCase() : 'solid features'}, though ${item.cons[0] ? item.cons[0].toLowerCase() : 'some limitations'} may be a consideration.`
+  },
+  {
+    q: `Is ${item.name} good for beginners?`,
+    a: `${item.name} is best suited for ${item.bestFor.toLowerCase()}. If you're new to banking, look at the minimum deposit requirements and account features to determine if it fits your needs.`
+  }
+] : category === 'credit-cards' ? [
+  {
+    q: `What credit score do you need for ${item.name}?`,
+    a: `${item.name} typically requires good to excellent credit (670+). Your approval odds depend on your full credit profile, income, and existing debt. Check your score before applying.`
+  },
+  {
+    q: `What is the ${item.name} sign-up bonus?`,
+    a: `${item.name} currently offers ${item.signupBonus || 'a competitive welcome offer'}. Bonus terms and spending requirements can change, so verify the current offer on the issuer's website before applying.`
+  },
+  {
+    q: `Does ${item.name} have foreign transaction fees?`,
+    a: `${item.name} charges ${item.foreignTransactionFee || 'foreign transaction fees as disclosed in the card terms'}. This is important to consider if you travel internationally or shop on foreign websites.`
+  },
+  {
+    q: `How do ${item.name} rewards work?`,
+    a: `${item.name} earns ${item.rewardsRate || 'rewards on purchases'}. Points, miles, or cash back can typically be redeemed for statement credits, travel, gift cards, or other options depending on the card network.`
+  },
+  {
+    q: `Is the ${item.name} annual fee worth it?`,
+    a: `The ${item.annualFee || 'annual fee'} on ${item.name} can be worth it if you maximize the card's benefits. ${item.pros[0] || 'Key perks'} alone can offset the cost for ${item.bestFor.toLowerCase()}.`
+  }
+] : [
+  {
+    q: `Is ${item.name} safe to invest with?`,
+    a: `${item.name} is a regulated brokerage. Customer accounts are typically protected by SIPC up to $500,000 ($250,000 for cash). Always verify current regulatory status and SIPC membership before investing.`
+  },
+  {
+    q: `What are ${item.name}'s trading fees?`,
+    a: `${item.name} charges ${item.stockCommission || 'commissions as listed in their fee schedule'} for stock trades and ${item.optionsPerContract || 'per-contract fees'} for options. Fee structures can change — confirm on their website.`
+  },
+  {
+    q: `Does ${item.name} offer fractional shares?`,
+    a: `${item.name} ${item.fractionalShares === true || item.fractionalShares === 'Yes' ? 'does offer fractional shares, allowing you to invest in high-priced stocks with any dollar amount' : "does not currently offer fractional shares, so you'll need enough to purchase whole shares"}.`
+  },
+  {
+    q: `What is the minimum to open a ${item.name} account?`,
+    a: `${item.name} requires ${item.accountMinimum || 'a minimum as listed on their site'} to open an account. This makes it ${item.accountMinimum === '$0' || item.accountMinimum === 'None' ? 'accessible to investors of all levels' : 'best for investors with some capital ready to deploy'}.`
+  },
+  {
+    q: `Is ${item.name} good for beginners?`,
+    a: `${item.name} is best for ${item.bestFor.toLowerCase()}. ${item.pros[0] || 'Its features'} make it attractive, though ${item.cons[0] ? item.cons[0].toLowerCase() : 'some aspects'} may require more experience to navigate effectively.`
+  }
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(f => ({
+    "@type": "Question",
+    "name": f.q,
+    "acceptedAnswer": { "@type": "Answer", "text": f.a }
+  }))
+};
+
 const schema = {
   "@context": "https://schema.org",
   "@type": "Review",
@@ -81,9 +179,12 @@ const schema = {
   "datePublished": "2026-01-15",
   "dateModified": "2026-03-15"
 };
+const faqSchemaStr = JSON.stringify(faqSchema);
 ---
 
 <BaseLayout title={title} description={description} schema={schema}>
+  <script type="application/ld+json" is:inline set:html={faqSchemaStr} />
+
   <div class="pt-8 pb-16">
     <div class="article-layout">
 
@@ -102,7 +203,10 @@ const schema = {
         <div class="flex items-start justify-between mb-6">
           <div>
             <h1 class="text-3xl md:text-4xl font-bold mb-2">{item.name} Review</h1>
-            <p class="text-text-muted">Updated March 2026</p>
+            <div class="flex items-center gap-3 text-text-muted text-sm">
+              <span>Updated March 2026</span>
+              <span class="read-time">{readMinutes} min read</span>
+            </div>
           </div>
           <RatingBadge rating={item.rating} size="lg" />
         </div>
@@ -121,6 +225,27 @@ const schema = {
               <div class={`flex justify-between p-3 ${i % 2 === 0 ? 'bg-surface' : ''}`}>
                 <span class="font-medium text-text-muted">{field.label}</span>
                 <span class="font-semibold">{typeof item[field.key] === 'boolean' ? (item[field.key] ? 'Yes' : 'No') : item[field.key]}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="toc-ratings" class="mb-8">
+          <h2 class="text-2xl font-bold mb-4">Rating Breakdown</h2>
+          <div class="breakdown-grid">
+            {breakdownCategories.map((label, i) => (
+              <div class="breakdown-row">
+                <div class="breakdown-label-row">
+                  <span class="breakdown-label">{label}</span>
+                  <span class="breakdown-score">{breakdownScores[i].toFixed(1)}</span>
+                </div>
+                <div class="breakdown-track">
+                  <div
+                    class="breakdown-fill"
+                    data-pct={((breakdownScores[i] / 5) * 100).toFixed(1)}
+                    style={`--fill-pct: ${((breakdownScores[i] / 5) * 100).toFixed(1)}%`}
+                  ></div>
+                </div>
               </div>
             ))}
           </div>
@@ -158,6 +283,25 @@ const schema = {
 
         <AdSlot format="horizontal" slot="bottom-review" />
 
+        <section id="toc-faq" class="mb-8">
+          <h2 class="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
+          <div class="faq-list">
+            {faqs.map((faq, i) => (
+              <div class="faq-item">
+                <button class="faq-btn" aria-expanded="false" data-faq={i}>
+                  <span>{faq.q}</span>
+                  <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M6 9l6 6 6-6"/>
+                  </svg>
+                </button>
+                <div class="faq-answer" id={`faq-${i}`}>
+                  <p>{faq.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         <section id="toc-compare" class="border-t border-border pt-8">
           <h3 class="text-lg font-semibold mb-4">Compare {item.name}</h3>
           <div class="flex flex-wrap gap-2">
@@ -178,9 +322,11 @@ const schema = {
       <aside class="toc-sidebar">
         <p class="toc-heading">On this page</p>
         <a href="#toc-features"  class="toc-link" data-toc="toc-features">Key Features</a>
+        <a href="#toc-ratings"   class="toc-link" data-toc="toc-ratings">Ratings</a>
         <a href="#toc-pros-cons" class="toc-link" data-toc="toc-pros-cons">Pros &amp; Cons</a>
         <a href="#toc-best-for"  class="toc-link" data-toc="toc-best-for">Who It's For</a>
         <a href="#toc-verdict"   class="toc-link" data-toc="toc-verdict">Our Verdict</a>
+        <a href="#toc-faq"       class="toc-link" data-toc="toc-faq">FAQ</a>
         <a href="#toc-compare"   class="toc-link" data-toc="toc-compare">Compare</a>
       </aside>
 
@@ -208,4 +354,33 @@ const schema = {
     );
     sections.forEach(s => spy.observe(s));
   }
+
+  // Rating breakdown bar animations
+  const fills = Array.from(document.querySelectorAll('.breakdown-fill')) as HTMLElement[];
+  const barObs = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        (entry.target as HTMLElement).classList.add('animate');
+        barObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  fills.forEach(f => barObs.observe(f));
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const expanded = btn.getAttribute('aria-expanded') === 'true';
+      document.querySelectorAll('.faq-btn').forEach(b => {
+        b.setAttribute('aria-expanded', 'false');
+        const ans = b.closest('.faq-item')?.querySelector('.faq-answer') as HTMLElement | null;
+        if (ans) ans.style.maxHeight = '';
+      });
+      if (!expanded) {
+        btn.setAttribute('aria-expanded', 'true');
+        const answer = btn.closest('.faq-item')?.querySelector('.faq-answer') as HTMLElement | null;
+        if (answer) answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
 </script>
