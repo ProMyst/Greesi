@@ -24,12 +24,28 @@ const description = "Compare the best banks of 2026 side by side. See APY rates,
 
     <AdSlot format="horizontal" slot="top-banking" />
 
-    <div class="space-y-4 mb-8">
+    <!-- Sort controls -->
+    <div class="sort-bar">
+      <span class="sort-label">Sort by:</span>
+      <button class="sort-btn sort-active" data-sort="rating">Rating</button>
+      <button class="sort-btn" data-sort="apy">APY</button>
+      <button class="sort-btn" data-sort="fee">Fee</button>
+      <button class="sort-btn" data-sort="name">Name</button>
+    </div>
+
+    <div id="sort-list" class="space-y-4 mb-8">
       {sorted.map((bank, i) => (
-        <div class="bg-white border border-border rounded-lg p-5 hover:shadow-md transition-shadow">
+        <div
+          class="bg-white border border-border rounded-lg p-5 hover:shadow-md transition-shadow sort-item reveal-item"
+          data-rating={bank.rating}
+          data-apy={parseFloat(bank.savingsApy.replace('%',''))}
+          data-fee={bank.checkingFee === 'None' || bank.checkingFee === '$0/mo' ? '0' : parseFloat(bank.checkingFee.replace(/[^0-9.]/g,''))}
+          data-name={bank.name}
+          style={`--delay:${i * 0.04}s`}
+        >
           <div class="flex flex-col md:flex-row md:items-center gap-4">
             <div class="flex items-center gap-3 md:w-8">
-              <span class="text-2xl font-bold text-text-muted">#{i + 1}</span>
+              <span class="rank-num text-2xl font-bold text-text-muted">#{i + 1}</span>
             </div>
             <div class="flex-1">
               <div class="flex items-center gap-3 mb-2">
@@ -65,3 +81,27 @@ const description = "Compare the best banks of 2026 side by side. See APY rates,
     </section>
   </div>
 </BaseLayout>
+
+<script>
+  const list = document.getElementById('sort-list');
+  const items = () => Array.from(list?.querySelectorAll('.sort-item') ?? []) as HTMLElement[];
+
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('sort-active'));
+      btn.classList.add('sort-active');
+
+      const key = (btn as HTMLElement).dataset.sort as string;
+      const sorted = items().sort((a, b) => {
+        if (key === 'name') return a.dataset.name!.localeCompare(b.dataset.name!);
+        if (key === 'fee')  return parseFloat(a.dataset.fee!)  - parseFloat(b.dataset.fee!);
+        return parseFloat(b.dataset[key]!) - parseFloat(a.dataset[key]!);
+      });
+
+      sorted.forEach((el, i) => {
+        el.querySelector('.rank-num')!.textContent = `#${i + 1}`;
+        list?.appendChild(el);
+      });
+    });
+  });
+</script>

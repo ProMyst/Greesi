@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import ClientRouter from 'astro/components/ClientRouter.astro';
 
 interface Props {
   title: string;
@@ -45,11 +46,27 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   {schema && (
     <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   )}
+
+  <!-- View Transitions (Astro 6 ClientRouter) -->
+  <ClientRouter />
+
+  <!-- Dark mode: runs before paint to prevent flash -->
+  <script is:inline>
+    (function() {
+      var t = localStorage.getItem('folvr-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
 </head>
+
 <body class="min-h-screen flex flex-col">
 
+  <!-- Reading progress bar -->
+  <div id="progress-bar"></div>
+
   <!-- ── Navigation ─────────────────────────────────────────── -->
-  <header id="site-nav" class="nav-root nav-transparent">
+  <header id="site-nav" class="nav-root nav-transparent" transition:persist>
     <nav class="nav-inner">
       <!-- Logo -->
       <a href="/" class="nav-logo">
@@ -66,12 +83,29 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         <a href="/finance/calculators/compound-interest" class="nav-link">Tools</a>
       </div>
 
-      <!-- Mobile Hamburger -->
-      <button id="mobile-menu-btn" class="nav-hamburger" aria-label="Open menu" aria-expanded="false">
-        <span class="ham-line"></span>
-        <span class="ham-line"></span>
-        <span class="ham-line"></span>
-      </button>
+      <!-- Right: search + theme + hamburger -->
+      <div class="nav-right">
+        <button id="search-btn" class="nav-icon-btn" aria-label="Search (⌘K)">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <kbd>⌘K</kbd>
+        </button>
+        <button id="theme-toggle" class="nav-icon-btn" aria-label="Toggle theme">
+          <svg id="icon-sun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none">
+            <circle cx="12" cy="12" r="5"/>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+          <svg id="icon-moon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <button id="mobile-menu-btn" class="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+          <span class="ham-line"></span>
+          <span class="ham-line"></span>
+          <span class="ham-line"></span>
+        </button>
+      </div>
     </nav>
 
     <!-- Mobile Menu -->
@@ -85,8 +119,16 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     </div>
   </header>
 
+  <!-- Search Modal -->
+  <div id="search-modal" class="search-modal-root" aria-hidden="true" role="dialog" aria-label="Search">
+    <div class="search-modal-overlay" id="search-overlay"></div>
+    <div class="search-modal-box">
+      <div id="search-container"></div>
+    </div>
+  </div>
+
   <!-- ── Page Content ───────────────────────────────────────── -->
-  <main class="flex-1">
+  <main class="flex-1" transition:animate="fade">
     <slot />
   </main>
 
@@ -94,20 +136,16 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   <footer class="footer-root">
     <div class="footer-grid section-container">
 
-      <!-- Brand Column -->
       <div class="footer-brand">
         <a href="/" class="footer-logo">Folvr</a>
         <p class="footer-tagline">Finance smarter.<br />Travel farther.</p>
         <div class="footer-socials">
-          <!-- Instagram -->
           <a href="#" aria-label="Instagram" class="social-icon">
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-              <circle cx="12" cy="12" r="4"/>
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/>
               <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
             </svg>
           </a>
-          <!-- X / Twitter -->
           <a href="#" aria-label="X" class="social-icon">
             <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -116,7 +154,6 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         </div>
       </div>
 
-      <!-- Finance Column -->
       <div class="footer-col">
         <h3 class="footer-col-heading">Banking</h3>
         <a href="/finance/banking" class="footer-link">Best Banks 2026</a>
@@ -126,7 +163,6 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         <a href="/finance/review/capital-one" class="footer-link">Capital One Review</a>
       </div>
 
-      <!-- Credit Cards Column -->
       <div class="footer-col">
         <h3 class="footer-col-heading">Credit Cards</h3>
         <a href="/finance/credit-cards" class="footer-link">Best Cards 2026</a>
@@ -136,7 +172,6 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         <a href="/travel/travel-cards" class="footer-link">Best Travel Cards</a>
       </div>
 
-      <!-- Travel Column -->
       <div class="footer-col">
         <h3 class="footer-col-heading">Travel</h3>
         <a href="/travel" class="footer-link">Destinations</a>
@@ -146,7 +181,6 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         <a href="/travel/destinations/amalfi-coast" class="footer-link">Amalfi Coast</a>
       </div>
 
-      <!-- Legal Column -->
       <div class="footer-col">
         <h3 class="footer-col-heading">Legal</h3>
         <a href="/about" class="footer-link">About Us</a>
@@ -166,6 +200,10 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     </div>
   </footer>
 
+  <!-- Custom cursor -->
+  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+
 </body>
 </html>
 
@@ -175,16 +213,9 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 100;
-  transition:
-    background   0.35s ease,
-    backdrop-filter 0.35s ease,
-    border-color 0.35s ease,
-    box-shadow   0.35s ease;
+  transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
-.nav-transparent {
-  background: transparent;
-  border-bottom: 1px solid transparent;
-}
+.nav-transparent { background: transparent; border-bottom: 1px solid transparent; }
 .nav-scrolled {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(20px) saturate(180%);
@@ -192,246 +223,308 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   border-bottom: 1px solid rgba(30, 58, 95, 0.09);
   box-shadow: 0 1px 24px rgba(0, 0, 0, 0.07);
 }
+html[data-theme='dark'] .nav-scrolled {
+  background: rgba(10, 18, 32, 0.92);
+  border-bottom-color: rgba(255,255,255,0.06);
+}
 
 .nav-inner {
-  max-width: 1152px;
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  max-width: 1152px; margin: 0 auto; padding: 0 24px;
+  height: 64px; display: flex; align-items: center; justify-content: space-between;
 }
 
-/* Logo */
 .nav-logo {
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  transition: color 0.3s;
+  font-size: 1.25rem; font-weight: 800; letter-spacing: -0.04em;
+  text-decoration: none; display: flex; align-items: center; gap: 2px; transition: color 0.3s;
 }
 .nav-transparent .nav-logo { color: white; }
-.nav-scrolled   .nav-logo { color: var(--color-primary); }
+.nav-scrolled .nav-logo { color: var(--color-primary); }
+html[data-theme='dark'] .nav-scrolled .nav-logo { color: #f1f5f9; }
+.nav-logo-dot { color: var(--color-accent); margin-left: 1px; }
 
-.nav-logo-dot {
-  color: var(--color-accent);
-  margin-left: 1px;
-}
-
-/* Desktop links */
-.nav-links {
-  display: none;
-  align-items: center;
-  gap: 32px;
-}
-@media (min-width: 768px) {
-  .nav-links { display: flex; }
-}
+.nav-links { display: none; align-items: center; gap: 32px; }
+@media (min-width: 768px) { .nav-links { display: flex; } }
 
 .nav-link {
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  text-decoration: none;
-  position: relative;
-  transition: color 0.25s;
+  font-size: 0.875rem; font-weight: 500; letter-spacing: -0.01em;
+  text-decoration: none; position: relative; transition: color 0.25s;
 }
 .nav-transparent .nav-link { color: rgba(255, 255, 255, 0.82); }
-.nav-scrolled   .nav-link { color: var(--color-text); }
-
+.nav-scrolled .nav-link { color: var(--color-text); }
 .nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: var(--color-accent);
-  border-radius: 2px;
+  content: ''; position: absolute; bottom: -3px; left: 0;
+  width: 0; height: 2px; background: var(--color-accent); border-radius: 2px;
   transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-link:hover::after { width: 100%; }
 .nav-transparent .nav-link:hover { color: white; }
-.nav-scrolled   .nav-link:hover { color: var(--color-primary); }
+.nav-scrolled .nav-link:hover { color: var(--color-primary); }
+html[data-theme='dark'] .nav-scrolled .nav-link:hover { color: var(--color-accent); }
 
-/* Hamburger */
 .nav-hamburger {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px;
+  display: flex; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: none; padding: 8px;
 }
 @media (min-width: 768px) { .nav-hamburger { display: none; } }
-
-.ham-line {
-  display: block;
-  width: 22px;
-  height: 2px;
-  border-radius: 2px;
-  transition: background 0.3s;
-}
+.ham-line { display: block; width: 22px; height: 2px; border-radius: 2px; transition: background 0.3s; }
 .nav-transparent .ham-line { background: white; }
-.nav-scrolled   .ham-line { background: var(--color-primary); }
+.nav-scrolled .ham-line { background: var(--color-primary); }
+html[data-theme='dark'] .nav-scrolled .ham-line { background: #f1f5f9; }
 
-/* Mobile menu */
 .nav-mobile {
-  display: none;
-  flex-direction: column;
-  padding: 12px 24px 20px;
+  display: none; flex-direction: column; padding: 12px 24px 20px;
   border-top: 1px solid rgba(255,255,255,0.1);
 }
-.nav-mobile.open {
-  display: flex;
-  animation: fade-in 0.2s ease;
-}
+.nav-mobile.open { display: flex; animation: fade-in 0.2s ease; }
 .nav-transparent .nav-mobile { background: rgba(30, 58, 95, 0.95); }
-.nav-scrolled   .nav-mobile {
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(20px);
+.nav-scrolled .nav-mobile {
+  background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
   border-top-color: rgba(30,58,95,0.08);
 }
-
+html[data-theme='dark'] .nav-scrolled .nav-mobile {
+  background: rgba(10,18,32,0.97); border-top-color: rgba(255,255,255,0.06);
+}
 .nav-mobile-link {
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 12px 0;
-  text-decoration: none;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-  transition: color 0.2s;
+  font-size: 1rem; font-weight: 500; padding: 12px 0;
+  text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.07); transition: color 0.2s;
 }
 .nav-transparent .nav-mobile-link { color: rgba(255,255,255,0.85); }
-.nav-scrolled   .nav-mobile-link { color: var(--color-text); border-bottom-color: var(--color-border); }
+.nav-scrolled .nav-mobile-link { color: var(--color-text); border-bottom-color: var(--color-border); }
 .nav-mobile-link:hover { color: var(--color-accent); }
 
 /* ── Footer ──────────────────────────────────────────────────── */
-.footer-root {
-  background: #0d1f35;
-  color: rgba(255, 255, 255, 0.55);
-  padding-top: 64px;
-}
-
-.footer-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 40px;
-  padding-bottom: 48px;
-}
-@media (min-width: 640px) {
-  .footer-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (min-width: 1024px) {
-  .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
-}
-
+.footer-root { background: #0d1f35; color: rgba(255, 255, 255, 0.55); padding-top: 64px; }
+.footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; padding-bottom: 48px; }
+@media (min-width: 640px)  { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; } }
 .footer-brand {}
-.footer-logo {
-  font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  color: white;
-  text-decoration: none;
-  display: inline-block;
-  margin-bottom: 12px;
-}
-.footer-tagline {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: rgba(255,255,255,0.45);
-  margin-bottom: 20px;
-}
-.footer-socials {
-  display: flex;
-  gap: 12px;
-}
-.social-icon {
-  color: rgba(255,255,255,0.4);
-  transition: color 0.2s;
-}
+.footer-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; color: white; text-decoration: none; display: inline-block; margin-bottom: 12px; }
+.footer-tagline { font-size: 0.9rem; line-height: 1.6; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
+.footer-socials { display: flex; gap: 12px; }
+.social-icon { color: rgba(255,255,255,0.4); transition: color 0.2s; }
 .social-icon:hover { color: white; }
-
-.footer-col-heading {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
-  margin-bottom: 16px;
-}
-.footer-link {
-  display: block;
-  font-size: 0.875rem;
-  color: rgba(255,255,255,0.6);
-  text-decoration: none;
-  padding: 5px 0;
-  transition: color 0.2s;
-}
+.footer-col-heading { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 16px; }
+.footer-link { display: block; font-size: 0.875rem; color: rgba(255,255,255,0.6); text-decoration: none; padding: 5px 0; transition: color 0.2s; }
 .footer-link:hover { color: white; }
-
-.footer-bottom {
-  border-top: 1px solid rgba(255,255,255,0.07);
-  padding: 24px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-@media (min-width: 768px) {
-  .footer-bottom {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-.footer-disclosure {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.3);
-  max-width: 520px;
-  line-height: 1.6;
-}
-.footer-copy {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.25);
-  white-space: nowrap;
-}
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.07); padding: 24px; display: flex; flex-direction: column; gap: 8px; }
+@media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; } }
+.footer-disclosure { font-size: 0.75rem; color: rgba(255,255,255,0.3); max-width: 520px; line-height: 1.6; }
+.footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
 </style>
 
 <script>
-  // ── Nav scroll behavior ──────────────────────────────────────
-  const nav = document.getElementById('site-nav');
-  let ticking = false;
+  import Lenis from 'lenis';
 
-  function updateNav() {
-    if (!nav) return;
-    if (window.scrollY > 72) {
-      nav.classList.remove('nav-transparent');
-      nav.classList.add('nav-scrolled');
-    } else {
-      nav.classList.remove('nav-scrolled');
-      nav.classList.add('nav-transparent');
+  let lenis: InstanceType<typeof Lenis> | null = null;
+  let cursorInited = false;
+  let rafId: number | null = null;
+
+  // ── Lenis + nav + progress bar ─────────────────────────────────
+  function initLenis() {
+    if (rafId !== null) cancelAnimationFrame(rafId);
+    lenis?.destroy();
+
+    lenis = new Lenis({
+      duration: 1.2,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      touchMultiplier: 2,
+    });
+
+    const nav = document.getElementById('site-nav');
+    const bar = document.getElementById('progress-bar');
+
+    lenis.on('scroll', ({ scroll, limit }: { scroll: number; limit: number }) => {
+      if (nav) {
+        const past = scroll > 72;
+        nav.classList.toggle('nav-scrolled', past);
+        nav.classList.toggle('nav-transparent', !past);
+      }
+      if (bar && limit > 0) bar.style.width = `${(scroll / limit) * 100}%`;
+    });
+
+    function raf(time: number) {
+      lenis!.raf(time);
+      rafId = requestAnimationFrame(raf);
     }
+    rafId = requestAnimationFrame(raf);
   }
 
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(() => { updateNav(); ticking = false; });
-      ticking = true;
+  // ── Mobile menu ────────────────────────────────────────────────
+  function initMobileMenu() {
+    const btn  = document.getElementById('mobile-menu-btn') as HTMLElement | null;
+    const menu = document.getElementById('mobile-menu');
+    if (!btn || btn.dataset.initialized) return;
+    btn.dataset.initialized = 'true';
+    btn.addEventListener('click', () => {
+      const open = menu?.classList.contains('open');
+      menu?.classList.toggle('open', !open);
+      btn.setAttribute('aria-expanded', String(!open));
+      menu?.setAttribute('aria-hidden', String(!!open));
+    });
+    menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      menu.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+      menu.setAttribute('aria-hidden', 'true');
+    }));
+  }
+
+  // ── Dark mode ──────────────────────────────────────────────────
+  function initDarkMode() {
+    const btn = document.getElementById('theme-toggle') as HTMLElement | null;
+    if (!btn || btn.dataset.initialized) return;
+    btn.dataset.initialized = 'true';
+
+    function applyTheme(t: string) {
+      document.documentElement.dataset.theme = t;
+      const sun  = document.getElementById('icon-sun');
+      const moon = document.getElementById('icon-moon');
+      if (sun)  sun.style.display  = t === 'dark' ? 'block' : 'none';
+      if (moon) moon.style.display = t === 'dark' ? 'none'  : 'block';
     }
-  }, { passive: true });
 
-  // ── Mobile menu toggle ────────────────────────────────────────
-  const menuBtn = document.getElementById('mobile-menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
+    const stored = localStorage.getItem('folvr-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(stored || (prefersDark ? 'dark' : 'light'));
 
-  menuBtn?.addEventListener('click', () => {
-    const isOpen = mobileMenu?.classList.contains('open');
-    mobileMenu?.classList.toggle('open', !isOpen);
-    menuBtn.setAttribute('aria-expanded', String(!isOpen));
-    mobileMenu?.setAttribute('aria-hidden', String(isOpen));
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+      localStorage.setItem('folvr-theme', next);
+    });
+  }
+
+  // ── Custom cursor ──────────────────────────────────────────────
+  function initCursor() {
+    if (cursorInited || window.matchMedia('(hover: none)').matches) return;
+    cursorInited = true;
+    const dot  = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    if (!dot || !ring) return;
+
+    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+    let rx = mx, ry = my;
+
+    document.addEventListener('mousemove', (e: MouseEvent) => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = `${mx}px`;
+      dot.style.top  = `${my}px`;
+    });
+
+    (function animRing() {
+      rx += (mx - rx) * 0.1;
+      ry += (my - ry) * 0.1;
+      ring.style.left = `${rx}px`;
+      ring.style.top  = `${ry}px`;
+      requestAnimationFrame(animRing);
+    })();
+
+    function bindHover() {
+      document.querySelectorAll('a, button').forEach(el => {
+        el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+        el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+      });
+    }
+    bindHover();
+    document.addEventListener('astro:after-swap', bindHover);
+  }
+
+  // ── Magnetic buttons ───────────────────────────────────────────
+  function initMagnetic() {
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+      const el = btn as HTMLElement;
+      el.addEventListener('mousemove', (e: Event) => {
+        const me = e as MouseEvent;
+        const r  = el.getBoundingClientRect();
+        const x  = (me.clientX - r.left  - r.width  / 2) * 0.28;
+        const y  = (me.clientY - r.top   - r.height / 2) * 0.28;
+        el.style.transform  = `translate(${x}px, ${y}px) translateY(-1px)`;
+        el.style.transition = 'transform 0.1s ease';
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform  = '';
+        el.style.transition = 'transform 0.4s cubic-bezier(0.16,1,0.3,1), background 0.2s, box-shadow 0.2s';
+      });
+    });
+  }
+
+  // ── 3D card tilt ───────────────────────────────────────────────
+  function initTilt() {
+    const TILT = '.pick-card, .story-secondary, .calc-card, .compare-card, .story-strip-item';
+    document.querySelectorAll(TILT).forEach(card => {
+      const el = card as HTMLElement;
+      el.addEventListener('mousemove', (e: Event) => {
+        const me = e as MouseEvent;
+        const r  = el.getBoundingClientRect();
+        const x  = (me.clientX - r.left) / r.width  - 0.5;
+        const y  = (me.clientY - r.top)  / r.height - 0.5;
+        el.style.transform  = `perspective(700px) rotateY(${x * 7}deg) rotateX(${-y * 7}deg) translateZ(6px)`;
+        el.style.transition = 'transform 0.08s ease';
+      });
+      el.addEventListener('mouseleave', () => {
+        el.style.transform  = '';
+        el.style.transition = 'transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease';
+      });
+    });
+  }
+
+  // ── Scroll reveal ──────────────────────────────────────────────
+  function initScrollReveal() {
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); }
+      }),
+      { threshold: 0.1, rootMargin: '0px 0px -36px 0px' }
+    );
+    document.querySelectorAll('.reveal-item:not(.revealed)').forEach(el => obs.observe(el));
+  }
+
+  // ── Search (Pagefind) ──────────────────────────────────────────
+  function initSearch() {
+    const modal   = document.getElementById('search-modal');
+    const overlay = document.getElementById('search-overlay');
+    const btn     = document.getElementById('search-btn') as HTMLElement | null;
+    if (!modal || btn?.dataset.initialized) return;
+    if (btn) btn.dataset.initialized = 'true';
+
+    let pfLoaded = false;
+
+    function openSearch() {
+      modal!.removeAttribute('aria-hidden');
+      if (!pfLoaded) {
+        pfLoaded = true;
+        document.head.appendChild(Object.assign(document.createElement('link'),
+          { rel: 'stylesheet', href: '/pagefind/pagefind-ui.css' }));
+        const s = document.createElement('script');
+        s.src = '/pagefind/pagefind-ui.js';
+        s.onload = () => {
+          new (window as any).PagefindUI({ element: '#search-container', showImages: false });
+          focus();
+        };
+        document.head.appendChild(s);
+      } else { focus(); }
+    }
+    function focus() {
+      setTimeout(() => (document.querySelector('#search-container input') as HTMLInputElement)?.focus(), 80);
+    }
+    function closeSearch() { modal!.setAttribute('aria-hidden', 'true'); }
+
+    btn?.addEventListener('click', openSearch);
+    overlay?.addEventListener('click', closeSearch);
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openSearch(); }
+      if (e.key === 'Escape') closeSearch();
+    });
+  }
+
+  // ── Boot on every page (View Transitions aware) ────────────────
+  document.addEventListener('astro:page-load', () => {
+    initLenis();
+    initMobileMenu();
+    initDarkMode();
+    initCursor();
+    initMagnetic();
+    initTilt();
+    initScrollReveal();
+    initSearch();
   });
 </script>

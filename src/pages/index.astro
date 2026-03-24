@@ -1205,69 +1205,53 @@ const schema = {
 </style>
 
 <script>
-  // ── Scroll Reveal (IntersectionObserver) ──────────────────────────
-  const revealObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-  );
-  document.querySelectorAll('.reveal-item').forEach(el => revealObserver.observe(el));
-
-  // ── Counter Animation ─────────────────────────────────────────────
-  function animateCounter(el: Element) {
-    const target = parseInt((el as HTMLElement).dataset.count || '0');
-    const suffix = (el as HTMLElement).dataset.suffix || '';
-    const prefix = (el as HTMLElement).dataset.prefix || '';
-    const isDecimals = (el as HTMLElement).dataset.decimals === 'true';
-    const duration = 1200;
-    const start = performance.now();
-
+  // ── Number Scramble ───────────────────────────────────────────────
+  const DIGITS = '0123456789';
+  function scramble(el: Element) {
+    const d       = el as HTMLElement;
+    const target  = parseInt(d.dataset.count  || '0');
+    const suffix  = d.dataset.suffix  || '';
+    const prefix  = d.dataset.prefix  || '';
+    const isDecim = d.dataset.decimals === 'true';
+    const dur = 1500, t0 = performance.now();
     function tick(now: number) {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const val = Math.round(eased * target);
-      el.textContent = isDecimals
-        ? `${prefix}${(val / 100).toFixed(2)}${suffix}`
-        : `${prefix}${val}${suffix}`;
-      if (progress < 1) requestAnimationFrame(tick);
+      const p    = Math.min((now - t0) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 4);
+      const val  = Math.round(ease * target);
+      if (p < 0.75) {
+        const noise = Math.max(0, Math.floor((1 - p / 0.75) * 2));
+        let tail = '';
+        for (let i = 0; i < noise; i++) tail += DIGITS[Math.floor(Math.random() * 10)];
+        d.textContent = isDecim
+          ? `${prefix}${(val / 100).toFixed(2)}${tail}${suffix}`
+          : `${prefix}${val}${tail}${suffix}`;
+      } else {
+        d.textContent = isDecim
+          ? `${prefix}${(target / 100).toFixed(2)}${suffix}`
+          : `${prefix}${val}${suffix}`;
+      }
+      if (p < 1) requestAnimationFrame(tick);
     }
     requestAnimationFrame(tick);
   }
-
-  const counterObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animateCounter(entry.target);
-          counterObserver.unobserve(entry.target);
-        }
-      });
-    },
+  const scrambleObs = new IntersectionObserver(
+    entries => entries.forEach(e => { if (e.isIntersecting) { scramble(e.target); scrambleObs.unobserve(e.target); } }),
     { threshold: 0.5 }
   );
-  document.querySelectorAll('[data-count]').forEach(el => counterObserver.observe(el));
+  document.querySelectorAll('[data-count]').forEach(el => scrambleObs.observe(el));
 
   // ── Tab Switcher ──────────────────────────────────────────────────
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const tab = (btn as HTMLElement).dataset.tab;
-      // Update buttons
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
       btn.classList.add('tab-active');
-      // Update panels
       document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('tab-hidden'));
       const panel = document.getElementById(`tab-${tab}`);
       if (panel) {
         panel.classList.remove('tab-hidden');
-        // Re-trigger reveals for newly visible panel
-        panel.querySelectorAll('.reveal-item').forEach(el => {
-          if (!el.classList.contains('revealed')) revealObserver.observe(el);
+        panel.querySelectorAll('.reveal-item:not(.revealed)').forEach((el, i) => {
+          setTimeout(() => el.classList.add('revealed'), i * 55);
         });
       }
     });
