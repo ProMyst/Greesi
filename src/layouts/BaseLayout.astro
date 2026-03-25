@@ -70,8 +70,11 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     <nav class="nav-inner">
       <!-- Logo -->
       <a href="/" class="nav-logo">
+        <svg class="nav-logo-mark" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="28" height="28" rx="6" fill="#1e3a5f"/>
+          <path d="M8 7h13v3.5H11.5v3.5H20v3.5h-8.5V22H8V7z" fill="#0ea5e9"/>
+        </svg>
         <span class="nav-logo-text">Folvr</span>
-        <span class="nav-logo-dot">·</span>
       </a>
 
       <!-- Desktop Links -->
@@ -80,7 +83,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         <a href="/finance/banking" class="nav-link">Banking</a>
         <a href="/finance/credit-cards" class="nav-link">Credit Cards</a>
         <a href="/travel" class="nav-link">Travel</a>
-        <a href="/finance/calculators/compound-interest" class="nav-link">Tools</a>
+        <a href="/tools" class="nav-link">Tools</a>
       </div>
 
       <!-- Right: search + theme + hamburger -->
@@ -115,7 +118,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
       <a href="/finance/credit-cards" class="nav-mobile-link">Credit Cards</a>
       <a href="/finance/investing" class="nav-mobile-link">Investing</a>
       <a href="/travel" class="nav-mobile-link">Travel</a>
-      <a href="/finance/calculators/compound-interest" class="nav-mobile-link">Tools</a>
+      <a href="/tools" class="nav-mobile-link">Tools</a>
     </div>
   </header>
 
@@ -275,12 +278,13 @@ html[data-theme='dark'] .nav-scrolled {
 
 .nav-logo {
   font-size: 1.25rem; font-weight: 800; letter-spacing: -0.04em;
-  text-decoration: none; display: flex; align-items: center; gap: 2px; transition: color 0.3s;
+  text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.3s;
 }
+.nav-logo-mark { flex-shrink: 0; border-radius: 6px; transition: transform 0.2s; }
+.nav-logo:hover .nav-logo-mark { transform: scale(1.05); }
 .nav-transparent .nav-logo { color: white; }
 .nav-scrolled .nav-logo { color: var(--color-primary); }
 html[data-theme='dark'] .nav-scrolled .nav-logo { color: #f1f5f9; }
-.nav-logo-dot { color: var(--color-accent); margin-left: 1px; }
 
 .nav-links { display: none; align-items: center; gap: 32px; }
 @media (min-width: 768px) { .nav-links { display: flex; } }
@@ -373,9 +377,16 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     const nav = document.getElementById('site-nav');
     const bar = document.getElementById('progress-bar');
 
+    // If the page has no colored hero at the top, start in scrolled state
+    const hasHero = document.querySelector('.hero-root, section.bg-primary, section.has-hero');
+    if (nav && !hasHero) {
+      nav.classList.add('nav-scrolled');
+      nav.classList.remove('nav-transparent');
+    }
+
     lenis.on('scroll', ({ scroll, limit }: { scroll: number; limit: number }) => {
       if (nav) {
-        const past = scroll > 72;
+        const past = hasHero ? scroll > 72 : true;
         nav.classList.toggle('nav-scrolled', past);
         nav.classList.toggle('nav-transparent', !past);
       }

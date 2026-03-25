@@ -1,0 +1,215 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Free Financial Tools, Calculators & Quizzes | Folvr";
+const description = "All of Folvr's free tools in one place — compound interest calculator, loan calculator, full comparison tables, and personalized quizzes for credit cards and bank accounts.";
+
+const tools = [
+  {
+    href: '/finance/calculators/compound-interest',
+    icon: '📈',
+    color: '#0ea5e9',
+    bg: 'rgba(14,165,233,0.08)',
+    label: 'Calculator',
+    name: 'Compound Interest',
+    desc: 'See exactly how your savings or investments grow year by year with the power of compounding.',
+    cta: 'Open Calculator',
+  },
+  {
+    href: '/finance/calculators/loan',
+    icon: '🏠',
+    color: '#6366f1',
+    bg: 'rgba(99,102,241,0.08)',
+    label: 'Calculator',
+    name: 'Loan Payment',
+    desc: 'Calculate your monthly payment, total interest paid, and full amortization schedule for any loan.',
+    cta: 'Open Calculator',
+  },
+  {
+    href: '/finance/compare',
+    icon: '⚖️',
+    color: '#f59e0b',
+    bg: 'rgba(245,158,11,0.08)',
+    label: 'Comparison',
+    name: 'Compare All Products',
+    desc: 'Full sortable spreadsheet tables for every bank, credit card, and investing platform we review.',
+    cta: 'Open Comparison',
+  },
+  {
+    href: '/finance/quiz/credit-card',
+    icon: '🃏',
+    color: '#10b981',
+    bg: 'rgba(16,185,129,0.08)',
+    label: 'Quiz',
+    name: 'Credit Card Quiz',
+    desc: 'Answer 5 questions about your spending habits and goals — get a personalized card recommendation.',
+    cta: 'Take the Quiz',
+  },
+  {
+    href: '/finance/quiz/bank-account',
+    icon: '🏦',
+    color: '#ef4444',
+    bg: 'rgba(239,68,68,0.08)',
+    label: 'Quiz',
+    name: 'Bank Account Quiz',
+    desc: 'Answer 4 questions about how you bank — find the account with the best APY, features, and perks.',
+    cta: 'Take the Quiz',
+  },
+  {
+    href: '/finance/compare',
+    icon: '🔍',
+    color: '#8b5cf6',
+    bg: 'rgba(139,92,246,0.08)',
+    label: 'Comparison',
+    name: 'Head-to-Head Compare',
+    desc: 'Pick any two banks, credit cards, or brokers and see them compared side-by-side in detail.',
+    cta: 'Compare Now',
+  },
+];
+---
+
+<BaseLayout title={title} description={description}>
+
+  <!-- Hero -->
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Free Tools</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Everything You Need to<br />Make Smarter Money Moves</h1>
+      <p class="text-white/65 text-lg max-w-xl mx-auto">Calculators, comparison tables, and personalized quizzes — all free, all unbiased.</p>
+    </div>
+  </section>
+
+  <!-- Tool grid -->
+  <div class="max-w-5xl mx-auto px-4 py-16">
+    <div class="tools-grid">
+      {tools.map((tool, i) => (
+        <a href={tool.href} class="tool-card reveal-item" style={`--delay:${i * 0.06}s; --tool-color:${tool.color}; --tool-bg:${tool.bg}`}>
+          <div class="tool-card-icon-wrap">
+            <span class="tool-card-icon">{tool.icon}</span>
+          </div>
+          <div class="tool-card-body">
+            <span class="tool-label">{tool.label}</span>
+            <h2 class="tool-name">{tool.name}</h2>
+            <p class="tool-desc">{tool.desc}</p>
+          </div>
+          <div class="tool-card-footer">
+            <span class="tool-cta">{tool.cta}</span>
+            <span class="tool-arrow">→</span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <section class="bg-surface border-t border-border py-12 text-center">
+    <h2 class="text-xl font-bold mb-2">Looking for reviews instead?</h2>
+    <p class="text-text-muted mb-6">We cover 30+ banks, credit cards, and investing platforms with in-depth, unbiased reviews.</p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <a href="/finance/banking" class="btn-primary">Best Banks</a>
+      <a href="/finance/credit-cards" class="border border-border hover:bg-surface px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors">Credit Cards</a>
+      <a href="/finance/investing" class="border border-border hover:bg-surface px-5 py-2.5 rounded-lg font-semibold text-sm transition-colors">Investing</a>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .tool-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    padding: 24px;
+    text-decoration: none;
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  html[data-theme='dark'] .tool-card { background: var(--color-surface); }
+
+  .tool-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--tool-color);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+    border-radius: 18px 18px 0 0;
+  }
+  .tool-card:hover::before { transform: scaleX(1); }
+  .tool-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    transform: translateY(-2px);
+    border-color: var(--tool-color);
+  }
+
+  .tool-card-icon-wrap {
+    width: 56px; height: 56px;
+    background: var(--tool-bg);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .tool-card:hover .tool-card-icon-wrap { transform: scale(1.08); }
+
+  .tool-card-body { flex: 1; }
+
+  .tool-label {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--tool-color);
+    margin-bottom: 6px;
+  }
+
+  .tool-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+
+  .tool-desc {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.55;
+  }
+
+  .tool-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--color-border);
+    padding-top: 14px;
+    margin-top: auto;
+  }
+
+  .tool-cta {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--tool-color);
+  }
+
+  .tool-arrow {
+    font-size: 1rem;
+    color: var(--tool-color);
+    transition: transform 0.2s;
+  }
+  .tool-card:hover .tool-arrow { transform: translateX(4px); }
+</style>
