@@ -183,40 +183,6 @@ html[data-theme='dark'] .tab-btn.tab-active {
   pointer-events: none;
 }
 
-/* ─── Custom Cursor ──────────────────────────────────────────── */
-.cursor-dot {
-  width: 7px;
-  height: 7px;
-  background: var(--color-accent);
-  border-radius: 50%;
-  position: fixed;
-  top: 0; left: 0;
-  pointer-events: none;
-  z-index: 9999;
-  transform: translate(-50%, -50%);
-  will-change: left, top;
-}
-.cursor-ring {
-  width: 30px;
-  height: 30px;
-  border: 1.5px solid rgba(14, 165, 233, 0.45);
-  border-radius: 50%;
-  position: fixed;
-  top: 0; left: 0;
-  pointer-events: none;
-  z-index: 9998;
-  transform: translate(-50%, -50%);
-  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease;
-  will-change: left, top;
-}
-.cursor-ring.hovering {
-  width: 46px;
-  height: 46px;
-  border-color: rgba(14, 165, 233, 0.7);
-}
-@media (hover: none) { .cursor-dot, .cursor-ring { display: none; } }
-body { cursor: none; }
-@media (hover: none) { body { cursor: auto; } }
 
 /* ─── Search Modal ───────────────────────────────────────────── */
 .search-modal-root {
@@ -260,7 +226,7 @@ html[data-theme='dark'] .search-modal-box { background: #1a2740; }
   gap: 6px;
   background: none;
   border: none;
-  cursor: none;
+  cursor: pointer;
   padding: 8px;
   border-radius: 8px;
   transition: background 0.2s;
@@ -308,7 +274,7 @@ html[data-theme='dark'] .search-modal-box { background: #1a2740; }
   border: 1px solid var(--color-border);
   background: white;
   color: var(--color-text-muted);
-  cursor: none;
+  cursor: pointer;
   transition: all 0.15s;
 }
 html[data-theme='dark'] .sort-btn { background: #0f1e30; color: var(--color-text-muted); }
@@ -451,7 +417,7 @@ html[data-theme='dark'] .cookie-banner {
   padding: 8px 18px;
   border-radius: 8px;
   border: none;
-  cursor: none;
+  cursor: pointer;
   transition: all 0.15s;
 }
 .cookie-btn-decline {
@@ -537,7 +503,7 @@ html[data-theme='dark'] .cookie-banner {
   color: white;
   font-size: 0.88rem;
   font-weight: 700;
-  cursor: none;
+  cursor: pointer;
   white-space: nowrap;
   transition: background 0.2s, transform 0.15s;
   font-family: inherit;
@@ -566,7 +532,7 @@ html[data-theme='dark'] .cookie-banner {
   background: var(--color-primary);
   color: white;
   border: none;
-  cursor: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -651,7 +617,7 @@ html[data-theme='dark'] .back-to-top { background: #1a2740; border: 1px solid #2
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  cursor: none;
+  cursor: pointer;
   font-family: inherit;
   transition: background 0.15s;
 }
@@ -717,7 +683,7 @@ html[data-theme='dark'] .back-to-top { background: #1a2740; border: 1px solid #2
   border-radius: 50%;
   background: rgba(255,255,255,0.2);
   transition: background 0.2s, transform 0.2s;
-  cursor: none;
+  cursor: pointer;
 }
 .carousel-dot.active {
   background: var(--color-accent);

@@ -227,10 +227,6 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     </div>
   </footer>
 
-  <!-- Custom cursor -->
-  <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
-  <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
-
   <!-- Back to top -->
   <button class="back-to-top" id="back-to-top" aria-label="Back to top">
     <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -310,7 +306,7 @@ html[data-theme='dark'] .nav-scrolled .nav-link:hover { color: var(--color-accen
 
 .nav-hamburger {
   display: flex; flex-direction: column; gap: 5px;
-  background: none; border: none; cursor: none; padding: 8px;
+  background: none; border: none; cursor: pointer; padding: 8px;
 }
 @media (min-width: 768px) { .nav-hamburger { display: none; } }
 .ham-line { display: block; width: 22px; height: 2px; border-radius: 2px; transition: background 0.3s; }
@@ -363,7 +359,6 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
   import Lenis from 'lenis';
 
   let lenis: InstanceType<typeof Lenis> | null = null;
-  let cursorInited = false;
   let rafId: number | null = null;
 
   // ── Lenis + nav + progress bar ─────────────────────────────────
@@ -445,41 +440,6 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
       applyTheme(next);
       localStorage.setItem('folvr-theme', next);
     });
-  }
-
-  // ── Custom cursor ──────────────────────────────────────────────
-  function initCursor() {
-    if (cursorInited || window.matchMedia('(hover: none)').matches) return;
-    cursorInited = true;
-    const dot  = document.getElementById('cursor-dot');
-    const ring = document.getElementById('cursor-ring');
-    if (!dot || !ring) return;
-
-    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-    let rx = mx, ry = my;
-
-    document.addEventListener('mousemove', (e: MouseEvent) => {
-      mx = e.clientX; my = e.clientY;
-      dot.style.left = `${mx}px`;
-      dot.style.top  = `${my}px`;
-    });
-
-    (function animRing() {
-      rx += (mx - rx) * 0.1;
-      ry += (my - ry) * 0.1;
-      ring.style.left = `${rx}px`;
-      ring.style.top  = `${ry}px`;
-      requestAnimationFrame(animRing);
-    })();
-
-    function bindHover() {
-      document.querySelectorAll('a, button').forEach(el => {
-        el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
-        el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
-      });
-    }
-    bindHover();
-    document.addEventListener('astro:after-swap', bindHover);
   }
 
   // ── Magnetic buttons ───────────────────────────────────────────
@@ -628,7 +588,6 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     initLenis();
     initMobileMenu();
     initDarkMode();
-    initCursor();
     initMagnetic();
     initTilt();
     initScrollReveal();
