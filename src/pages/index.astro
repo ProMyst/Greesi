@@ -24,12 +24,14 @@
 <nav class="g-nav" id="gnav">
   <div class="g-nav-inner">
     <a href="/" class="g-logo" aria-label="Greesi home">
-      <svg width="88" height="28" viewBox="0 0 88 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <!-- Pill with diagonal cut mark -->
-        <rect x="0" y="4" width="26" height="20" rx="10" fill="white"/>
-        <line x1="9" y1="4" x2="17" y2="24" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round"/>
-        <text x="32" y="20" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.5" fill="white">greesi</text>
+      <svg width="14" height="28" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
+        <defs><clipPath id="gp1"><rect x="0" y="0" width="40" height="80" rx="20"/></clipPath></defs>
+        <g clip-path="url(#gp1)">
+          <rect x="0" y="0" width="40" height="80" fill="white"/>
+          <polygon points="25,0 33,0 15,80 7,80" fill="#0a0a0a"/>
+        </g>
       </svg>
+      <span style="font-size:0.95rem;font-weight:700;letter-spacing:-0.04em;color:white">greesi</span>
     </a>
     <div class="g-nav-links">
       <a href="/finance" class="g-nav-link">Finance</a>
@@ -329,12 +331,15 @@
 <footer class="g-footer">
   <div class="g-footer-inner">
     <div class="g-footer-brand">
-      <a href="/" class="g-logo" aria-label="Greesi home">
-        <svg width="88" height="28" viewBox="0 0 88 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect x="0" y="4" width="26" height="20" rx="10" fill="white" opacity="0.9"/>
-          <line x1="9" y1="4" x2="17" y2="24" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round"/>
-          <text x="32" y="20" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.5" fill="white" opacity="0.9">greesi</text>
+      <a href="/" class="g-logo" aria-label="Greesi home" style="display:flex;align-items:center;gap:9px;opacity:0.9">
+        <svg width="14" height="28" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex-shrink:0">
+          <defs><clipPath id="gp2"><rect x="0" y="0" width="40" height="80" rx="20"/></clipPath></defs>
+          <g clip-path="url(#gp2)">
+            <rect x="0" y="0" width="40" height="80" fill="white"/>
+            <polygon points="25,0 33,0 15,80 7,80" fill="#111111"/>
+          </g>
         </svg>
+        <span style="font-size:0.95rem;font-weight:700;letter-spacing:-0.04em;color:white">greesi</span>
       </a>
       <p class="g-footer-tagline">Signal intelligence for the financially serious.</p>
     </div>
@@ -696,6 +701,8 @@
 </style>
 
 <script>
+  import { animate, stagger } from 'animejs';
+
   // ── Nav scroll ──────────────────────────────────────────
   const nav = document.getElementById('gnav');
   window.addEventListener('scroll', () => {
@@ -707,45 +714,48 @@
     document.getElementById('gmobile').classList.toggle('open');
   });
 
-  // ── Reveal on scroll ────────────────────────────────────
-  const revealEls = document.querySelectorAll('.reveal');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('in');
-        observer.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-  revealEls.forEach(el => observer.observe(el));
-
-  // ── Staggered reveal within grids ───────────────────────
-  document.querySelectorAll('.g-method-card, .g-signal-card, .g-cat-card, .g-proof-item').forEach((el, i) => {
-    el.style.transitionDelay = `${(i % 5) * 80}ms`;
+  // ── Hero entrance (Anime.js stagger) ────────────────────
+  animate('.g-hero-eyebrow, .g-hero-headline, .g-hero-sub, .g-hero-actions, .g-hero-proof', {
+    opacity: [0, 1],
+    translateY: [28, 0],
+    duration: 700,
+    ease: 'out(3)',
+    delay: stagger(90, { start: 120 }),
   });
 
-  // ── Proof bar count-up ───────────────────────────────────
-  const counters = document.querySelectorAll('.g-proof-bar-num[data-count]');
+  // ── Scroll reveal (Anime.js) ─────────────────────────────
+  const observer = new IntersectionObserver((entries) => {
+    const batch = entries.filter(e => e.isIntersecting).map(e => e.target);
+    if (!batch.length) return;
+    animate(batch, {
+      opacity: [0, 1],
+      translateY: [18, 0],
+      duration: 520,
+      ease: 'out(3)',
+      delay: stagger(65),
+    });
+    batch.forEach(el => { el.classList.add('in'); observer.unobserve(el); });
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal:not(.in)').forEach(el => observer.observe(el));
+
+  // ── Proof bar count-up (Anime.js) ────────────────────────
   const countObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (!entry.isIntersecting) return;
-      const el = entry.target;
+      const el = entry.target as HTMLElement;
       const target = parseInt(el.dataset.count, 10);
       const suffix = el.dataset.suffix || '';
       const prefix = el.dataset.prefix || '';
-      const start = performance.now();
-      const dur = 1200;
-      const tick = (now) => {
-        const t = Math.min((now - start) / dur, 1);
-        const ease = 1 - Math.pow(1 - t, 3);
-        el.textContent = prefix + Math.round(ease * target) + suffix;
-        if (t < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
+      animate({ value: 0 }, {
+        value: target,
+        duration: 1100,
+        ease: 'out(3)',
+        onUpdate: (a) => { el.textContent = prefix + Math.round((a.targets[0] as any).value) + suffix; },
+      });
       countObserver.unobserve(el);
     });
   }, { threshold: 0.5 });
-  counters.forEach(c => countObserver.observe(c));
+  document.querySelectorAll('.g-proof-bar-num[data-count]').forEach(c => countObserver.observe(c));
 
   // ── Form submit ─────────────────────────────────────────
   document.getElementById('gform').addEventListener('submit', (e) => {

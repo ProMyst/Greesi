@@ -72,19 +72,22 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   <header id="site-nav" class="nav-root nav-transparent" transition:persist>
     <nav class="nav-inner">
       <!-- Logo -->
-      <a href="/" class="nav-logo">
-        <svg width="82" height="24" viewBox="0 0 88 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="nav-logo-svg">
-          <rect x="0" y="4" width="26" height="20" rx="10" fill="white"/>
-          <line x1="9" y1="4" x2="17" y2="24" stroke="#0ea5e9" stroke-width="2.2" stroke-linecap="round"/>
-          <text x="32" y="20" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.5" fill="white">greesi</text>
+      <a href="/" class="nav-logo" aria-label="Greesi home">
+        <svg class="nav-logo-mark" width="14" height="28" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><clipPath id="g-pill-nav"><rect x="0" y="0" width="40" height="80" rx="20"/></clipPath></defs>
+          <g clip-path="url(#g-pill-nav)">
+            <rect x="0" y="0" width="40" height="80" class="logo-pill"/>
+            <polygon points="25,0 33,0 15,80 7,80" class="logo-slash"/>
+          </g>
         </svg>
+        <span class="nav-logo-name">greesi</span>
       </a>
 
       <!-- Desktop Links -->
       <div class="nav-links">
         <div class="nav-dropdown">
           <a href="/finance" class="nav-link nav-dropdown-trigger">Finance ▾</a>
-          <div class="nav-dropdown-menu">
+          <div class="nav-dropdown-menu" data-cols="3">
             <div class="nav-dropdown-col">
               <p class="nav-dropdown-heading">Reviews</p>
               <a href="/finance/banking" class="nav-dropdown-link">Best Banks</a>
@@ -111,7 +114,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         </div>
         <div class="nav-dropdown">
           <a href="/travel" class="nav-link nav-dropdown-trigger">Travel ▾</a>
-          <div class="nav-dropdown-menu">
+          <div class="nav-dropdown-menu" data-cols="2">
             <div class="nav-dropdown-col">
               <p class="nav-dropdown-heading">Destinations</p>
               <a href="/travel/destinations/maldives" class="nav-dropdown-link">Maldives</a>
@@ -130,7 +133,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         </div>
         <div class="nav-dropdown">
           <a href="/tools" class="nav-link nav-dropdown-trigger">Tools ▾</a>
-          <div class="nav-dropdown-menu">
+          <div class="nav-dropdown-menu" data-cols="2">
             <div class="nav-dropdown-col">
               <p class="nav-dropdown-heading">Calculators</p>
               <a href="/finance/calculators/compound-interest" class="nav-dropdown-link">Compound Interest</a>
@@ -240,11 +243,14 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
 
       <div class="footer-brand">
         <a href="/" class="footer-logo" aria-label="Greesi home">
-          <svg width="82" height="24" viewBox="0 0 88 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <rect x="0" y="4" width="26" height="20" rx="10" fill="white" opacity="0.9"/>
-            <line x1="9" y1="4" x2="17" y2="24" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round"/>
-            <text x="32" y="20" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.5" fill="white" opacity="0.9">greesi</text>
+          <svg class="footer-logo-mark" width="16" height="32" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs><clipPath id="g-pill-footer"><rect x="0" y="0" width="40" height="80" rx="20"/></clipPath></defs>
+            <g clip-path="url(#g-pill-footer)">
+              <rect x="0" y="0" width="40" height="80" fill="white" opacity="0.9"/>
+              <polygon points="25,0 33,0 15,80 7,80" fill="#0d1f35"/>
+            </g>
           </svg>
+          <span class="footer-logo-name">greesi</span>
         </a>
         <p class="footer-tagline">Signal intelligence.<br />Decisions that compound.</p>
         <div class="footer-socials">
@@ -397,11 +403,26 @@ html[data-theme='dark'] .nav-scrolled {
   font-size: 1.25rem; font-weight: 800; letter-spacing: -0.04em;
   text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.3s;
 }
-.nav-logo-svg { flex-shrink: 0; transition: opacity 0.2s; }
-.nav-logo:hover .nav-logo-svg { opacity: 0.85; }
-/* Scrolled state: pill stays white, text label needs to stay visible */
-.nav-scrolled .nav-logo-svg text { fill: white; }
-html[data-theme='light'] .nav-scrolled .nav-logo-svg text { fill: var(--color-primary); }
+/* ── Logo mark pill/slash colors ─────────────────────────────── */
+.nav-logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.nav-logo-mark { flex-shrink: 0; transition: transform 0.2s; }
+.nav-logo:hover .nav-logo-mark { transform: scale(1.06); }
+/* Transparent nav (dark hero bg) → white pill, dark slash */
+.nav-transparent .logo-pill { fill: white; }
+.nav-transparent .logo-slash { fill: #0a1220; }
+/* Scrolled nav (light bg) → dark pill, white slash */
+.nav-scrolled .logo-pill { fill: #0a1220; }
+.nav-scrolled .logo-slash { fill: white; }
+html[data-theme='dark'] .nav-scrolled .logo-pill { fill: white; }
+html[data-theme='dark'] .nav-scrolled .logo-slash { fill: #0a1220; }
+/* Logo name */
+.nav-logo-name {
+  font-size: 0.95rem; font-weight: 700; letter-spacing: -0.04em;
+  transition: color 0.3s;
+}
+.nav-transparent .nav-logo-name { color: white; }
+.nav-scrolled .nav-logo-name { color: var(--color-primary); }
+html[data-theme='dark'] .nav-scrolled .nav-logo-name { color: #f1f5f9; }
 
 .nav-links { display: none; align-items: center; gap: 28px; }
 @media (min-width: 768px) { .nav-links { display: flex; } }
@@ -410,20 +431,30 @@ html[data-theme='light'] .nav-scrolled .nav-logo-svg text { fill: var(--color-pr
 .nav-dropdown { position: relative; }
 .nav-dropdown-trigger { user-select: none; }
 .nav-dropdown-menu {
-  display: none; position: absolute; top: calc(100% + 12px); left: 50%;
-  transform: translateX(-50%);
+  display: none; position: absolute; top: calc(100% + 8px); left: 0;
   background: white; border: 1px solid rgba(30,58,95,0.1);
   border-radius: 16px; padding: 20px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.12);
-  min-width: 560px; grid-template-columns: repeat(3, 1fr); gap: 0 24px;
-  z-index: 200;
-  animation: dropdown-in 0.18s cubic-bezier(0.16,1,0.3,1);
+  grid-template-columns: repeat(2, 1fr); gap: 0 24px;
+  min-width: 320px; z-index: 200;
 }
-.nav-dropdown:has(.nav-dropdown-menu:not([style*="display: none"])) .nav-dropdown-menu,
+/* 3-column Finance menu: wider and centered */
+.nav-dropdown-menu[data-cols="3"] {
+  grid-template-columns: repeat(3, 1fr);
+  min-width: 560px;
+  left: 50%; transform: translateX(-50%);
+}
+/* Hover-only open — no focus-within (avoids multi-open) */
 .nav-dropdown:hover .nav-dropdown-menu,
-.nav-dropdown:focus-within .nav-dropdown-menu { display: grid; }
+.nav-dropdown.is-open .nav-dropdown-menu { display: grid; animation: dropdown-in 0.18s cubic-bezier(0.16,1,0.3,1); }
+.nav-dropdown-menu[data-cols="3"].is-open,
+.nav-dropdown.is-open .nav-dropdown-menu[data-cols="3"] { animation: dropdown-in-center 0.18s cubic-bezier(0.16,1,0.3,1); }
 html[data-theme='dark'] .nav-dropdown-menu { background: #0d1f35; border-color: rgba(255,255,255,0.08); }
 @keyframes dropdown-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes dropdown-in-center {
   from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
@@ -500,8 +531,9 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
 @media (min-width: 640px)  { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; } }
 .footer-brand {}
-.footer-logo { display: inline-block; margin-bottom: 12px; text-decoration: none; opacity: 0.9; transition: opacity 0.2s; }
+.footer-logo { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 12px; text-decoration: none; opacity: 0.9; transition: opacity 0.2s; }
 .footer-logo:hover { opacity: 1; }
+.footer-logo-name { font-size: 1rem; font-weight: 700; letter-spacing: -0.04em; color: white; }
 .footer-tagline { font-size: 0.9rem; line-height: 1.6; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
 .footer-socials { display: flex; gap: 12px; }
 .social-icon { color: rgba(255,255,255,0.4); transition: color 0.2s; }
@@ -516,6 +548,8 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
 </style>
 
 <script>
+  import { animate, stagger } from 'animejs';
+
   // ── Nav + progress bar (native scroll) ────────────────────────
   function initScroll() {
     const nav = document.getElementById('site-nav');
@@ -631,15 +665,42 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     });
   }
 
-  // ── Scroll reveal ──────────────────────────────────────────────
+  // ── Scroll reveal (Anime.js stagger) ──────────────────────────
   function initScrollReveal() {
-    const obs = new IntersectionObserver(
-      entries => entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('revealed'); obs.unobserve(e.target); }
-      }),
-      { threshold: 0.1, rootMargin: '0px 0px -36px 0px' }
-    );
+    const obs = new IntersectionObserver(entries => {
+      // Group by parent to stagger siblings together
+      const batch: Element[] = [];
+      entries.forEach(e => { if (e.isIntersecting) batch.push(e.target); });
+      if (!batch.length) return;
+      animate(batch, {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        duration: 550,
+        ease: 'out(3)',
+        delay: stagger(70),
+        onComplete: () => batch.forEach(el => {
+          (el as HTMLElement).style.opacity = '1';
+          (el as HTMLElement).style.transform = 'none';
+        }),
+      });
+      batch.forEach(el => { el.classList.add('revealed'); obs.unobserve(el); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -28px 0px' });
     document.querySelectorAll('.reveal-item:not(.revealed)').forEach(el => obs.observe(el));
+  }
+
+  // ── Dropdown mutual exclusion ──────────────────────────────────
+  function initDropdowns() {
+    const dropdowns = document.querySelectorAll('.nav-dropdown');
+    dropdowns.forEach(dd => {
+      // Already initialized guard not needed here — hover is CSS, JS only for mutual exclusion
+      dd.addEventListener('mouseenter', () => {
+        dropdowns.forEach(other => { if (other !== dd) other.classList.remove('is-open'); });
+      });
+    });
+    // Close all when leaving the nav links bar
+    document.querySelector('.nav-links')?.addEventListener('mouseleave', () => {
+      dropdowns.forEach(dd => dd.classList.remove('is-open'));
+    });
   }
 
   // ── Search (Pagefind) ──────────────────────────────────────────
@@ -871,6 +932,7 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     initScroll();
     initMobileMenu();
     initDarkMode();
+    initDropdowns();
     initMagnetic();
     initTilt();
     initScrollReveal();
