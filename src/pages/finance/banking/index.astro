@@ -55,7 +55,7 @@ const description = "Compare the best banks of 2026 side by side. See APY rates,
               </div>
               <p class="text-sm text-text-muted mb-3">{bank.bestFor}</p>
               <div class="flex flex-wrap gap-4 text-sm">
-                <span><strong class="text-accent">{bank.savingsApy}</strong> Savings APY</span>
+                <span><strong class="text-accent" data-count={bank.savingsApy.replace('%','')} data-suffix="%">{bank.savingsApy}</strong> Savings APY</span>
                 <span><strong>{bank.checkingFee}</strong> Checking Fee</span>
                 <span><strong>{bank.atmNetwork}</strong></span>
                 {bank.signupBonus !== "None" && <span class="text-success font-medium">{bank.signupBonus} Bonus</span>}

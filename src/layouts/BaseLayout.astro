@@ -530,6 +530,20 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
 @media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; } }
 .footer-disclosure { font-size: 0.75rem; color: rgba(255,255,255,0.3); max-width: 520px; line-height: 1.6; }
 .footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+
+/* ── Reveal items start hidden ────────────────────────────── */
+.reveal-item { opacity: 0; transform: translateY(22px) scale(0.97); }
+.reveal-item.revealed { opacity: 1; transform: none; }
+
+/* ── Card spotlight glow ──────────────────────────────────── */
+.sort-item, .pick-card, .signal-card { position: relative; overflow: hidden; }
+.spotlight-active::after {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background: radial-gradient(280px circle at var(--sx, 50%) var(--sy, 50%), rgba(14,165,233,0.07), transparent 65%);
+  z-index: 0;
+}
+.sort-item > *, .pick-card > *, .signal-card > * { position: relative; z-index: 1; }
 </style>
 
 <script>
@@ -632,7 +646,7 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
 
   // ── 3D card tilt ───────────────────────────────────────────────
   function initTilt() {
-    const TILT = '.pick-card, .story-secondary, .calc-card, .compare-card, .story-strip-item';
+    const TILT = '.pick-card, .story-secondary, .calc-card, .compare-card, .story-strip-item, .sort-item, .g-signal-card';
     document.querySelectorAll(TILT).forEach(card => {
       const el = card as HTMLElement;
       el.addEventListener('mousemove', (e: Event) => {
@@ -650,17 +664,38 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     });
   }
 
+  // ── Page entrance ──────────────────────────────────────────────
+  function initPageEntrance() {
+    const main = document.querySelector('main');
+    if (!main) return;
+    animate(main, { opacity: [0, 1], translateY: [10, 0], duration: 480, ease: 'out(3)' });
+
+    // Hero section children stagger (finance/travel/etc hero sections)
+    const hero = document.querySelector('section.bg-primary, section.bg-gradient-to-br, section.has-hero');
+    if (!hero) return;
+    const targets = Array.from(hero.querySelectorAll('h1, h2, p, .flex, a, button')).slice(0, 8);
+    if (!targets.length) return;
+    animate(targets, {
+      opacity: [0, 1],
+      translateY: [28, 0],
+      scale: [0.97, 1],
+      duration: 680,
+      ease: 'out(3)',
+      delay: stagger(85, { start: 80 }),
+    });
+  }
+
   // ── Scroll reveal (Anime.js stagger) ──────────────────────────
   function initScrollReveal() {
     const obs = new IntersectionObserver(entries => {
-      // Group by parent to stagger siblings together
       const batch: Element[] = [];
       entries.forEach(e => { if (e.isIntersecting) batch.push(e.target); });
       if (!batch.length) return;
       animate(batch, {
         opacity: [0, 1],
-        translateY: [20, 0],
-        duration: 550,
+        translateY: [22, 0],
+        scale: [0.97, 1],
+        duration: 580,
         ease: 'out(3)',
         delay: stagger(70),
         onComplete: () => batch.forEach(el => {
@@ -671,6 +706,43 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
       batch.forEach(el => { el.classList.add('revealed'); obs.unobserve(el); });
     }, { threshold: 0.08, rootMargin: '0px 0px -28px 0px' });
     document.querySelectorAll('.reveal-item:not(.revealed)').forEach(el => obs.observe(el));
+  }
+
+  // ── Count-up for [data-count] elements ────────────────────────
+  function initCountUp() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target as HTMLElement;
+        const target  = parseFloat(el.dataset.count || '0');
+        const suffix  = el.dataset.suffix  || '';
+        const prefix  = el.dataset.prefix  || '';
+        const decimals = (el.dataset.count || '').includes('.') ? 2 : 0;
+        animate({ value: 0 }, {
+          value: target,
+          duration: 1200,
+          ease: 'out(3)',
+          onUpdate: (a: any) => {
+            el.textContent = prefix + parseFloat(a.targets[0].value).toFixed(decimals) + suffix;
+          },
+        });
+        obs.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-count]').forEach(el => obs.observe(el));
+  }
+
+  // ── Card spotlight glow ────────────────────────────────────────
+  function initSpotlight() {
+    document.querySelectorAll<HTMLElement>('.sort-item, .pick-card, .signal-card').forEach(el => {
+      el.addEventListener('mousemove', (e: MouseEvent) => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--sx', `${e.clientX - r.left}px`);
+        el.style.setProperty('--sy', `${e.clientY - r.top}px`);
+        el.classList.add('spotlight-active');
+      });
+      el.addEventListener('mouseleave', () => el.classList.remove('spotlight-active'));
+    });
   }
 
   // ── Dropdown mutual exclusion ──────────────────────────────────
@@ -920,7 +992,10 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     initDropdowns();
     initMagnetic();
     initTilt();
+    initPageEntrance();
     initScrollReveal();
+    initCountUp();
+    initSpotlight();
     initSearch();
     initExitIntent();
     initCookie();
