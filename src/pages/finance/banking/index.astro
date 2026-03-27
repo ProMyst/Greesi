@@ -63,7 +63,12 @@ const description = "Compare the best banks of 2026 side by side. See APY rates,
             </div>
             <div class="flex flex-col gap-2 md:w-40">
               <a href={`/finance/review/${bank.slug}`} class="text-center bg-accent hover:bg-accent-dark text-white text-sm font-semibold py-2 px-4 rounded-lg transition-colors">Read Review</a>
-              <a href={`/finance/compare/${bank.slug}-vs-${sorted[0].slug === bank.slug ? sorted[1].slug : sorted[0].slug}`} class="text-center border border-border hover:bg-surface text-sm py-2 px-4 rounded-lg transition-colors">Compare</a>
+              <button
+                class="add-compare-btn text-center border border-border hover:bg-surface text-sm py-2 px-4 rounded-lg transition-colors"
+                data-compare-slug={bank.slug}
+                data-compare-name={bank.name}
+                data-compare-category="banks"
+              >+ Compare</button>
             </div>
           </div>
         </div>
@@ -83,6 +88,18 @@ const description = "Compare the best banks of 2026 side by side. See APY rates,
 </BaseLayout>
 
 <script>
+  // Add-to-compare buttons
+  document.querySelectorAll('.add-compare-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const el = btn as HTMLElement;
+      const added = el.classList.toggle('compare-added');
+      el.textContent = added ? '✓ Added' : '+ Compare';
+      document.dispatchEvent(new CustomEvent('greesi:compare-add', {
+        detail: { slug: el.dataset.compareSlug, name: el.dataset.compareName, category: el.dataset.compareCategory }
+      }));
+    });
+  });
+
   const list = document.getElementById('sort-list');
   const items = () => Array.from(list?.querySelectorAll('.sort-item') ?? []) as HTMLElement[];
 

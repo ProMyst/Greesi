@@ -1,0 +1,664 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = "Points Transfer Calculator — See What Your Points Are Worth | Greesi";
+const description = "Enter your points balance and see exactly how much each transfer partner is worth. Compare airline and hotel transfer values for Chase, Amex, and Capital One.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Points Transfer Calculator",
+  "description": description,
+  "applicationCategory": "FinanceApplication",
+  "offers": { "@type": "Offer", "price": "0" }
+};
+
+const programs = [
+  {
+    id: 'chase-ur',
+    name: 'Chase Ultimate Rewards',
+    color: '#1a6fe3',
+    cards: ['Sapphire Preferred', 'Sapphire Reserve', 'Freedom Flex'],
+    baseValue: 1.0,
+    portalValue: 1.25,
+    partners: [
+      { name: 'United Airlines', ratio: '1:1', value: 1.2, category: 'airline' },
+      { name: 'Southwest Airlines', ratio: '1:1', value: 1.5, category: 'airline' },
+      { name: 'British Airways', ratio: '1:1', value: 1.8, category: 'airline' },
+      { name: 'Air France/KLM', ratio: '1:1', value: 1.5, category: 'airline' },
+      { name: 'Hyatt', ratio: '1:1', value: 2.1, category: 'hotel' },
+      { name: 'IHG', ratio: '1:1', value: 0.8, category: 'hotel' },
+      { name: 'Marriott Bonvoy', ratio: '1:1', value: 0.7, category: 'hotel' },
+    ],
+  },
+  {
+    id: 'amex-mr',
+    name: 'Amex Membership Rewards',
+    color: '#007bc1',
+    cards: ['Gold Card', 'Platinum Card', 'Green Card'],
+    baseValue: 0.8,
+    portalValue: 1.0,
+    partners: [
+      { name: 'Delta SkyMiles', ratio: '1:1', value: 1.1, category: 'airline' },
+      { name: 'British Airways', ratio: '1:1', value: 1.8, category: 'airline' },
+      { name: 'Air France/KLM', ratio: '1:1', value: 1.5, category: 'airline' },
+      { name: 'Singapore Airlines', ratio: '1:1', value: 2.1, category: 'airline' },
+      { name: 'Hilton Honors', ratio: '1:2', value: 0.5, category: 'hotel' },
+      { name: 'Marriott Bonvoy', ratio: '1:1', value: 0.7, category: 'hotel' },
+    ],
+  },
+  {
+    id: 'capital-one',
+    name: 'Capital One Miles',
+    color: '#d03027',
+    cards: ['Venture X', 'Venture', 'VentureOne'],
+    baseValue: 1.0,
+    portalValue: 1.0,
+    partners: [
+      { name: 'Air Canada Aeroplan', ratio: '1:1', value: 1.7, category: 'airline' },
+      { name: 'Turkish Airlines', ratio: '1:1', value: 1.8, category: 'airline' },
+      { name: 'British Airways', ratio: '1:1', value: 1.8, category: 'airline' },
+      { name: 'Avianca LifeMiles', ratio: '1:1', value: 1.6, category: 'airline' },
+      { name: 'Wyndham Rewards', ratio: '1:1', value: 1.0, category: 'hotel' },
+    ],
+  },
+];
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+
+  <!-- Hero -->
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <p class="section-eyebrow">Free Calculator</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">Points Transfer Calculator</h1>
+      <p class="text-white/65 text-lg max-w-2xl mx-auto">Select your points program, enter your balance, and instantly see what every transfer partner is worth.</p>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-4 py-12">
+
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-text-muted mb-8">
+      <a href="/" class="hover:text-accent transition-colors">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/finance" class="hover:text-accent transition-colors">Finance</a>
+      <span class="mx-2">/</span>
+      <a href="/finance/calculators/compound-interest" class="hover:text-accent transition-colors">Calculators</a>
+      <span class="mx-2">/</span>
+      <span>Points Transfer</span>
+    </nav>
+
+    <!-- Step 1: Program Selector -->
+    <section class="step-section">
+      <div class="step-label">
+        <span class="step-num">1</span>
+        <span class="step-title">Select your points program</span>
+      </div>
+      <div class="program-selector" id="program-selector">
+        {programs.map((prog, i) => (
+          <button
+            class={`prog-btn ${i === 0 ? 'prog-btn--active' : ''}`}
+            data-prog-id={prog.id}
+            style={`--prog-color: ${prog.color}`}
+          >
+            <span class="prog-btn-name">{prog.name}</span>
+            <span class="prog-btn-cards">{prog.cards.join(', ')}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- Step 2: Points Balance -->
+    <section class="step-section">
+      <div class="step-label">
+        <span class="step-num">2</span>
+        <span class="step-title">Enter your points balance</span>
+      </div>
+      <div class="balance-input-wrap">
+        <input
+          id="points-balance"
+          type="number"
+          min="0"
+          step="1000"
+          value="50000"
+          class="balance-input"
+          placeholder="e.g. 50000"
+        />
+        <span class="balance-unit">points</span>
+      </div>
+      <p class="balance-hint">Tip: Check your balance in your card issuer's app or online portal.</p>
+    </section>
+
+    <!-- Step 3: Results -->
+    <section class="step-section">
+      <div class="step-label">
+        <span class="step-num">3</span>
+        <span class="step-title">Your value breakdown</span>
+      </div>
+
+      <!-- Summary bar -->
+      <div class="summary-bar" id="summary-bar">
+        <div class="summary-item">
+          <span class="summary-label">Points Balance</span>
+          <span class="summary-val" id="sum-balance">50,000</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-label">Best Value (Transfer)</span>
+          <span class="summary-val summary-val--best" id="sum-best">$1,050</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-label">Cash Value</span>
+          <span class="summary-val" id="sum-cash">$500</span>
+        </div>
+        <div class="summary-divider"></div>
+        <div class="summary-item">
+          <span class="summary-label">Portal Value</span>
+          <span class="summary-val" id="sum-portal">$625</span>
+        </div>
+      </div>
+
+      <!-- Results Table -->
+      <div class="results-table-wrap">
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th class="col-partner">Transfer Partner</th>
+              <th class="col-type">Type</th>
+              <th class="col-ratio">Ratio</th>
+              <th class="col-cpp">Value/Point</th>
+              <th class="col-total">Total Value</th>
+            </tr>
+          </thead>
+          <tbody id="results-tbody">
+            <!-- populated by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <p class="disclaimer">
+        Point values are estimates based on average real-world redemptions. Actual value depends on availability, routing, and class of service. Transfer partner ratios and availability subject to change. Transfers are typically irreversible — verify partner terms before transferring.
+      </p>
+    </section>
+
+    <!-- How to Use section -->
+    <section class="how-to-section">
+      <h2 class="how-to-title">How to Use This Calculator</h2>
+      <ol class="how-to-list">
+        <li><strong>Pick your program</strong> — Select the bank that issued your points-earning card.</li>
+        <li><strong>Enter your balance</strong> — Check your current points balance in your card issuer's app.</li>
+        <li><strong>Compare partners</strong> — Look for the highest total value row (highlighted in green). That's where your points go furthest.</li>
+        <li><strong>Research before you transfer</strong> — Confirm award availability with the partner before initiating a transfer, since most are instant but irreversible.</li>
+      </ol>
+    </section>
+
+    <!-- Related links -->
+    <section class="related-section">
+      <div class="related-links">
+        <a href="/finance/points-value" class="rel-link">Points Value Guide</a>
+        <a href="/tools/rewards-optimizer" class="rel-link">Rewards Optimizer</a>
+        <a href="/finance/credit-cards" class="rel-link">Best Credit Cards</a>
+      </div>
+    </section>
+
+  </div>
+
+</BaseLayout>
+
+<script define:vars={{ programs }}>
+  let activeProg = programs[0];
+  let pointsBalance = 50000;
+
+  function fmt(n) {
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+  function fmtPts(n) {
+    return n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  }
+
+  function calcTotal(valuePerPoint) {
+    return (pointsBalance * valuePerPoint) / 100;
+  }
+
+  function updateSummaryBar() {
+    const bestPartner = [...activeProg.partners].sort((a, b) => b.value - a.value)[0];
+    const bestTotal = calcTotal(bestPartner.value);
+    const cashTotal = calcTotal(activeProg.baseValue);
+    const portalTotal = calcTotal(activeProg.portalValue);
+
+    document.getElementById('sum-balance').textContent = fmtPts(pointsBalance);
+    document.getElementById('sum-best').textContent = fmt(bestTotal);
+    document.getElementById('sum-cash').textContent = fmt(cashTotal);
+    document.getElementById('sum-portal').textContent = fmt(portalTotal);
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('results-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    const bestValue = Math.max(...activeProg.partners.map(p => p.value));
+
+    // Cash row
+    const cashRow = document.createElement('tr');
+    cashRow.className = 'special-row';
+    cashRow.innerHTML = `
+      <td class="col-partner"><span class="partner-name">Cash / Statement Credit</span></td>
+      <td class="col-type"><span class="type-tag type-tag--cash">Cash</span></td>
+      <td class="col-ratio"><span class="ratio-badge">—</span></td>
+      <td class="col-cpp"><span class="cpp-val">${activeProg.baseValue}¢</span></td>
+      <td class="col-total"><span class="total-val">${fmt(calcTotal(activeProg.baseValue))}</span></td>
+    `;
+    tbody.appendChild(cashRow);
+
+    // Portal row
+    const portalRow = document.createElement('tr');
+    portalRow.className = 'special-row';
+    portalRow.innerHTML = `
+      <td class="col-partner"><span class="partner-name">Travel Portal</span></td>
+      <td class="col-type"><span class="type-tag type-tag--portal">Portal</span></td>
+      <td class="col-ratio"><span class="ratio-badge">—</span></td>
+      <td class="col-cpp"><span class="cpp-val">${activeProg.portalValue}¢</span></td>
+      <td class="col-total"><span class="total-val">${fmt(calcTotal(activeProg.portalValue))}</span></td>
+    `;
+    tbody.appendChild(portalRow);
+
+    // Divider row
+    const divRow = document.createElement('tr');
+    divRow.innerHTML = `<td colspan="5" class="divider-row-cell"><span class="divider-label">Transfer Partners</span></td>`;
+    tbody.appendChild(divRow);
+
+    // Partner rows sorted by value desc
+    const sorted = [...activeProg.partners].sort((a, b) => b.value - a.value);
+    sorted.forEach(partner => {
+      const isBest = partner.value === bestValue;
+      const total = calcTotal(partner.value);
+      const barWidth = Math.round((partner.value / bestValue) * 100);
+
+      const row = document.createElement('tr');
+      row.className = 'partner-row' + (isBest ? ' partner-row--best' : '');
+      row.innerHTML = `
+        <td class="col-partner">
+          <div class="partner-name-wrap">
+            ${isBest ? '<span class="best-dot" title="Best value"></span>' : '<span class="dot-spacer"></span>'}
+            <span class="partner-name">${partner.name}</span>
+            ${isBest ? '<span class="best-label">Best</span>' : ''}
+          </div>
+        </td>
+        <td class="col-type">
+          <span class="type-tag type-tag--${partner.category}">${partner.category === 'airline' ? 'Airline' : 'Hotel'}</span>
+        </td>
+        <td class="col-ratio"><span class="ratio-badge">${partner.ratio}</span></td>
+        <td class="col-cpp">
+          <div class="cpp-cell">
+            <span class="cpp-val cpp-val--partner">${partner.value}¢</span>
+            <div class="cpp-bar-wrap">
+              <div class="cpp-bar" style="width: ${barWidth}%"></div>
+            </div>
+          </div>
+        </td>
+        <td class="col-total">
+          <span class="total-val ${isBest ? 'total-val--best' : ''}">${fmt(total)}</span>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+
+    updateSummaryBar();
+  }
+
+  function setActiveProgram(progId) {
+    activeProg = programs.find(p => p.id === progId) || programs[0];
+    document.querySelectorAll('.prog-btn').forEach(btn => {
+      btn.classList.toggle('prog-btn--active', btn.dataset.progId === progId);
+    });
+    renderTable();
+  }
+
+  // Program selector
+  document.querySelectorAll('.prog-btn').forEach(btn => {
+    btn.addEventListener('click', () => setActiveProgram(btn.dataset.progId));
+  });
+
+  // Balance input
+  const balInput = document.getElementById('points-balance');
+  if (balInput) {
+    balInput.addEventListener('input', () => {
+      pointsBalance = parseFloat(balInput.value) || 0;
+      renderTable();
+    });
+  }
+
+  renderTable();
+</script>
+
+<style>
+  /* ── Steps ── */
+  .step-section {
+    margin-bottom: 40px;
+  }
+  .step-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: white;
+    font-weight: 800;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-title { font-size: 1.15rem; font-weight: 700; }
+
+  /* ── Program Selector ── */
+  .program-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  @media (min-width: 600px) {
+    .program-selector { flex-direction: row; flex-wrap: wrap; }
+  }
+
+  .prog-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 14px 18px;
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    background: white;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    flex: 1;
+    min-width: 200px;
+  }
+  html[data-theme='dark'] .prog-btn { background: #1a2740; border-color: #2d3f55; }
+  .prog-btn:hover {
+    border-color: var(--prog-color);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .prog-btn--active {
+    border-color: var(--prog-color) !important;
+    background: color-mix(in srgb, var(--prog-color) 6%, white) !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.1) !important;
+  }
+  html[data-theme='dark'] .prog-btn--active {
+    background: color-mix(in srgb, var(--prog-color) 12%, #1a2740) !important;
+  }
+  .prog-btn-name { font-size: 0.9rem; font-weight: 700; color: var(--color-text); }
+  .prog-btn-cards { font-size: 0.72rem; color: var(--color-text-muted); }
+
+  /* ── Balance Input ── */
+  .balance-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .balance-input {
+    max-width: 240px;
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: white;
+    color: var(--color-text);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -moz-appearance: textfield;
+  }
+  .balance-input::-webkit-outer-spin-button,
+  .balance-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .balance-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.15);
+  }
+  html[data-theme='dark'] .balance-input { background: #1a2740; border-color: #2d3f55; color: #f1f5f9; }
+  .balance-unit { font-size: 0.9rem; color: var(--color-text-muted); font-weight: 600; }
+  .balance-hint { font-size: 0.78rem; color: var(--color-text-muted); margin-top: 8px; }
+
+  /* ── Summary Bar ── */
+  .summary-bar {
+    display: flex;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 14px;
+    padding: 20px 24px;
+    gap: 0;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 120px;
+    padding: 0 12px;
+  }
+  .summary-item:first-child { padding-left: 0; }
+  .summary-item:last-child { padding-right: 0; }
+  .summary-divider {
+    width: 1px;
+    background: rgba(255,255,255,0.15);
+    align-self: stretch;
+  }
+  @media (max-width: 500px) {
+    .summary-divider { display: none; }
+    .summary-item { padding: 8px 0; flex-basis: 50%; }
+  }
+  .summary-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.55); font-weight: 600; }
+  .summary-val { font-size: 1.25rem; font-weight: 800; }
+  .summary-val--best { color: #4ade80; }
+
+  /* ── Results Table ── */
+  .results-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    margin-bottom: 20px;
+  }
+  html[data-theme='dark'] .results-table-wrap { border-color: #2d3f55; }
+
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+
+  .results-table thead tr {
+    background: var(--color-surface);
+    border-bottom: 2px solid var(--color-border);
+  }
+  html[data-theme='dark'] .results-table thead tr { background: #0f1e30; border-color: #2d3f55; }
+  .results-table th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+  }
+  .results-table th.col-cpp,
+  .results-table th.col-total { text-align: right; }
+
+  .results-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+  }
+  html[data-theme='dark'] .results-table td { border-color: #2d3f55; }
+  .results-table tr:last-child td { border-bottom: none; }
+
+  .special-row { background: var(--color-surface); }
+  html[data-theme='dark'] .special-row { background: #1a2740; }
+  .special-row .partner-name { color: var(--color-text-muted); font-style: italic; }
+
+  .partner-row { transition: background 0.15s; }
+  html[data-theme='dark'] .partner-row { background: #1a2740; }
+  .partner-row:hover { background: rgba(14,165,233,0.04); }
+  .partner-row--best {
+    background: rgba(16,185,129,0.05) !important;
+  }
+  html[data-theme='dark'] .partner-row--best { background: rgba(16,185,129,0.08) !important; }
+
+  .divider-row-cell {
+    padding: 6px 16px !important;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border) !important;
+  }
+  html[data-theme='dark'] .divider-row-cell { background: #0f1e30; border-color: #2d3f55 !important; }
+  .divider-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+  }
+
+  .partner-name-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .best-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-success);
+    flex-shrink: 0;
+  }
+  .dot-spacer {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+  }
+  .partner-name { font-weight: 600; }
+  .best-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    background: var(--color-success);
+    color: white;
+    padding: 1px 7px;
+    border-radius: 999px;
+  }
+
+  /* Type Tags */
+  .type-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .type-tag--airline { background: rgba(14,165,233,0.1); color: var(--color-accent); }
+  .type-tag--hotel { background: rgba(245,158,11,0.12); color: var(--color-warning); }
+  .type-tag--cash { background: rgba(100,116,139,0.12); color: var(--color-text-muted); }
+  .type-tag--portal { background: rgba(99,102,241,0.1); color: #6366f1; }
+
+  .ratio-badge {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-family: 'Courier New', monospace;
+  }
+
+  /* CPP cell */
+  .col-cpp { text-align: right; }
+  .cpp-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+  .cpp-val { font-weight: 700; }
+  .cpp-val--partner { color: var(--color-accent); }
+  .cpp-bar-wrap {
+    width: 64px;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  html[data-theme='dark'] .cpp-bar-wrap { background: #2d3f55; }
+  .cpp-bar { height: 100%; background: var(--color-accent); border-radius: 999px; }
+
+  /* Total value */
+  .col-total { text-align: right; }
+  .total-val { font-weight: 700; font-size: 0.95rem; }
+  .total-val--best { color: var(--color-success); font-size: 1.05rem; }
+
+  /* ── Disclaimer ── */
+  .disclaimer {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    padding: 12px 16px;
+    background: var(--color-surface);
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    margin-bottom: 0;
+  }
+  html[data-theme='dark'] .disclaimer { background: #1a2740; border-color: #2d3f55; }
+
+  /* ── How To ── */
+  .how-to-section {
+    margin-top: 48px;
+    padding: 28px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    margin-bottom: 24px;
+  }
+  html[data-theme='dark'] .how-to-section { background: #1a2740; border-color: #2d3f55; }
+  .how-to-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; }
+  .how-to-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 0;
+    list-style: none;
+    counter-reset: how-to;
+  }
+  .how-to-list li {
+    font-size: 0.88rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    padding-left: 4px;
+  }
+  .how-to-list li strong { color: var(--color-text); }
+
+  /* ── Related ── */
+  .related-section { margin-top: 8px; }
+  .related-links { display: flex; flex-wrap: wrap; gap: 10px; }
+  .rel-link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-accent);
+    padding: 7px 14px;
+    border: 1px solid rgba(14,165,233,0.3);
+    border-radius: 8px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .rel-link:hover { background: rgba(14,165,233,0.08); border-color: var(--color-accent); }
+</style>

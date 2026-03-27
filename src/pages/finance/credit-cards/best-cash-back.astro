@@ -1,0 +1,199 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import creditCards from '../../../data/finance/credit-cards.json';
+
+const cashBackCards = creditCards
+  .filter(c => c.category === 'Cash Back')
+  .sort((a, b) => b.rating - a.rating);
+
+const title = "Best Cash Back Credit Cards 2026 | Top Picks";
+const description = "The best cash back credit cards put real money in your pocket. Compare flat-rate, rotating category, and hybrid cash back cards for 2026.";
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://greesi.com" },
+    { "@type": "ListItem", "position": 2, "name": "Credit Cards", "item": "https://greesi.com/finance/credit-cards" },
+    { "@type": "ListItem", "position": 3, "name": "Best Cash Back Cards", "item": "https://greesi.com/finance/credit-cards/best-cash-back" },
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} schema={breadcrumbSchema}>
+
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Best-Of 2026</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Best Cash Back Credit Cards</h1>
+      <p class="text-white/65 text-lg max-w-xl mx-auto">Simple, reliable, and honest rewards. These cards put actual money back in your pocket — no points math required.</p>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-4 py-14">
+
+    <!-- At a glance -->
+    <div class="at-a-glance mb-12">
+      <h2 class="text-lg font-bold mb-4">At a Glance: Flat Rate vs Rotating Categories</h2>
+      <div class="glance-grid">
+        <div class="glance-card">
+          <p class="glance-type">📊 Flat Rate</p>
+          <p class="glance-pct">1.5% – 2%</p>
+          <p class="glance-desc">Same rate on everything. Simple, no tracking required. Best if you spend evenly across categories.</p>
+        </div>
+        <div class="glance-card">
+          <p class="glance-type">🔄 Rotating Categories</p>
+          <p class="glance-pct">5% (capped)</p>
+          <p class="glance-desc">High rate in specific categories that change quarterly. Best if you can track and activate bonus categories.</p>
+        </div>
+        <div class="glance-card">
+          <p class="glance-type">🏆 Hybrid</p>
+          <p class="glance-pct">3–5% + base</p>
+          <p class="glance-desc">High rate on specific categories (dining, groceries) + solid base. Best for targeted high spenders.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cards list -->
+    <div class="cb-list">
+      {cashBackCards.map((card, i) => (
+        <div class={`cb-card${i === 0 ? ' cb-card-top' : ''}`}>
+          <div class="cb-rank">{i === 0 ? '🏆' : `#${i + 1}`}</div>
+          <div class="cb-body">
+            <div class="cb-header">
+              <div>
+                <h2 class="cb-name">{card.name}</h2>
+                <span class="cb-meta-line">{card.issuer} · No Annual Fee</span>
+              </div>
+              <RatingBadge rating={card.rating} />
+            </div>
+            <div class="cb-stats">
+              <div class="cb-stat">
+                <span class="cb-stat-label">Sign-Up Bonus</span>
+                <span class="cb-stat-val bonus-accent">{card.signupBonus}</span>
+              </div>
+              <div class="cb-stat">
+                <span class="cb-stat-label">Annual Fee</span>
+                <span class="cb-stat-val">{card.annualFee}</span>
+              </div>
+              <div class="cb-stat">
+                <span class="cb-stat-label">Foreign Fee</span>
+                <span class={`cb-stat-val ${card.foreignTransactionFee === 'None' ? 'val-good' : ''}`}>{card.foreignTransactionFee}</span>
+              </div>
+            </div>
+            <p class="cb-rewards">{card.rewardsRate}</p>
+            <p class="cb-best">Best for: <strong>{card.bestFor}</strong></p>
+          </div>
+          <div class="cb-actions">
+            <a href={`/finance/review/${card.slug}`} class="cb-review-btn">Full Review</a>
+            <a href={card.affiliateUrl} class="cb-apply-btn" target="_blank" rel="noopener sponsored">Apply Now →</a>
+            <p class="cb-aff-note">Affiliate link</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Math breakdown -->
+    <section class="math-section mt-14">
+      <h2 class="text-xl font-bold mb-4">What Cash Back Actually Adds Up To</h2>
+      <p class="text-text-muted text-sm mb-6">Based on $2,000/month total spend ($600 groceries, $400 dining, $400 gas, $600 other).</p>
+      <div class="math-table-wrap">
+        <table class="math-table">
+          <thead>
+            <tr>
+              <th>Card</th>
+              <th>Annual Fee</th>
+              <th>Est. Annual Cash Back</th>
+              <th>Net Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="math-row-top"><td>Citi Double Cash</td><td>$0</td><td>$480</td><td class="val-good font-bold">$480</td></tr>
+            <tr><td>Chase Freedom Unlimited</td><td>$0</td><td>$444</td><td class="val-good font-bold">$444</td></tr>
+            <tr><td>Discover it Cash Back</td><td>$0</td><td>$420 (yr 1: $840)</td><td class="val-good font-bold">$420+</td></tr>
+            <tr><td>Wells Fargo Active Cash</td><td>$0</td><td>$480</td><td class="val-good font-bold">$480</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold mb-6">Frequently Asked Questions</h2>
+      {[
+        ["Is 2% cash back good?", "Yes — 2% flat on everything is excellent for a no-fee card. Over a year at $2,000/month spending, that's $480 back in your pocket with zero effort."],
+        ["Can you have multiple cash back cards?", "Absolutely. Many savvy users pair a flat-rate card (2% on everything) with a category card (5% on groceries or gas) to maximize every dollar."],
+        ["Do cash back rewards expire?", "With most major issuers, cash back doesn't expire as long as your account is open and in good standing. Always check your specific card terms."],
+        ["Is cash back or travel rewards better?", "Cash back is simpler and always worth exactly what it says. Travel rewards can be worth more — but require planning and flexibility. If you travel 3+ times per year, travel cards often win."],
+        ["What credit score do I need?", "Most cash back cards on this list require good to excellent credit (670+). The Discover it is slightly more accessible for those building credit."],
+      ].map(([q, a]) => (
+        <details class="faq-simple">
+          <summary class="faq-q-s">{q}</summary>
+          <p class="faq-a-s">{a}</p>
+        </details>
+      ))}
+    </section>
+
+    <div class="bottom-cta-bar mt-14">
+      <div>
+        <p class="font-bold text-lg">Not sure which card fits you?</p>
+        <p class="text-text-muted text-sm">Take our 5-question quiz for a personalized recommendation.</p>
+      </div>
+      <div class="flex gap-3 flex-wrap">
+        <a href="/finance/quiz/credit-card" class="btn-primary">Take the Quiz</a>
+        <a href="/tools/rewards-optimizer" class="btn-outline">Rewards Optimizer</a>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .at-a-glance { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 24px; }
+  .glance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 12px; }
+  .glance-card { background: var(--color-bg); border: 1px solid var(--color-border); border-radius: 12px; padding: 16px; }
+  .glance-type { font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted); margin-bottom: 4px; }
+  .glance-pct { font-size: 1.5rem; font-weight: 800; color: var(--color-accent); margin-bottom: 6px; }
+  .glance-desc { font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.5; }
+
+  .cb-list { display: flex; flex-direction: column; gap: 14px; }
+  .cb-card { display: flex; gap: 16px; align-items: flex-start; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 22px; flex-wrap: wrap; }
+  .cb-card-top { border-color: var(--color-accent); box-shadow: 0 0 0 1px var(--color-accent); }
+  .cb-rank { font-size: 1.4rem; font-weight: 800; min-width: 36px; text-align: center; }
+  .cb-body { flex: 1; min-width: 240px; }
+  .cb-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .cb-name { font-size: 1.1rem; font-weight: 700; color: var(--color-text); }
+  .cb-meta-line { font-size: 0.75rem; color: var(--color-text-muted); }
+  .cb-stats { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+  .cb-stat { display: flex; flex-direction: column; gap: 2px; }
+  .cb-stat-label { font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-text-muted); font-weight: 600; }
+  .cb-stat-val { font-size: 0.85rem; font-weight: 700; color: var(--color-text); }
+  .bonus-accent { color: var(--color-accent); }
+  .val-good { color: #10b981; }
+  .cb-rewards { font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 6px; }
+  .cb-best { font-size: 0.8rem; color: var(--color-text-muted); }
+  .cb-actions { display: flex; flex-direction: column; gap: 8px; align-items: center; flex-shrink: 0; }
+  .cb-review-btn { display: block; text-align: center; padding: 8px 16px; border: 1px solid var(--color-border); border-radius: 9px; font-size: 0.78rem; font-weight: 600; color: var(--color-text); text-decoration: none; white-space: nowrap; }
+  .cb-apply-btn { display: block; background: var(--color-accent); color: white; font-weight: 700; font-size: 0.875rem; padding: 10px 18px; border-radius: 9px; text-decoration: none; white-space: nowrap; transition: background 0.2s; }
+  .cb-apply-btn:hover { background: #0284c7; }
+  .cb-aff-note { font-size: 0.63rem; color: var(--color-text-muted); }
+
+  .math-section { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 24px; }
+  .math-table-wrap { overflow-x: auto; }
+  .math-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  .math-table th { text-align: left; padding: 10px 14px; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-text-muted); border-bottom: 1px solid var(--color-border); }
+  .math-table td { padding: 12px 14px; border-bottom: 1px solid var(--color-border); color: var(--color-text); }
+  .math-row-top td { background: rgba(14,165,233,0.04); }
+
+  .faq-simple { border: 1px solid var(--color-border); border-radius: 12px; margin-bottom: 8px; }
+  .faq-q-s { padding: 15px 20px; font-weight: 600; font-size: 0.875rem; cursor: pointer; list-style: none; color: var(--color-text); }
+  .faq-q-s::-webkit-details-marker { display: none; }
+  .faq-q-s::before { content: '+'; margin-right: 10px; color: var(--color-accent); font-weight: 700; }
+  details[open] .faq-q-s::before { content: '−'; }
+  .faq-a-s { padding: 0 20px 14px 36px; font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.7; }
+
+  .bottom-cta-bar { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .btn-outline { border: 1px solid var(--color-border); padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 0.875rem; text-decoration: none; color: var(--color-text); transition: background 0.15s; }
+  .btn-outline:hover { background: rgba(0,0,0,0.04); }
+</style>

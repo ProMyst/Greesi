@@ -1,0 +1,509 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+
+const title = "50/30/20 Budget Calculator 2026 — Free Budgeting Tool";
+const description = "The simple 50/30/20 budgeting rule used by millions. Enter your income and see exactly where your money should go — with subcategory breakdowns and savings projections.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "50/30/20 Budget Calculator",
+  "description": description,
+  "applicationCategory": "FinanceApplication",
+  "offers": { "@type": "Offer", "price": "0" }
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="section-container text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Free Calculator</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">50/30/20 Budget Calculator</h1>
+      <p class="text-white/70 text-lg max-w-2xl mx-auto">The simple budgeting rule used by millions. Enter your income and see exactly where your money should go.</p>
+    </div>
+  </section>
+
+  <div class="section-container py-10">
+
+    <nav class="text-sm text-text-muted mb-8">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/finance" class="hover:text-accent">Finance</a>
+      <span class="mx-2">/</span>
+      <a href="/finance/calculators" class="hover:text-accent">Calculators</a>
+      <span class="mx-2">/</span>
+      <span>50/30/20 Budget</span>
+    </nav>
+
+    <!-- Income Input -->
+    <div class="bg-surface rounded-xl border border-border p-6 mb-6">
+      <h2 class="text-xl font-bold mb-4">Your Income</h2>
+      <div class="flex flex-wrap gap-4 items-end">
+        <div class="flex-1 min-w-[200px]">
+          <label class="block text-sm font-medium mb-1" for="incomeAmount">Income Amount</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted font-medium">$</span>
+            <input id="incomeAmount" type="number" value="5000" min="0" step="100"
+              class="w-full pl-8 pr-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Period</label>
+          <div class="flex rounded-lg border border-border overflow-hidden">
+            <button id="toggleMonthly" class="px-4 py-2.5 text-sm font-semibold bg-primary text-white transition-colors">Monthly</button>
+            <button id="toggleAnnual" class="px-4 py-2.5 text-sm font-semibold bg-surface text-text-muted hover:bg-surface-alt transition-colors">Annual</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Allocation Sliders -->
+    <div class="bg-surface rounded-xl border border-border p-6 mb-8">
+      <h2 class="text-xl font-bold mb-2">Adjust Allocations</h2>
+      <p class="text-text-muted text-sm mb-5">Percentages must add up to 100%. Defaults are 50/30/20 but you can customize.</p>
+      <div class="space-y-5">
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="font-semibold text-sm flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-primary inline-block"></span>
+              Needs / Essentials
+            </label>
+            <div class="flex items-center gap-1">
+              <input id="needsPct" type="number" value="50" min="0" max="100"
+                class="w-16 text-center border border-border rounded-lg py-1 text-sm font-bold focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white" />
+              <span class="text-sm text-text-muted">%</span>
+            </div>
+          </div>
+          <input id="needsSlider" type="range" min="0" max="100" value="50" class="w-full accent-primary h-2 rounded-full cursor-pointer" />
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="font-semibold text-sm flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-accent inline-block"></span>
+              Wants / Lifestyle
+            </label>
+            <div class="flex items-center gap-1">
+              <input id="wantsPct" type="number" value="30" min="0" max="100"
+                class="w-16 text-center border border-border rounded-lg py-1 text-sm font-bold focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white" />
+              <span class="text-sm text-text-muted">%</span>
+            </div>
+          </div>
+          <input id="wantsSlider" type="range" min="0" max="100" value="30" class="w-full accent-sky-500 h-2 rounded-full cursor-pointer" />
+        </div>
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="font-semibold text-sm flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-success inline-block"></span>
+              Savings / Debt
+            </label>
+            <div class="flex items-center gap-1">
+              <input id="savingsPct" type="number" value="20" min="0" max="100"
+                class="w-16 text-center border border-border rounded-lg py-1 text-sm font-bold focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white" />
+              <span class="text-sm text-text-muted">%</span>
+            </div>
+          </div>
+          <input id="savingsSlider" type="range" min="0" max="100" value="20" class="w-full accent-emerald-500 h-2 rounded-full cursor-pointer" />
+        </div>
+        <div id="pctWarning" class="hidden text-sm font-semibold text-danger bg-danger/10 px-4 py-2 rounded-lg">
+          Percentages don't add up to 100% — please adjust.
+        </div>
+        <div id="pctOk" class="text-sm font-semibold text-success bg-success/10 px-4 py-2 rounded-lg">
+          Allocations add up to 100% ✓
+        </div>
+      </div>
+    </div>
+
+    <AdSlot format="horizontal" slot="mid-budget-calc" />
+
+    <!-- Donut + Results -->
+    <div class="grid md:grid-cols-2 gap-8 mb-10">
+
+      <!-- SVG Donut -->
+      <div class="flex flex-col items-center justify-center bg-surface rounded-xl border border-border p-6">
+        <h3 class="text-lg font-bold mb-4">Your Budget Breakdown</h3>
+        <div class="relative">
+          <svg id="donutChart" viewBox="0 0 200 200" class="w-52 h-52 -rotate-90">
+            <circle id="donutNeeds"   cx="100" cy="100" r="70" fill="none" stroke="#1e3a5f" stroke-width="28" stroke-dasharray="439.82 439.82" stroke-dashoffset="0" class="transition-all duration-700 ease-out" />
+            <circle id="donutWants"   cx="100" cy="100" r="70" fill="none" stroke="#0ea5e9" stroke-width="28" stroke-dasharray="439.82 439.82" stroke-dashoffset="0" class="transition-all duration-700 ease-out" />
+            <circle id="donutSavings" cx="100" cy="100" r="70" fill="none" stroke="#10b981" stroke-width="28" stroke-dasharray="439.82 439.82" stroke-dashoffset="0" class="transition-all duration-700 ease-out" />
+          </svg>
+          <div class="absolute inset-0 flex flex-col items-center justify-center rotate-0">
+            <p class="text-xs text-text-muted uppercase tracking-wide">Monthly</p>
+            <p id="donutCenter" class="text-2xl font-bold">$5,000</p>
+          </div>
+        </div>
+        <div class="flex gap-6 mt-4 text-sm">
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-primary inline-block"></span> Needs</div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-accent inline-block"></span> Wants</div>
+          <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-sm bg-success inline-block"></span> Savings</div>
+        </div>
+      </div>
+
+      <!-- Summary Numbers -->
+      <div class="space-y-4">
+        <div class="bg-primary text-white rounded-xl p-5">
+          <p class="text-xs uppercase tracking-wide text-white/60 mb-1">Monthly Budget</p>
+          <p id="summaryMonthly" class="text-3xl font-bold">$5,000</p>
+          <p id="summaryAnnual" class="text-sm text-white/65 mt-1">$60,000 / year</p>
+        </div>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="bg-surface border border-border rounded-xl p-4 text-center">
+            <p class="text-xs text-text-muted mb-1">Needs</p>
+            <p id="needsAmt" class="text-xl font-bold text-primary">$2,500</p>
+            <p id="needsPctDisplay" class="text-xs text-text-muted">50%</p>
+          </div>
+          <div class="bg-surface border border-border rounded-xl p-4 text-center">
+            <p class="text-xs text-text-muted mb-1">Wants</p>
+            <p id="wantsAmt" class="text-xl font-bold text-accent">$1,500</p>
+            <p id="wantsPctDisplay" class="text-xs text-text-muted">30%</p>
+          </div>
+          <div class="bg-surface border border-border rounded-xl p-4 text-center">
+            <p class="text-xs text-text-muted mb-1">Savings</p>
+            <p id="savingsAmt" class="text-xl font-bold text-success">$1,000</p>
+            <p id="savingsPctDisplay" class="text-xs text-text-muted">20%</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Breakdowns -->
+    <div class="grid md:grid-cols-3 gap-6 mb-10">
+
+      <!-- Needs -->
+      <div class="bg-surface rounded-xl border border-border overflow-hidden">
+        <div class="bg-primary text-white px-5 py-4">
+          <h3 class="font-bold">Needs / Essentials</h3>
+          <p id="needsHeader" class="text-2xl font-bold mt-1">$2,500</p>
+          <p class="text-white/60 text-xs mt-0.5">per month</p>
+        </div>
+        <div class="p-5 space-y-3 text-sm">
+          <div class="flex justify-between"><span class="text-text-muted">Housing (rent/mortgage)</span><span id="n-housing" class="font-semibold">$1,125</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Food & Groceries</span><span id="n-food" class="font-semibold">$375</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Transportation</span><span id="n-transport" class="font-semibold">$375</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Utilities</span><span id="n-utilities" class="font-semibold">$250</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Health Insurance</span><span id="n-insurance" class="font-semibold">$250</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Minimum Debt Payments</span><span id="n-debt" class="font-semibold">$125</span></div>
+        </div>
+        <div class="px-5 pb-5">
+          <div class="text-xs text-text-muted bg-surface-alt rounded-lg p-3 border border-border">Guideline: housing should stay under 30% of gross income. If you're over, consider roommates, refinancing, or relocating.</div>
+        </div>
+      </div>
+
+      <!-- Wants -->
+      <div class="bg-surface rounded-xl border border-border overflow-hidden">
+        <div class="bg-accent text-white px-5 py-4">
+          <h3 class="font-bold">Wants / Lifestyle</h3>
+          <p id="wantsHeader" class="text-2xl font-bold mt-1">$1,500</p>
+          <p class="text-white/80 text-xs mt-0.5">per month</p>
+        </div>
+        <div class="p-5 space-y-3 text-sm">
+          <div class="flex justify-between"><span class="text-text-muted">Dining Out</span><span id="w-dining" class="font-semibold">$300</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Entertainment</span><span id="w-entertainment" class="font-semibold">$225</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Subscriptions</span><span id="w-subs" class="font-semibold">$150</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Shopping / Clothing</span><span id="w-shopping" class="font-semibold">$525</span></div>
+          <div class="flex justify-between"><span class="text-text-muted">Hobbies & Fitness</span><span id="w-hobbies" class="font-semibold">$300</span></div>
+        </div>
+        <div class="px-5 pb-5">
+          <div class="text-xs text-text-muted bg-surface-alt rounded-lg p-3 border border-border">Wants are flexible — this is where most budgets overrun. Tracking subscriptions alone often reveals $50–200/mo in forgotten charges.</div>
+        </div>
+      </div>
+
+      <!-- Savings -->
+      <div class="bg-surface rounded-xl border border-border overflow-hidden">
+        <div style="background: #10b981;" class="text-white px-5 py-4">
+          <h3 class="font-bold">Savings / Debt</h3>
+          <p id="savingsHeader" class="text-2xl font-bold mt-1">$1,000</p>
+          <p class="text-white/80 text-xs mt-0.5">per month</p>
+        </div>
+        <div class="p-5 space-y-3 text-sm">
+          <div class="flex justify-between items-start gap-2">
+            <span class="text-text-muted">Emergency Fund</span>
+            <span id="s-emergency" class="font-semibold text-right">$200</span>
+          </div>
+          <div class="flex justify-between items-start gap-2">
+            <span class="text-text-muted">Retirement (401k/IRA)</span>
+            <span id="s-retirement" class="font-semibold text-right">$400</span>
+          </div>
+          <div class="flex justify-between items-start gap-2">
+            <span class="text-text-muted">Extra Debt Payoff</span>
+            <span id="s-debt" class="font-semibold text-right">$200</span>
+          </div>
+          <div class="flex justify-between items-start gap-2">
+            <span class="text-text-muted">Investments / Brokerage</span>
+            <span id="s-invest" class="font-semibold text-right">$200</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-border">
+            <p id="rothNote" class="text-xs text-text-muted bg-success/5 rounded-lg p-2 border border-success/20"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <AdSlot format="horizontal" slot="mid-budget-2" />
+
+    <!-- Growth Projections -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-2">Are You Saving Enough?</h2>
+      <p class="text-text-muted mb-6">If you invested your savings allocation at a 7% average annual return (historical S&amp;P 500 average after inflation), here's what you'd have:</p>
+      <div class="grid sm:grid-cols-3 gap-5">
+        <div class="bg-surface rounded-xl border border-border p-5 text-center">
+          <p class="text-text-muted text-sm mb-1">In 10 Years</p>
+          <p id="proj10" class="text-3xl font-bold text-success">$173,843</p>
+          <p class="text-xs text-text-muted mt-1">at 7% annual return</p>
+        </div>
+        <div class="bg-surface rounded-xl border border-border p-5 text-center">
+          <p class="text-text-muted text-sm mb-1">In 20 Years</p>
+          <p id="proj20" class="text-3xl font-bold text-success">$520,926</p>
+          <p class="text-xs text-text-muted mt-1">at 7% annual return</p>
+        </div>
+        <div class="bg-surface rounded-xl border border-border p-5 text-center">
+          <p class="text-text-muted text-sm mb-1">In 30 Years</p>
+          <p id="proj30" class="text-3xl font-bold text-success">$1,213,186</p>
+          <p class="text-xs text-text-muted mt-1">at 7% annual return</p>
+        </div>
+      </div>
+      <p class="text-xs text-text-muted mt-3">*Projections assume consistent monthly investment. Not financial advice. Past returns do not guarantee future results.</p>
+    </section>
+
+    <!-- Tips -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-6">Actionable Tips for Each Category</h2>
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <div class="bg-surface rounded-xl border border-border p-5">
+          <h3 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-sm font-bold">N</span>
+            5 Tips for Needs
+          </h3>
+          <ol class="space-y-2 text-sm text-text-muted list-decimal list-inside">
+            <li>Shop your auto insurance annually — rates vary 20–40% between providers.</li>
+            <li>Refinance your mortgage if rates are 0.75%+ below your current rate.</li>
+            <li>Meal plan weekly to cut grocery waste (avg. American wastes ~30% of food).</li>
+            <li>Use a high-deductible health plan + HSA if you're generally healthy.</li>
+            <li>Bundle internet, phone, and streaming for package discounts.</li>
+          </ol>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-5">
+          <h3 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-accent/10 text-accent flex items-center justify-center text-sm font-bold">W</span>
+            5 Tips for Wants
+          </h3>
+          <ol class="space-y-2 text-sm text-text-muted list-decimal list-inside">
+            <li>Do a monthly subscription audit — cancel anything unused for 30+ days.</li>
+            <li>Use cash-back credit cards (and pay them off monthly) for all wants spending.</li>
+            <li>Apply a 48-hour rule before any non-essential purchase over $50.</li>
+            <li>Cook at home 4–5 nights/week and save dining out for experiences.</li>
+            <li>Use library cards for books, audiobooks (Libby), and even museum passes.</li>
+          </ol>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-5">
+          <h3 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-7 h-7 rounded-lg bg-success/10 text-success flex items-center justify-center text-sm font-bold">S</span>
+            5 Tips for Savings
+          </h3>
+          <ol class="space-y-2 text-sm text-text-muted list-decimal list-inside">
+            <li>Automate transfers to savings on payday — what you don't see, you don't spend.</li>
+            <li>Max your employer 401k match first — it's an instant 50–100% return.</li>
+            <li>Open a Roth IRA for tax-free growth (2026 limit: $7,000/year).</li>
+            <li>Keep 3–6 months of expenses in a high-yield savings account (HYSA).</li>
+            <li>Invest extra savings in low-cost index funds (e.g., VTI, VXUS) rather than letting cash sit.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-border pt-8">
+      <h3 class="text-lg font-semibold mb-4">Related Tools</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="/finance/calculators/compound-interest" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Compound Interest Calculator</a>
+        <a href="/finance/calculators/debt-payoff" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Debt Payoff Calculator</a>
+        <a href="/finance/banking" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Best High-Yield Savings Accounts</a>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // ─── State ────────────────────────────────────────────────────────────────
+    let isAnnual = false;
+    let needsPct = 50, wantsPct = 30, savingsPct = 20;
+
+    function getMonthlyIncome(): number {
+      const raw = parseFloat((document.getElementById('incomeAmount') as HTMLInputElement).value) || 0;
+      return isAnnual ? raw / 12 : raw;
+    }
+
+    function fmt(n: number): string {
+      return '$' + Math.round(n).toLocaleString('en-US');
+    }
+
+    // ─── Donut chart ──────────────────────────────────────────────────────────
+    const CIRCUMFERENCE = 2 * Math.PI * 70; // ≈ 439.82
+
+    function updateDonut(nPct: number, wPct: number, sPct: number) {
+      const needsLen  = (nPct / 100) * CIRCUMFERENCE;
+      const wantsLen  = (wPct / 100) * CIRCUMFERENCE;
+      const savingsLen = (sPct / 100) * CIRCUMFERENCE;
+
+      // Needs starts at 0 (top after -rotate-90)
+      const needsEl   = document.getElementById('donutNeeds')!;
+      const wantsEl   = document.getElementById('donutWants')!;
+      const savingsEl = document.getElementById('donutSavings')!;
+
+      needsEl.setAttribute('stroke-dasharray', `${needsLen} ${CIRCUMFERENCE}`);
+      needsEl.setAttribute('stroke-dashoffset', '0');
+
+      wantsEl.setAttribute('stroke-dasharray', `${wantsLen} ${CIRCUMFERENCE}`);
+      wantsEl.setAttribute('stroke-dashoffset', `${-needsLen}`);
+
+      savingsEl.setAttribute('stroke-dasharray', `${savingsLen} ${CIRCUMFERENCE}`);
+      savingsEl.setAttribute('stroke-dashoffset', `${-(needsLen + wantsLen)}`);
+    }
+
+    // ─── Main update ──────────────────────────────────────────────────────────
+    function update() {
+      const monthly = getMonthlyIncome();
+      const annual  = monthly * 12;
+
+      const needsAmt   = monthly * needsPct / 100;
+      const wantsAmt   = monthly * wantsPct / 100;
+      const savingsAmt = monthly * savingsPct / 100;
+
+      const total = needsPct + wantsPct + savingsPct;
+      const warning = document.getElementById('pctWarning')!;
+      const ok = document.getElementById('pctOk')!;
+      if (total !== 100) {
+        warning.classList.remove('hidden');
+        ok.classList.add('hidden');
+      } else {
+        warning.classList.add('hidden');
+        ok.classList.remove('hidden');
+      }
+
+      // Summary
+      (document.getElementById('summaryMonthly')!).textContent = fmt(monthly);
+      (document.getElementById('summaryAnnual')!).textContent = `${fmt(annual)} / year`;
+      (document.getElementById('donutCenter')!).textContent = fmt(monthly);
+
+      // Category amounts
+      (document.getElementById('needsAmt')!).textContent = fmt(needsAmt);
+      (document.getElementById('wantsAmt')!).textContent = fmt(wantsAmt);
+      (document.getElementById('savingsAmt')!).textContent = fmt(savingsAmt);
+      (document.getElementById('needsPctDisplay')!).textContent = `${needsPct}%`;
+      (document.getElementById('wantsPctDisplay')!).textContent = `${wantsPct}%`;
+      (document.getElementById('savingsPctDisplay')!).textContent = `${savingsPct}%`;
+
+      // Category headers
+      (document.getElementById('needsHeader')!).textContent = fmt(needsAmt);
+      (document.getElementById('wantsHeader')!).textContent = fmt(wantsAmt);
+      (document.getElementById('savingsHeader')!).textContent = fmt(savingsAmt);
+
+      // Needs subcategories (% of needsAmt)
+      (document.getElementById('n-housing')!).textContent   = fmt(needsAmt * 0.45);
+      (document.getElementById('n-food')!).textContent      = fmt(needsAmt * 0.15);
+      (document.getElementById('n-transport')!).textContent = fmt(needsAmt * 0.15);
+      (document.getElementById('n-utilities')!).textContent = fmt(needsAmt * 0.10);
+      (document.getElementById('n-insurance')!).textContent = fmt(needsAmt * 0.10);
+      (document.getElementById('n-debt')!).textContent      = fmt(needsAmt * 0.05);
+
+      // Wants subcategories
+      (document.getElementById('w-dining')!).textContent        = fmt(wantsAmt * 0.20);
+      (document.getElementById('w-entertainment')!).textContent = fmt(wantsAmt * 0.15);
+      (document.getElementById('w-subs')!).textContent          = fmt(wantsAmt * 0.10);
+      (document.getElementById('w-shopping')!).textContent      = fmt(wantsAmt * 0.35);
+      (document.getElementById('w-hobbies')!).textContent       = fmt(wantsAmt * 0.20);
+
+      // Savings subcategories
+      (document.getElementById('s-emergency')!).textContent  = fmt(savingsAmt * 0.20);
+      (document.getElementById('s-retirement')!).textContent = fmt(savingsAmt * 0.40);
+      (document.getElementById('s-debt')!).textContent       = fmt(savingsAmt * 0.20);
+      (document.getElementById('s-invest')!).textContent     = fmt(savingsAmt * 0.20);
+
+      // Roth IRA note
+      const rothMonthly = 7000 / 12;
+      const rothNote = document.getElementById('rothNote')!;
+      if (savingsAmt >= rothMonthly) {
+        rothNote.textContent = `Max your Roth IRA: ${fmt(rothMonthly)}/mo covers the $7,000 annual limit.`;
+      } else {
+        rothNote.textContent = `You'd need ${fmt(rothMonthly)}/mo to max your Roth IRA ($7,000/yr limit).`;
+      }
+
+      // Growth projections (FV of annuity at 7% annual)
+      function fvAnnuity(pmt: number, years: number): number {
+        const r = 0.07 / 12;
+        const n = years * 12;
+        return pmt * ((Math.pow(1 + r, n) - 1) / r);
+      }
+      (document.getElementById('proj10')!).textContent = fmt(fvAnnuity(savingsAmt, 10));
+      (document.getElementById('proj20')!).textContent = fmt(fvAnnuity(savingsAmt, 20));
+      (document.getElementById('proj30')!).textContent = fmt(fvAnnuity(savingsAmt, 30));
+
+      // Donut
+      updateDonut(needsPct, wantsPct, savingsPct);
+    }
+
+    // ─── Sync sliders & number inputs ─────────────────────────────────────────
+    function setupSliderSync(sliderId: string, inputId: string, getVal: () => number, setVal: (v: number) => void) {
+      const slider = document.getElementById(sliderId) as HTMLInputElement;
+      const input  = document.getElementById(inputId)  as HTMLInputElement;
+
+      slider.addEventListener('input', () => {
+        setVal(parseInt(slider.value));
+        input.value = slider.value;
+        update();
+      });
+      input.addEventListener('input', () => {
+        const v = Math.max(0, Math.min(100, parseInt(input.value) || 0));
+        setVal(v);
+        slider.value = String(v);
+        update();
+      });
+    }
+
+    setupSliderSync('needsSlider',   'needsPct',   () => needsPct,   (v) => { needsPct = v; });
+    setupSliderSync('wantsSlider',   'wantsPct',   () => wantsPct,   (v) => { wantsPct = v; });
+    setupSliderSync('savingsSlider', 'savingsPct', () => savingsPct, (v) => { savingsPct = v; });
+
+    // Monthly / Annual toggle
+    document.getElementById('toggleMonthly')!.addEventListener('click', () => {
+      isAnnual = false;
+      (document.getElementById('toggleMonthly') as HTMLElement).classList.add('bg-primary', 'text-white');
+      (document.getElementById('toggleMonthly') as HTMLElement).classList.remove('bg-surface', 'text-text-muted');
+      (document.getElementById('toggleAnnual') as HTMLElement).classList.remove('bg-primary', 'text-white');
+      (document.getElementById('toggleAnnual') as HTMLElement).classList.add('bg-surface', 'text-text-muted');
+      update();
+    });
+    document.getElementById('toggleAnnual')!.addEventListener('click', () => {
+      isAnnual = true;
+      (document.getElementById('toggleAnnual') as HTMLElement).classList.add('bg-primary', 'text-white');
+      (document.getElementById('toggleAnnual') as HTMLElement).classList.remove('bg-surface', 'text-text-muted');
+      (document.getElementById('toggleMonthly') as HTMLElement).classList.remove('bg-primary', 'text-white');
+      (document.getElementById('toggleMonthly') as HTMLElement).classList.add('bg-surface', 'text-text-muted');
+      update();
+    });
+
+    document.getElementById('incomeAmount')!.addEventListener('input', update);
+
+    // Animate donut on first load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Start collapsed, then animate
+      ['donutNeeds','donutWants','donutSavings'].forEach(id => {
+        const el = document.getElementById(id)!;
+        const orig = el.getAttribute('stroke-dasharray')!;
+        el.setAttribute('stroke-dasharray', `0 ${CIRCUMFERENCE}`);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            el.setAttribute('stroke-dasharray', orig);
+          });
+        });
+      });
+    });
+
+    update();
+  </script>
+
+</BaseLayout>

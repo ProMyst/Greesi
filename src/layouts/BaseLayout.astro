@@ -11,8 +11,8 @@ interface Props {
 }
 
 const { title, description, canonical, ogImage, schema } = Astro.props;
-const siteUrl = 'https://folvr.com';
-const fullTitle = title.includes('Folvr') ? title : `${title} | Folvr`;
+const siteUrl = 'https://greesi.com';
+const fullTitle = title.includes('Greesi') ? title : `${title} | Greesi`;
 const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
 const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
 ---
@@ -32,7 +32,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:image" content={ogImageUrl} />
   <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Folvr" />
+  <meta property="og:site_name" content="Greesi" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -56,7 +56,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   <!-- Dark mode: runs before paint to prevent flash -->
   <script is:inline>
     (function() {
-      var t = localStorage.getItem('folvr-theme') ||
+      var t = localStorage.getItem('greesi-theme') ||
         (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       document.documentElement.dataset.theme = t;
     })();
@@ -73,20 +73,82 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     <nav class="nav-inner">
       <!-- Logo -->
       <a href="/" class="nav-logo">
-        <svg class="nav-logo-mark" width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <rect width="28" height="28" rx="6" fill="#1e3a5f"/>
-          <path d="M8 7h13v3.5H11.5v3.5H20v3.5h-8.5V22H8V7z" fill="#0ea5e9"/>
+        <svg width="82" height="24" viewBox="0 0 88 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="nav-logo-svg">
+          <rect x="0" y="4" width="26" height="20" rx="10" fill="white"/>
+          <line x1="9" y1="4" x2="17" y2="24" stroke="#0ea5e9" stroke-width="2.2" stroke-linecap="round"/>
+          <text x="32" y="20" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.5" fill="white">greesi</text>
         </svg>
-        <span class="nav-logo-text">Folvr</span>
       </a>
 
       <!-- Desktop Links -->
       <div class="nav-links">
-        <a href="/finance" class="nav-link">Finance</a>
-        <a href="/finance/banking" class="nav-link">Banking</a>
-        <a href="/finance/credit-cards" class="nav-link">Credit Cards</a>
-        <a href="/travel" class="nav-link">Travel</a>
-        <a href="/tools" class="nav-link">Tools</a>
+        <div class="nav-dropdown">
+          <a href="/finance" class="nav-link nav-dropdown-trigger">Finance ▾</a>
+          <div class="nav-dropdown-menu">
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Reviews</p>
+              <a href="/finance/banking" class="nav-dropdown-link">Best Banks</a>
+              <a href="/finance/credit-cards" class="nav-dropdown-link">Credit Cards</a>
+              <a href="/finance/investing" class="nav-dropdown-link">Investing</a>
+            </div>
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Best-Of Lists</p>
+              <a href="/finance/banking/best-high-yield" class="nav-dropdown-link">Best High-Yield Savings</a>
+              <a href="/finance/banking/best-for-students" class="nav-dropdown-link">Best Student Banks</a>
+              <a href="/finance/credit-cards/best-for-travel" class="nav-dropdown-link">Best Travel Cards</a>
+              <a href="/finance/credit-cards/best-cash-back" class="nav-dropdown-link">Best Cash Back</a>
+              <a href="/finance/credit-cards/best-no-fee" class="nav-dropdown-link">Best No-Fee Cards</a>
+              <a href="/finance/credit-cards/best-for-dining" class="nav-dropdown-link">Best for Dining</a>
+            </div>
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Guides</p>
+              <a href="/finance/points-value" class="nav-dropdown-link">Points Value Guide</a>
+              <a href="/finance/glossary" class="nav-dropdown-link">Finance Glossary</a>
+              <a href="/finance/compare" class="nav-dropdown-link">Compare Products</a>
+              <a href="/methodology" class="nav-dropdown-link">Our Methodology</a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/travel" class="nav-link nav-dropdown-trigger">Travel ▾</a>
+          <div class="nav-dropdown-menu">
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Destinations</p>
+              <a href="/travel/destinations/maldives" class="nav-dropdown-link">Maldives</a>
+              <a href="/travel/destinations/greek-islands" class="nav-dropdown-link">Greek Islands</a>
+              <a href="/travel/destinations/amalfi-coast" class="nav-dropdown-link">Amalfi Coast</a>
+              <a href="/travel/destinations/british-virgin-islands" class="nav-dropdown-link">BVI</a>
+              <a href="/travel" class="nav-dropdown-link">All Destinations →</a>
+            </div>
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Travel Money</p>
+              <a href="/travel/travel-cards" class="nav-dropdown-link">Best Travel Cards</a>
+              <a href="/travel/miles-guide" class="nav-dropdown-link">Miles & Points Guide</a>
+              <a href="/finance/calculators/points-transfer" class="nav-dropdown-link">Points Calculator</a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-dropdown">
+          <a href="/tools" class="nav-link nav-dropdown-trigger">Tools ▾</a>
+          <div class="nav-dropdown-menu">
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Calculators</p>
+              <a href="/finance/calculators/compound-interest" class="nav-dropdown-link">Compound Interest</a>
+              <a href="/finance/calculators/loan" class="nav-dropdown-link">Loan Payment</a>
+              <a href="/finance/calculators/debt-payoff" class="nav-dropdown-link">Debt Payoff</a>
+              <a href="/finance/calculators/budget" class="nav-dropdown-link">50/30/20 Budget</a>
+              <a href="/finance/calculators/points-transfer" class="nav-dropdown-link">Points Transfer</a>
+            </div>
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Optimizers</p>
+              <a href="/tools/rewards-optimizer" class="nav-dropdown-link">Rewards Optimizer</a>
+              <a href="/finance/quiz/credit-card" class="nav-dropdown-link">Credit Card Quiz</a>
+              <a href="/finance/quiz/bank-account" class="nav-dropdown-link">Bank Account Quiz</a>
+              <a href="/finance/compare" class="nav-dropdown-link">Compare Products</a>
+            </div>
+          </div>
+        </div>
+        <a href="/about" class="nav-link">About</a>
       </div>
 
       <!-- Right: search + theme + hamburger -->
@@ -116,12 +178,25 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
 
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="nav-mobile" aria-hidden="true">
-      <a href="/finance" class="nav-mobile-link">Finance</a>
-      <a href="/finance/banking" class="nav-mobile-link">Banking</a>
+      <p class="nav-mobile-section">Finance</p>
+      <a href="/finance/banking" class="nav-mobile-link">Best Banks</a>
       <a href="/finance/credit-cards" class="nav-mobile-link">Credit Cards</a>
       <a href="/finance/investing" class="nav-mobile-link">Investing</a>
-      <a href="/travel" class="nav-mobile-link">Travel</a>
-      <a href="/tools" class="nav-mobile-link">Tools</a>
+      <a href="/finance/banking/best-high-yield" class="nav-mobile-link">Best High-Yield Savings</a>
+      <a href="/finance/credit-cards/best-for-travel" class="nav-mobile-link">Best Travel Cards</a>
+      <a href="/finance/points-value" class="nav-mobile-link">Points Value Guide</a>
+      <p class="nav-mobile-section">Travel</p>
+      <a href="/travel" class="nav-mobile-link">Destinations</a>
+      <a href="/travel/miles-guide" class="nav-mobile-link">Miles & Points Guide</a>
+      <a href="/travel/travel-cards" class="nav-mobile-link">Travel Cards</a>
+      <p class="nav-mobile-section">Tools</p>
+      <a href="/tools/rewards-optimizer" class="nav-mobile-link">Rewards Optimizer</a>
+      <a href="/finance/calculators/debt-payoff" class="nav-mobile-link">Debt Payoff Calculator</a>
+      <a href="/finance/calculators/budget" class="nav-mobile-link">Budget Calculator</a>
+      <a href="/tools" class="nav-mobile-link">All Tools</a>
+      <p class="nav-mobile-section">Company</p>
+      <a href="/about" class="nav-mobile-link">About Us</a>
+      <a href="/submit-story" class="nav-mobile-link">Submit a Story</a>
     </div>
   </header>
 
@@ -164,8 +239,14 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     <div class="footer-grid section-container">
 
       <div class="footer-brand">
-        <a href="/" class="footer-logo">Folvr</a>
-        <p class="footer-tagline">Finance smarter.<br />Travel farther.</p>
+        <a href="/" class="footer-logo" aria-label="Greesi home">
+          <svg width="82" height="24" viewBox="0 0 88 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="0" y="4" width="26" height="20" rx="10" fill="white" opacity="0.9"/>
+            <line x1="9" y1="4" x2="17" y2="24" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round"/>
+            <text x="32" y="20" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.5" fill="white" opacity="0.9">greesi</text>
+          </svg>
+        </a>
+        <p class="footer-tagline">Signal intelligence.<br />Decisions that compound.</p>
         <div class="footer-socials">
           <a href="#" aria-label="Instagram" class="social-icon">
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -184,37 +265,45 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
       <div class="footer-col">
         <h3 class="footer-col-heading">Banking</h3>
         <a href="/finance/banking" class="footer-link">Best Banks 2026</a>
+        <a href="/finance/banking/best-high-yield" class="footer-link">Best High-Yield Savings</a>
+        <a href="/finance/banking/best-for-students" class="footer-link">Best Student Banks</a>
         <a href="/finance/review/ally" class="footer-link">Ally Bank Review</a>
         <a href="/finance/review/sofi" class="footer-link">SoFi Review</a>
-        <a href="/finance/review/marcus" class="footer-link">Marcus Review</a>
-        <a href="/finance/review/capital-one" class="footer-link">Capital One Review</a>
       </div>
 
       <div class="footer-col">
         <h3 class="footer-col-heading">Credit Cards</h3>
         <a href="/finance/credit-cards" class="footer-link">Best Cards 2026</a>
-        <a href="/finance/review/chase-sapphire-preferred" class="footer-link">Chase Sapphire</a>
-        <a href="/finance/review/capital-one-venture-x" class="footer-link">Venture X</a>
-        <a href="/finance/review/amex-gold" class="footer-link">Amex Gold</a>
-        <a href="/travel/travel-cards" class="footer-link">Best Travel Cards</a>
+        <a href="/finance/credit-cards/best-for-travel" class="footer-link">Best Travel Cards</a>
+        <a href="/finance/credit-cards/best-cash-back" class="footer-link">Best Cash Back</a>
+        <a href="/finance/credit-cards/best-for-dining" class="footer-link">Best for Dining</a>
+        <a href="/finance/credit-cards/best-no-fee" class="footer-link">Best No-Fee Cards</a>
       </div>
 
       <div class="footer-col">
         <h3 class="footer-col-heading">Travel</h3>
         <a href="/travel" class="footer-link">Destinations</a>
-        <a href="/travel/destinations/maldives" class="footer-link">Maldives</a>
-        <a href="/travel/destinations/british-virgin-islands" class="footer-link">BVI</a>
-        <a href="/travel/destinations/greek-islands" class="footer-link">Greek Islands</a>
-        <a href="/travel/destinations/amalfi-coast" class="footer-link">Amalfi Coast</a>
+        <a href="/travel/miles-guide" class="footer-link">Miles & Points Guide</a>
+        <a href="/travel/travel-cards" class="footer-link">Best Travel Cards</a>
+        <a href="/finance/points-value" class="footer-link">Points Value Guide</a>
+        <a href="/submit-story" class="footer-link">Submit Your Story</a>
       </div>
 
       <div class="footer-col">
-        <h3 class="footer-col-heading">Legal</h3>
+        <h3 class="footer-col-heading">Tools</h3>
+        <a href="/tools/rewards-optimizer" class="footer-link">Rewards Optimizer</a>
+        <a href="/finance/calculators/debt-payoff" class="footer-link">Debt Payoff Calculator</a>
+        <a href="/finance/calculators/budget" class="footer-link">50/30/20 Budget</a>
+        <a href="/finance/calculators/points-transfer" class="footer-link">Points Transfer</a>
+        <a href="/finance/glossary" class="footer-link">Finance Glossary</a>
+      </div>
+
+      <div class="footer-col">
+        <h3 class="footer-col-heading">Company</h3>
         <a href="/about" class="footer-link">About Us</a>
+        <a href="/methodology" class="footer-link">Our Methodology</a>
         <a href="/privacy" class="footer-link">Privacy Policy</a>
         <a href="/disclaimer" class="footer-link">Disclaimer</a>
-        <a href="/finance/calculators/compound-interest" class="footer-link">Calculators</a>
-        <a href="/finance/investing" class="footer-link">Investing</a>
       </div>
     </div>
 
@@ -223,7 +312,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
         <strong>Affiliate Disclosure:</strong> Some links on this site are affiliate links.
         We may earn a commission at no extra cost to you. Our editorial opinions are independent.
       </p>
-      <p class="footer-copy">&copy; {new Date().getFullYear()} Folvr. All rights reserved.</p>
+      <p class="footer-copy">&copy; {new Date().getFullYear()} Greesi. All rights reserved.</p>
     </div>
   </footer>
 
@@ -233,6 +322,35 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
       <path d="M18 15l-6-6-6 6"/>
     </svg>
   </button>
+
+  <!-- Exit Intent Modal -->
+  <div class="exit-modal" id="exit-modal" aria-hidden="true" role="dialog" aria-label="Stay in the loop">
+    <div class="exit-overlay" id="exit-overlay"></div>
+    <div class="exit-box">
+      <button class="exit-close" id="exit-close" aria-label="Close">×</button>
+      <div class="exit-emoji">💰</div>
+      <h3 class="exit-heading">Wait — don't miss these rates</h3>
+      <p class="exit-sub">Get the best APYs, card bonuses, and travel deals delivered weekly. No spam. Ever.</p>
+      <form class="exit-form" id="exit-form" novalidate>
+        <input type="email" class="exit-input" id="exit-email" placeholder="your@email.com" required aria-label="Email address" />
+        <button type="submit" class="exit-submit">Get Weekly Picks →</button>
+      </form>
+      <p class="exit-success" id="exit-success" hidden>You're in! Check your inbox.</p>
+      <button class="exit-skip" id="exit-skip">No thanks, I'll miss out</button>
+    </div>
+  </div>
+
+  <!-- Sticky Comparison Tray -->
+  <div class="compare-tray" id="compare-tray" aria-hidden="true">
+    <div class="compare-tray-inner">
+      <div class="compare-tray-slots" id="compare-tray-slots"></div>
+      <div class="compare-tray-actions">
+        <span class="compare-tray-hint" id="compare-tray-hint">Add 1 more to compare</span>
+        <button class="compare-tray-go" id="compare-tray-go" disabled>Compare Now →</button>
+        <button class="compare-tray-clear" id="compare-tray-clear" aria-label="Clear all">Clear all</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Cookie consent -->
   <div class="cookie-banner" id="cookie-banner" hidden>
@@ -279,14 +397,55 @@ html[data-theme='dark'] .nav-scrolled {
   font-size: 1.25rem; font-weight: 800; letter-spacing: -0.04em;
   text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.3s;
 }
-.nav-logo-mark { flex-shrink: 0; border-radius: 6px; transition: transform 0.2s; }
-.nav-logo:hover .nav-logo-mark { transform: scale(1.05); }
-.nav-transparent .nav-logo { color: white; }
-.nav-scrolled .nav-logo { color: var(--color-primary); }
-html[data-theme='dark'] .nav-scrolled .nav-logo { color: #f1f5f9; }
+.nav-logo-svg { flex-shrink: 0; transition: opacity 0.2s; }
+.nav-logo:hover .nav-logo-svg { opacity: 0.85; }
+/* Scrolled state: pill stays white, text label needs to stay visible */
+.nav-scrolled .nav-logo-svg text { fill: white; }
+html[data-theme='light'] .nav-scrolled .nav-logo-svg text { fill: var(--color-primary); }
 
-.nav-links { display: none; align-items: center; gap: 32px; }
+.nav-links { display: none; align-items: center; gap: 28px; }
 @media (min-width: 768px) { .nav-links { display: flex; } }
+
+/* ── Dropdown menus ───────────────────────────────────────────── */
+.nav-dropdown { position: relative; }
+.nav-dropdown-trigger { user-select: none; }
+.nav-dropdown-menu {
+  display: none; position: absolute; top: calc(100% + 12px); left: 50%;
+  transform: translateX(-50%);
+  background: white; border: 1px solid rgba(30,58,95,0.1);
+  border-radius: 16px; padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  min-width: 560px; grid-template-columns: repeat(3, 1fr); gap: 0 24px;
+  z-index: 200;
+  animation: dropdown-in 0.18s cubic-bezier(0.16,1,0.3,1);
+}
+.nav-dropdown:has(.nav-dropdown-menu:not([style*="display: none"])) .nav-dropdown-menu,
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu { display: grid; }
+html[data-theme='dark'] .nav-dropdown-menu { background: #0d1f35; border-color: rgba(255,255,255,0.08); }
+@keyframes dropdown-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.nav-dropdown-col { display: flex; flex-direction: column; gap: 2px; }
+.nav-dropdown-heading {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--color-text-muted); margin-bottom: 8px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+.nav-dropdown-link {
+  font-size: 0.82rem; font-weight: 500; padding: 5px 8px; border-radius: 7px;
+  text-decoration: none; color: var(--color-text); transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.nav-dropdown-link:hover { background: rgba(14,165,233,0.08); color: var(--color-accent); }
+
+/* Mobile section headers */
+.nav-mobile-section {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); padding: 14px 0 4px; margin-top: 4px;
+}
+.nav-scrolled .nav-mobile-section { color: var(--color-text-muted); }
 
 .nav-link {
   font-size: 0.875rem; font-weight: 500; letter-spacing: -0.01em;
@@ -306,7 +465,7 @@ html[data-theme='dark'] .nav-scrolled .nav-link:hover { color: var(--color-accen
 
 .nav-hamburger {
   display: flex; flex-direction: column; gap: 5px;
-  background: none; border: none; cursor: pointer; padding: 8px;
+  background: none; border: none; cursor: pointer; padding: 12px;
 }
 @media (min-width: 768px) { .nav-hamburger { display: none; } }
 .ham-line { display: block; width: 22px; height: 2px; border-radius: 2px; transition: background 0.3s; }
@@ -341,7 +500,8 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
 @media (min-width: 640px)  { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1024px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; } }
 .footer-brand {}
-.footer-logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.04em; color: white; text-decoration: none; display: inline-block; margin-bottom: 12px; }
+.footer-logo { display: inline-block; margin-bottom: 12px; text-decoration: none; opacity: 0.9; transition: opacity 0.2s; }
+.footer-logo:hover { opacity: 1; }
 .footer-tagline { font-size: 0.9rem; line-height: 1.6; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
 .footer-socials { display: flex; gap: 12px; }
 .social-icon { color: rgba(255,255,255,0.4); transition: color 0.2s; }
@@ -356,46 +516,36 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
 </style>
 
 <script>
-  import Lenis from 'lenis';
-
-  let lenis: InstanceType<typeof Lenis> | null = null;
-  let rafId: number | null = null;
-
-  // ── Lenis + nav + progress bar ─────────────────────────────────
-  function initLenis() {
-    if (rafId !== null) cancelAnimationFrame(rafId);
-    lenis?.destroy();
-
-    lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 2,
-    });
-
+  // ── Nav + progress bar (native scroll) ────────────────────────
+  function initScroll() {
     const nav = document.getElementById('site-nav');
     const bar = document.getElementById('progress-bar');
 
-    // If the page has no colored hero at the top, start in scrolled state
     const hasHero = document.querySelector('.hero-root, section.bg-primary, section.has-hero');
     if (nav && !hasHero) {
       nav.classList.add('nav-scrolled');
       nav.classList.remove('nav-transparent');
     }
+    const main = document.querySelector('main') as HTMLElement | null;
+    if (main && !hasHero) {
+      main.style.paddingTop = '64px';
+    } else if (main) {
+      main.style.paddingTop = '';
+    }
 
-    lenis.on('scroll', ({ scroll, limit }: { scroll: number; limit: number }) => {
+    function onScroll() {
+      const scroll = window.scrollY;
+      const limit  = document.documentElement.scrollHeight - window.innerHeight;
       if (nav) {
         const past = hasHero ? scroll > 72 : true;
         nav.classList.toggle('nav-scrolled', past);
         nav.classList.toggle('nav-transparent', !past);
       }
       if (bar && limit > 0) bar.style.width = `${(scroll / limit) * 100}%`;
-    });
-
-    function raf(time: number) {
-      lenis!.raf(time);
-      rafId = requestAnimationFrame(raf);
     }
-    rafId = requestAnimationFrame(raf);
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   }
 
   // ── Mobile menu ────────────────────────────────────────────────
@@ -431,14 +581,14 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
       if (moon) moon.style.display = t === 'dark' ? 'none'  : 'block';
     }
 
-    const stored = localStorage.getItem('folvr-theme');
+    const stored = localStorage.getItem('greesi-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(stored || (prefersDark ? 'dark' : 'light'));
 
     btn.addEventListener('click', () => {
       const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
       applyTheme(next);
-      localStorage.setItem('folvr-theme', next);
+      localStorage.setItem('greesi-theme', next);
     });
   }
 
@@ -530,6 +680,69 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     });
   }
 
+  // ── Exit intent ────────────────────────────────────────────────
+  function initExitIntent() {
+    const modal   = document.getElementById('exit-modal');
+    const overlay = document.getElementById('exit-overlay');
+    const closeBtn = document.getElementById('exit-close');
+    const skipBtn  = document.getElementById('exit-skip');
+    const form     = document.getElementById('exit-form') as HTMLFormElement | null;
+    const success  = document.getElementById('exit-success');
+    if (!modal) return;
+
+    // Don't show if already subscribed or dismissed this session
+    if (localStorage.getItem('greesi-exit-subscribed') || sessionStorage.getItem('greesi-exit-dismissed')) return;
+
+    let pageTimer: ReturnType<typeof setTimeout> | null = null;
+    let triggered = false;
+
+    function show() {
+      if (triggered) return;
+      triggered = true;
+      modal.removeAttribute('aria-hidden');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hide() {
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      sessionStorage.setItem('greesi-exit-dismissed', '1');
+    }
+
+    // Trigger on mouse leaving toward top of page (desktop only)
+    function onMouseLeave(e: MouseEvent) {
+      if (e.clientY <= 20) show();
+    }
+
+    // Wait 5s before arming exit intent (don't fire on immediate bounce)
+    pageTimer = setTimeout(() => {
+      if (window.innerWidth >= 768) {
+        document.addEventListener('mouseleave', onMouseLeave);
+      }
+    }, 5000);
+
+    closeBtn?.addEventListener('click', hide);
+    skipBtn?.addEventListener('click', hide);
+    overlay?.addEventListener('click', hide);
+    document.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Escape') hide(); });
+
+    form?.addEventListener('submit', (e: Event) => {
+      e.preventDefault();
+      const input = form.querySelector('input[type="email"]') as HTMLInputElement;
+      if (!input?.validity.valid) { input?.focus(); return; }
+      localStorage.setItem('greesi-exit-subscribed', '1');
+      if (form) form.style.display = 'none';
+      if (success) success.hidden = false;
+      setTimeout(hide, 2000);
+      // TODO: connect to email service
+    });
+
+    return () => {
+      if (pageTimer) clearTimeout(pageTimer);
+      document.removeEventListener('mouseleave', onMouseLeave);
+    };
+  }
+
   // ── Cookie consent ─────────────────────────────────────────────
   function initCookie() {
     const banner  = document.getElementById('cookie-banner') as HTMLElement | null;
@@ -538,15 +751,15 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     if (!banner || (banner as HTMLElement).dataset.initialized) return;
     (banner as HTMLElement).dataset.initialized = 'true';
 
-    const stored = localStorage.getItem('folvr-cookie');
+    const stored = localStorage.getItem('greesi-cookie');
     if (!stored) setTimeout(() => { banner.hidden = false; }, 1200);
 
     accept?.addEventListener('click', () => {
-      localStorage.setItem('folvr-cookie', 'accepted');
+      localStorage.setItem('greesi-cookie', 'accepted');
       banner.hidden = true;
     });
     decline?.addEventListener('click', () => {
-      localStorage.setItem('folvr-cookie', 'declined');
+      localStorage.setItem('greesi-cookie', 'declined');
       banner.hidden = true;
     });
   }
@@ -577,23 +790,95 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
     if (!btn || (btn as HTMLElement).dataset.initialized) return;
     (btn as HTMLElement).dataset.initialized = 'true';
 
-    lenis?.on('scroll', ({ scroll }: { scroll: number }) => {
-      btn.classList.toggle('visible', scroll > 400);
+    window.addEventListener('scroll', () => {
+      btn.classList.toggle('visible', window.scrollY > 400);
+    }, { passive: true });
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  }
+
+  // ── Comparison Tray ────────────────────────────────────────────
+  function initCompareTray() {
+    const tray   = document.getElementById('compare-tray');
+    const slots  = document.getElementById('compare-tray-slots');
+    const goBtn  = document.getElementById('compare-tray-go') as HTMLButtonElement | null;
+    const hint   = document.getElementById('compare-tray-hint');
+    const clearBtn = document.getElementById('compare-tray-clear');
+    if (!tray) return;
+
+    type CompareItem = { slug: string; name: string; category: string };
+    let items: CompareItem[] = JSON.parse(sessionStorage.getItem('greesi-compare') ?? '[]');
+
+    function save() { sessionStorage.setItem('greesi-compare', JSON.stringify(items)); }
+
+    function render() {
+      if (!slots || !goBtn || !hint) return;
+      tray.setAttribute('aria-hidden', items.length === 0 ? 'true' : 'false');
+      slots.innerHTML = '';
+      items.forEach(it => {
+        const chip = document.createElement('div');
+        chip.className = 'compare-tray-chip';
+        chip.innerHTML = `<span>${it.name}</span><button class="compare-tray-remove" data-slug="${it.slug}" aria-label="Remove ${it.name}">×</button>`;
+        slots.appendChild(chip);
+      });
+      const need = 2 - items.length;
+      hint.textContent = items.length === 0 ? 'Select products to compare' :
+                         need > 0 ? `Add ${need} more to compare` : 'Ready to compare!';
+      goBtn.disabled = items.length < 2;
+      if (items.length >= 2) {
+        goBtn.onclick = () => {
+          window.location.href = `/finance/compare/${items.map(i => i.slug).join('-vs-')}`;
+        };
+      }
+    }
+
+    // Remove chip clicks
+    slots?.addEventListener('click', e => {
+      const btn = (e.target as HTMLElement).closest('[data-slug]') as HTMLElement | null;
+      if (btn) {
+        items = items.filter(i => i.slug !== btn.dataset.slug);
+        save(); render();
+        // uncheck the add button on page if visible
+        const addBtn = document.querySelector(`[data-compare-slug="${btn.dataset.slug}"]`) as HTMLElement | null;
+        if (addBtn) { addBtn.textContent = '+ Compare'; addBtn.classList.remove('compare-added'); }
+      }
     });
-    btn.addEventListener('click', () => lenis?.scrollTo(0, { duration: 1.4 }));
+
+    clearBtn?.addEventListener('click', () => {
+      items = [];
+      save(); render();
+      document.querySelectorAll('.add-compare-btn').forEach(b => {
+        (b as HTMLElement).textContent = '+ Compare';
+        b.classList.remove('compare-added');
+      });
+    });
+
+    // Listen for add-to-compare events from any page
+    document.addEventListener('greesi:compare-add', (e: Event) => {
+      const { slug, name, category } = (e as CustomEvent).detail as CompareItem;
+      if (items.find(i => i.slug === slug)) {
+        items = items.filter(i => i.slug !== slug);
+      } else if (items.length < 3) {
+        items.push({ slug, name, category });
+      }
+      save(); render();
+    });
+
+    render();
   }
 
   // ── Boot on every page (View Transitions aware) ────────────────
   document.addEventListener('astro:page-load', () => {
-    initLenis();
+    initScroll();
     initMobileMenu();
     initDarkMode();
     initMagnetic();
     initTilt();
     initScrollReveal();
     initSearch();
+    initExitIntent();
     initCookie();
     initNewsletter();
     initBackToTop();
+    initCompareTray();
   });
 </script>

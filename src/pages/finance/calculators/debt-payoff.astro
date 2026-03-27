@@ -1,0 +1,541 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+
+const title = "Debt Payoff Calculator: Snowball vs Avalanche 2026";
+const description = "See exactly when you'll be debt-free and how much interest you'll save with the snowball vs avalanche method. Free interactive debt payoff calculator.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Debt Payoff Calculator",
+  "description": description,
+  "applicationCategory": "FinanceApplication",
+  "offers": { "@type": "Offer", "price": "0" }
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="section-container text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Free Calculator</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Debt Payoff Calculator:<br class="hidden md:block" /> Snowball vs Avalanche</h1>
+      <p class="text-white/70 text-lg max-w-2xl mx-auto">See exactly when you'll be debt-free and how much interest you'll save with each strategy.</p>
+    </div>
+  </section>
+
+  <div class="section-container py-10">
+
+    <nav class="text-sm text-text-muted mb-8">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/finance" class="hover:text-accent">Finance</a>
+      <span class="mx-2">/</span>
+      <a href="/finance/calculators" class="hover:text-accent">Calculators</a>
+      <span class="mx-2">/</span>
+      <span>Debt Payoff</span>
+    </nav>
+
+    <!-- Debts Table -->
+    <div class="bg-surface rounded-xl border border-border p-6 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-bold">Your Debts</h2>
+        <button id="addDebtBtn" class="inline-flex items-center gap-2 bg-accent hover:bg-accent-dark text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+          Add a Debt
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="text-left pb-3 pr-3 font-semibold text-text-muted">Debt Name</th>
+              <th class="text-right pb-3 px-3 font-semibold text-text-muted">Balance ($)</th>
+              <th class="text-right pb-3 px-3 font-semibold text-text-muted">Rate (%)</th>
+              <th class="text-right pb-3 px-3 font-semibold text-text-muted">Min. Payment ($)</th>
+              <th class="pb-3 pl-3"></th>
+            </tr>
+          </thead>
+          <tbody id="debtTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Extra Payment -->
+    <div class="bg-surface rounded-xl border border-border p-6 mb-8">
+      <label class="block text-sm font-semibold mb-1" for="extraPayment">How much extra can you pay each month?</label>
+      <p class="text-text-muted text-sm mb-3">This gets applied on top of all minimum payments using whichever strategy you choose.</p>
+      <div class="relative max-w-xs">
+        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted font-medium">$</span>
+        <input id="extraPayment" type="number" value="200" min="0" step="25"
+          class="w-full pl-8 pr-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white dark:bg-surface-alt" />
+      </div>
+    </div>
+
+    <AdSlot format="horizontal" slot="mid-debt-calc" />
+
+    <!-- Results -->
+    <div id="resultsSection" class="mb-10">
+      <h2 class="text-2xl font-bold mb-6">Comparison Results</h2>
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
+
+        <!-- Snowball -->
+        <div class="rounded-xl border-2 border-border overflow-hidden" id="snowballCard">
+          <div class="bg-primary text-white px-6 py-4">
+            <div class="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M9 12l2 2 4-4"/></svg>
+              <h3 class="text-lg font-bold">Snowball Method</h3>
+            </div>
+            <p class="text-white/65 text-sm">Pay lowest balance first — builds momentum</p>
+          </div>
+          <div class="p-6 bg-surface space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs text-text-muted uppercase tracking-wide mb-1">Payoff Date</p>
+                <p id="snowballDate" class="text-xl font-bold">—</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-muted uppercase tracking-wide mb-1">Total Months</p>
+                <p id="snowballMonths" class="text-xl font-bold">—</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-muted uppercase tracking-wide mb-1">Total Interest</p>
+                <p id="snowballInterest" class="text-xl font-bold text-danger">—</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-muted uppercase tracking-wide mb-1">Total Paid</p>
+                <p id="snowballTotal" class="text-xl font-bold">—</p>
+              </div>
+            </div>
+            <div id="snowballBadge" class="hidden text-sm font-semibold text-center py-2 px-3 rounded-lg"></div>
+          </div>
+        </div>
+
+        <!-- Avalanche -->
+        <div class="rounded-xl border-2 border-border overflow-hidden" id="avalancheCard">
+          <div class="bg-primary text-white px-6 py-4">
+            <div class="flex items-center gap-2 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+              <h3 class="text-lg font-bold">Avalanche Method</h3>
+            </div>
+            <p class="text-white/65 text-sm">Pay highest interest rate first — saves most money</p>
+          </div>
+          <div class="p-6 bg-surface space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <p class="text-xs text-text-muted uppercase tracking-wide mb-1">Payoff Date</p>
+                <p id="avalancheDate" class="text-xl font-bold">—</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-muted uppercase tracking-wide mb-1">Total Months</p>
+                <p id="avalancheMonths" class="text-xl font-bold">—</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-muted uppercase tracking-wide mb-1">Total Interest</p>
+                <p id="avalancheInterest" class="text-xl font-bold text-danger">—</p>
+              </div>
+              <div>
+                <p class="text-xs text-text-muted uppercase tracking-wide mb-1">Total Paid</p>
+                <p id="avalancheTotal" class="text-xl font-bold">—</p>
+              </div>
+            </div>
+            <div id="avalancheBadge" class="hidden text-sm font-semibold text-center py-2 px-3 rounded-lg"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedules -->
+      <div class="space-y-6">
+        <!-- Snowball Schedule -->
+        <div class="bg-surface rounded-xl border border-border overflow-hidden">
+          <button id="toggleSnowball" class="w-full flex items-center justify-between px-6 py-4 font-semibold text-left hover:bg-surface-alt transition-colors">
+            <span>Snowball — Full Payoff Schedule</span>
+            <svg id="snowballChevron" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-text-muted transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="snowballSchedule" class="hidden overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-primary text-white">
+                  <th class="p-3 text-left">Month</th>
+                  <th class="p-3 text-left">Focus Debt</th>
+                  <th class="p-3 text-right">Payment</th>
+                  <th class="p-3 text-right">Principal</th>
+                  <th class="p-3 text-right">Interest</th>
+                  <th class="p-3 text-right">Remaining</th>
+                </tr>
+              </thead>
+              <tbody id="snowballScheduleBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Avalanche Schedule -->
+        <div class="bg-surface rounded-xl border border-border overflow-hidden">
+          <button id="toggleAvalanche" class="w-full flex items-center justify-between px-6 py-4 font-semibold text-left hover:bg-surface-alt transition-colors">
+            <span>Avalanche — Full Payoff Schedule</span>
+            <svg id="avalancheChevron" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-text-muted transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="avalancheSchedule" class="hidden overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-primary text-white">
+                  <th class="p-3 text-left">Month</th>
+                  <th class="p-3 text-left">Focus Debt</th>
+                  <th class="p-3 text-right">Payment</th>
+                  <th class="p-3 text-right">Principal</th>
+                  <th class="p-3 text-right">Interest</th>
+                  <th class="p-3 text-right">Remaining</th>
+                </tr>
+              </thead>
+              <tbody id="avalancheScheduleBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <AdSlot format="horizontal" slot="bottom-debt-calc" />
+
+    <!-- Which is right for you -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-6">Which Method Is Right for You?</h2>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-surface rounded-xl border border-border p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-lg font-bold">Choose Snowball If…</h3>
+          </div>
+          <ul class="space-y-2 text-sm text-text-muted">
+            <li class="flex gap-2"><span class="text-accent font-bold mt-0.5">✓</span> You feel overwhelmed and need quick wins to stay motivated</li>
+            <li class="flex gap-2"><span class="text-accent font-bold mt-0.5">✓</span> You've struggled to stick with payoff plans in the past</li>
+            <li class="flex gap-2"><span class="text-accent font-bold mt-0.5">✓</span> Your smallest debts have similar interest rates to larger ones</li>
+            <li class="flex gap-2"><span class="text-accent font-bold mt-0.5">✓</span> You're paying off 4+ separate accounts and want to simplify</li>
+            <li class="flex gap-2"><span class="text-accent font-bold mt-0.5">✓</span> The psychological reward of crossing debts off matters to you</li>
+          </ul>
+          <div class="mt-4 p-3 bg-accent/5 rounded-lg border border-accent/20 text-xs text-text-muted">
+            <strong class="text-text">The science:</strong> Research from Harvard Business Review found that people paying smallest balances first were more likely to eliminate debt entirely — even if it cost more.
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-6">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-lg font-bold">Choose Avalanche If…</h3>
+          </div>
+          <ul class="space-y-2 text-sm text-text-muted">
+            <li class="flex gap-2"><span class="text-success font-bold mt-0.5">✓</span> Minimizing total interest paid is your top priority</li>
+            <li class="flex gap-2"><span class="text-success font-bold mt-0.5">✓</span> You're disciplined and don't need early wins to stay on track</li>
+            <li class="flex gap-2"><span class="text-success font-bold mt-0.5">✓</span> You have one or two high-APR debts (20%+) dragging you down</li>
+            <li class="flex gap-2"><span class="text-success font-bold mt-0.5">✓</span> You can see the long-term math and trust the process</li>
+            <li class="flex gap-2"><span class="text-success font-bold mt-0.5">✓</span> You want to optimize every dollar of your repayment plan</li>
+          </ul>
+          <div class="mt-4 p-3 bg-success/5 rounded-lg border border-success/20 text-xs text-text-muted">
+            <strong class="text-text">Bottom line:</strong> Avalanche is mathematically optimal. The difference can be hundreds or even thousands of dollars saved in interest — especially with high-APR credit card debt.
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-primary text-white rounded-xl p-6">
+        <h3 class="font-bold mb-2">Can't Decide? Use a Hybrid Approach.</h3>
+        <p class="text-white/75 text-sm">Start with snowball to knock out your smallest 1–2 debts fast, then switch to avalanche for the rest. You get the psychological boost <em>and</em> math advantage. Many financial coaches recommend this approach for people who are new to structured debt payoff.</p>
+      </div>
+    </section>
+
+    <section class="border-t border-border pt-8">
+      <h3 class="text-lg font-semibold mb-4">Related Calculators</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="/finance/calculators/loan" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Loan Calculator</a>
+        <a href="/finance/calculators/compound-interest" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Compound Interest Calculator</a>
+        <a href="/finance/credit-cards" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Best Balance Transfer Cards</a>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // ─── State ────────────────────────────────────────────────────────────────
+    interface Debt {
+      id: number;
+      name: string;
+      balance: number;
+      rate: number;
+      minPayment: number;
+    }
+
+    let nextId = 1;
+    let debts: Debt[] = [
+      { id: nextId++, name: 'Credit Card', balance: 5400, rate: 22.99, minPayment: 108 },
+      { id: nextId++, name: 'Car Loan',    balance: 12000, rate: 6.9,  minPayment: 240 },
+      { id: nextId++, name: 'Personal Loan', balance: 3000, rate: 14.5, minPayment: 85 },
+    ];
+
+    // ─── Render debt rows ─────────────────────────────────────────────────────
+    function renderDebtTable() {
+      const tbody = document.getElementById('debtTableBody')!;
+      tbody.innerHTML = '';
+      debts.forEach(debt => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-border last:border-0';
+        tr.innerHTML = `
+          <td class="py-2 pr-3">
+            <input data-id="${debt.id}" data-field="name" type="text" value="${debt.name}"
+              class="w-full px-2 py-1.5 border border-border rounded-lg text-sm focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white" />
+          </td>
+          <td class="py-2 px-3">
+            <div class="relative">
+              <span class="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted text-sm">$</span>
+              <input data-id="${debt.id}" data-field="balance" type="number" value="${debt.balance}" min="0" step="100"
+                class="w-full pl-6 pr-2 py-1.5 border border-border rounded-lg text-sm text-right focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white" />
+            </div>
+          </td>
+          <td class="py-2 px-3">
+            <div class="relative">
+              <input data-id="${debt.id}" data-field="rate" type="number" value="${debt.rate}" min="0" max="100" step="0.1"
+                class="w-full pl-2 pr-6 py-1.5 border border-border rounded-lg text-sm text-right focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white" />
+              <span class="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted text-sm">%</span>
+            </div>
+          </td>
+          <td class="py-2 px-3">
+            <div class="relative">
+              <span class="absolute left-2 top-1/2 -translate-y-1/2 text-text-muted text-sm">$</span>
+              <input data-id="${debt.id}" data-field="minPayment" type="number" value="${debt.minPayment}" min="0" step="5"
+                class="w-full pl-6 pr-2 py-1.5 border border-border rounded-lg text-sm text-right focus:ring-2 focus:ring-accent focus:border-accent outline-none bg-white" />
+            </div>
+          </td>
+          <td class="py-2 pl-3">
+            <button data-delete="${debt.id}" class="text-text-muted hover:text-danger transition-colors p-1 rounded">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            </button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // ─── Core amortization engine ─────────────────────────────────────────────
+    interface ScheduleRow {
+      month: number;
+      focusDebt: string;
+      payment: number;
+      principal: number;
+      interest: number;
+      remaining: number;
+    }
+
+    function runPayoff(debtList: Debt[], extra: number, strategy: 'snowball' | 'avalanche'):
+      { months: number; totalInterest: number; totalPaid: number; schedule: ScheduleRow[] } {
+
+      // deep clone balances
+      const balances = debtList.map(d => ({ ...d, balance: d.balance }));
+      let month = 0;
+      let totalInterest = 0;
+      let totalPaid = 0;
+      const schedule: ScheduleRow[] = [];
+      const MAX_MONTHS = 600;
+
+      while (balances.some(d => d.balance > 0.005) && month < MAX_MONTHS) {
+        month++;
+
+        // accrue interest on all debts
+        const interestThisMonth = balances.map(d => {
+          if (d.balance <= 0) return 0;
+          return d.balance * (d.rate / 100 / 12);
+        });
+
+        // figure out which debt to focus extra payment on
+        const active = balances.filter(d => d.balance > 0.005);
+        let focusDebt = active[0];
+        if (active.length > 0) {
+          if (strategy === 'snowball') {
+            focusDebt = active.reduce((a, b) => a.balance < b.balance ? a : b);
+          } else {
+            focusDebt = active.reduce((a, b) => a.rate > b.rate ? a : b);
+          }
+        }
+
+        // calculate available extra (rollover freed-up minimums)
+        let availableExtra = extra;
+
+        // apply payments
+        let totalPaymentThisMonth = 0;
+        let totalPrincipalThisMonth = 0;
+        let totalInterestThisMonth = 0;
+        let totalRemainingThisMonth = 0;
+
+        for (let i = 0; i < balances.length; i++) {
+          const d = balances[i];
+          if (d.balance <= 0.005) continue;
+
+          const interest = interestThisMonth[i];
+          const balWithInterest = d.balance + interest;
+
+          let payment = d.minPayment;
+          if (d.id === focusDebt.id) {
+            payment = d.minPayment + availableExtra;
+          }
+
+          // can't pay more than owed
+          payment = Math.min(payment, balWithInterest);
+
+          const principal = payment - interest;
+          d.balance = Math.max(0, d.balance - principal);
+
+          totalInterest += interest;
+          totalPaid += payment;
+          totalPaymentThisMonth += payment;
+          totalPrincipalThisMonth += principal;
+          totalInterestThisMonth += interest;
+        }
+
+        totalRemainingThisMonth = balances.reduce((sum, d) => sum + Math.max(0, d.balance), 0);
+
+        schedule.push({
+          month,
+          focusDebt: focusDebt ? focusDebt.name : '—',
+          payment: totalPaymentThisMonth,
+          principal: totalPrincipalThisMonth,
+          interest: totalInterestThisMonth,
+          remaining: totalRemainingThisMonth,
+        });
+      }
+
+      return { months: month, totalInterest, totalPaid, schedule };
+    }
+
+    function fmt(n: number) {
+      return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function payoffDate(months: number): string {
+      const d = new Date();
+      d.setMonth(d.getMonth() + months);
+      return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    }
+
+    function buildScheduleRows(schedule: ScheduleRow[]): string {
+      return schedule.map((r, i) => `
+        <tr class="${i % 2 === 0 ? 'bg-white' : 'bg-surface'}">
+          <td class="p-3">${r.month}</td>
+          <td class="p-3 text-text-muted">${r.focusDebt}</td>
+          <td class="p-3 text-right font-medium">${fmt(r.payment)}</td>
+          <td class="p-3 text-right">${fmt(r.principal)}</td>
+          <td class="p-3 text-right text-danger">${fmt(r.interest)}</td>
+          <td class="p-3 text-right font-semibold">${fmt(r.remaining)}</td>
+        </tr>`).join('');
+    }
+
+    // ─── Calculate & update UI ────────────────────────────────────────────────
+    function calculate() {
+      const extra = parseFloat((document.getElementById('extraPayment') as HTMLInputElement).value) || 0;
+      const validDebts = debts.filter(d => d.balance > 0 && d.rate >= 0 && d.minPayment > 0);
+      if (validDebts.length === 0) return;
+
+      const snow = runPayoff(validDebts, extra, 'snowball');
+      const aval = runPayoff(validDebts, extra, 'avalanche');
+
+      // Snowball results
+      (document.getElementById('snowballDate') as HTMLElement).textContent = payoffDate(snow.months);
+      (document.getElementById('snowballMonths') as HTMLElement).textContent = `${snow.months} months`;
+      (document.getElementById('snowballInterest') as HTMLElement).textContent = fmt(snow.totalInterest);
+      (document.getElementById('snowballTotal') as HTMLElement).textContent = fmt(snow.totalPaid);
+
+      // Avalanche results
+      (document.getElementById('avalancheDate') as HTMLElement).textContent = payoffDate(aval.months);
+      (document.getElementById('avalancheMonths') as HTMLElement).textContent = `${aval.months} months`;
+      (document.getElementById('avalancheInterest') as HTMLElement).textContent = fmt(aval.totalInterest);
+      (document.getElementById('avalancheTotal') as HTMLElement).textContent = fmt(aval.totalPaid);
+
+      // Badges
+      const interestDiff = snow.totalInterest - aval.totalInterest;
+      const monthsDiff = snow.months - aval.months;
+
+      const snowBadge = document.getElementById('snowballBadge')!;
+      const avalBadge = document.getElementById('avalancheBadge')!;
+
+      snowBadge.className = 'text-sm font-semibold text-center py-2 px-3 rounded-lg';
+      avalBadge.className = 'text-sm font-semibold text-center py-2 px-3 rounded-lg';
+
+      if (interestDiff > 1) {
+        snowBadge.textContent = `Costs ${fmt(interestDiff)} more in interest`;
+        snowBadge.classList.add('bg-danger/10', 'text-danger');
+        snowBadge.classList.remove('hidden');
+
+        avalBadge.textContent = `Saves ${fmt(interestDiff)} vs Snowball`;
+        avalBadge.classList.add('bg-success/10', 'text-success');
+        avalBadge.classList.remove('hidden');
+      } else if (interestDiff < -1) {
+        avalBadge.textContent = `Costs ${fmt(-interestDiff)} more in interest`;
+        avalBadge.classList.add('bg-danger/10', 'text-danger');
+        avalBadge.classList.remove('hidden');
+
+        snowBadge.textContent = `Saves ${fmt(-interestDiff)} vs Avalanche`;
+        snowBadge.classList.add('bg-success/10', 'text-success');
+        snowBadge.classList.remove('hidden');
+      } else {
+        snowBadge.classList.add('hidden');
+        avalBadge.classList.add('hidden');
+      }
+
+      // Schedules
+      (document.getElementById('snowballScheduleBody') as HTMLElement).innerHTML = buildScheduleRows(snow.schedule);
+      (document.getElementById('avalancheScheduleBody') as HTMLElement).innerHTML = buildScheduleRows(aval.schedule);
+    }
+
+    // ─── Event delegation ─────────────────────────────────────────────────────
+    document.getElementById('debtTableBody')!.addEventListener('input', (e) => {
+      const target = e.target as HTMLInputElement;
+      const id = parseInt(target.dataset.id || '0');
+      const field = target.dataset.field as keyof Debt;
+      if (!id || !field) return;
+      const debt = debts.find(d => d.id === id);
+      if (!debt) return;
+      if (field === 'name') {
+        debt[field] = target.value;
+      } else {
+        (debt as any)[field] = parseFloat(target.value) || 0;
+      }
+      calculate();
+    });
+
+    document.getElementById('debtTableBody')!.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const deleteId = (target.closest('[data-delete]') as HTMLElement)?.dataset?.delete;
+      if (deleteId) {
+        debts = debts.filter(d => d.id !== parseInt(deleteId));
+        renderDebtTable();
+        calculate();
+      }
+    });
+
+    document.getElementById('addDebtBtn')!.addEventListener('click', () => {
+      debts.push({ id: nextId++, name: 'New Debt', balance: 1000, rate: 15, minPayment: 30 });
+      renderDebtTable();
+      calculate();
+    });
+
+    document.getElementById('extraPayment')!.addEventListener('input', calculate);
+
+    // Collapsible schedules
+    function setupToggle(btnId: string, panelId: string, chevronId: string) {
+      document.getElementById(btnId)!.addEventListener('click', () => {
+        const panel = document.getElementById(panelId)!;
+        const chevron = document.getElementById(chevronId)!;
+        const open = !panel.classList.contains('hidden');
+        panel.classList.toggle('hidden', open);
+        chevron.style.transform = open ? '' : 'rotate(180deg)';
+      });
+    }
+    setupToggle('toggleSnowball', 'snowballSchedule', 'snowballChevron');
+    setupToggle('toggleAvalanche', 'avalancheSchedule', 'avalancheChevron');
+
+    // ─── Init ──────────────────────────────────────────────────────────────────
+    renderDebtTable();
+    calculate();
+  </script>
+
+</BaseLayout>

@@ -1,0 +1,184 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import creditCards from '../../../data/finance/credit-cards.json';
+
+const travelCards = creditCards
+  .filter(c => c.category === 'Travel' || c.category === 'Premium Travel')
+  .sort((a, b) => b.rating - a.rating);
+
+const title = "Best Travel Credit Cards 2026 | Top Picks for Miles & Perks";
+const description = "The best travel credit cards earn miles, waive foreign transaction fees, and unlock airport lounges. Compare our top picks for 2026.";
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://greesi.com" },
+    { "@type": "ListItem", "position": 2, "name": "Credit Cards", "item": "https://greesi.com/finance/credit-cards" },
+    { "@type": "ListItem", "position": 3, "name": "Best Travel Cards", "item": "https://greesi.com/finance/credit-cards/best-for-travel" },
+  ]
+};
+
+const criteria = [
+  { icon: "✈️", label: "Sign-Up Bonus", tip: "A big bonus covers the annual fee for years — look for 60,000+ points." },
+  { icon: "🌍", label: "No Foreign Fees", tip: "3% foreign transaction fees erase your rewards overseas. Always go no-fee." },
+  { icon: "🛋️", label: "Lounge Access", tip: "Priority Pass or Centurion access saves $50–$70 per visit." },
+  { icon: "🔄", label: "Transfer Partners", tip: "Flexible points (Chase UR, Amex MR) beat airline-locked miles 9 times out of 10." },
+];
+---
+
+<BaseLayout title={title} description={description} schema={breadcrumbSchema}>
+
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Best-Of 2026</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Best Travel Credit Cards</h1>
+      <p class="text-white/65 text-lg max-w-xl mx-auto">Earn miles, skip foreign fees, and unlock lounges. These cards make every trip cheaper — and a lot more comfortable.</p>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-4 py-14">
+
+    <!-- What to look for -->
+    <div class="criteria-grid mb-12">
+      {criteria.map(c => (
+        <div class="criteria-card">
+          <span class="criteria-icon">{c.icon}</span>
+          <strong class="criteria-label">{c.label}</strong>
+          <p class="criteria-tip">{c.tip}</p>
+        </div>
+      ))}
+    </div>
+
+    <!-- Cards -->
+    <div class="bestof-list">
+      {travelCards.map((card, i) => (
+        <div class={`bestof-card${i === 0 ? ' bestof-card-top' : ''}`}>
+          <div class="bestof-rank">{i === 0 ? '🏆' : `#${i + 1}`}</div>
+          <div class="bestof-body">
+            <div class="bestof-header">
+              <div>
+                <h2 class="bestof-name">{card.name}</h2>
+                <span class="bestof-issuer">{card.issuer} · {card.category}</span>
+              </div>
+              <RatingBadge rating={card.rating} />
+            </div>
+            <div class="bestof-meta-row">
+              <div class="bestof-meta-item">
+                <span class="bestof-meta-label">Annual Fee</span>
+                <span class="bestof-meta-val">{card.annualFee}</span>
+              </div>
+              <div class="bestof-meta-item">
+                <span class="bestof-meta-label">Sign-Up Bonus</span>
+                <span class="bestof-meta-val bonus-val">{card.signupBonus}</span>
+              </div>
+              <div class="bestof-meta-item">
+                <span class="bestof-meta-label">Foreign Fee</span>
+                <span class={`bestof-meta-val ${card.foreignTransactionFee === 'None' ? 'val-good' : 'val-bad'}`}>
+                  {card.foreignTransactionFee}
+                </span>
+              </div>
+              <div class="bestof-meta-item">
+                <span class="bestof-meta-label">Credit Needed</span>
+                <span class="bestof-meta-val">{card.creditScore}</span>
+              </div>
+            </div>
+            <p class="bestof-rewards">{card.rewardsRate}</p>
+            <p class="bestof-best-for">Best for: {card.bestFor}</p>
+          </div>
+          <div class="bestof-actions">
+            <a href={`/finance/review/${card.slug}`} class="bestof-review-btn">Full Review</a>
+            <a href={card.affiliateUrl} class="bestof-apply-btn" target="_blank" rel="noopener sponsored">Apply Now →</a>
+            <p class="bestof-affiliate-note">Affiliate link</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- How to pick -->
+    <section class="editorial-section mt-14">
+      <h2 class="editorial-heading">How to Pick a Travel Card</h2>
+      <p class="editorial-text">The "best" travel card depends entirely on how you travel. Heavy spenders who can use all the credits on the Amex Platinum or Chase Sapphire Reserve will get incredible value from a premium card. Occasional travelers who take 2–3 trips per year are often better off with the Chase Sapphire Preferred — a $95 card that punches way above its weight.</p>
+      <p class="editorial-text mt-3">The single most important feature for international travel is <strong>no foreign transaction fees</strong>. Paying 3% extra on every overseas purchase completely erases your rewards. Every card on this list waives that fee.</p>
+      <p class="editorial-text mt-3">If you only get one travel card, make it one with <strong>transferable points</strong> (Chase Ultimate Rewards or Amex Membership Rewards). These let you move your points to 10+ airline and hotel partners — dramatically increasing what they're worth compared to airline-specific miles.</p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-12">
+      <h2 class="text-xl font-bold mb-6">Frequently Asked Questions</h2>
+      {[
+        ["Are travel cards worth the annual fee?", "For most travelers, yes — but only if you use the perks. A $95 card like the Sapphire Preferred pays for itself with one sign-up bonus. Premium cards ($395–$695) require using multiple annual credits to come out ahead."],
+        ["What's the best first travel card?", "The Chase Sapphire Preferred is the classic first travel card: reasonable $95 fee, excellent sign-up bonus, and access to the Chase UR transfer ecosystem."],
+        ["Can I use travel cards anywhere?", "Visa and Mastercard are accepted at 98%+ of merchants worldwide. American Express has slightly less coverage, especially in rural areas and some countries."],
+        ["Do travel points expire?", "Most points don't expire as long as your account is open and active. Airline miles can expire if there's no earning or redemption activity for 12–24 months — check your specific program."],
+        ["Should I get multiple travel cards?", "Many travel enthusiasts carry 2–3 cards to maximize categories: a premium card for lounge access, a mid-tier card for dining and everyday spend, and a no-fee card as a backup."],
+      ].map(([q, a]) => (
+        <details class="faq-item-simple">
+          <summary class="faq-q-simple">{q}</summary>
+          <p class="faq-a-simple">{a}</p>
+        </details>
+      ))}
+    </section>
+
+    <!-- Bottom CTA -->
+    <div class="bottom-cta-bar mt-14">
+      <div>
+        <p class="font-bold text-lg">Ready to earn miles on every purchase?</p>
+        <p class="text-text-muted text-sm">Compare all credit cards or take our quiz to find your perfect match.</p>
+      </div>
+      <div class="flex gap-3 flex-wrap">
+        <a href="/finance/credit-cards" class="btn-primary">All Credit Cards</a>
+        <a href="/finance/quiz/credit-card" class="btn-outline">Take the Quiz</a>
+      </div>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<style>
+  .criteria-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+  .criteria-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+  .criteria-icon { font-size: 1.5rem; }
+  .criteria-label { font-size: 0.875rem; font-weight: 700; color: var(--color-text); }
+  .criteria-tip { font-size: 0.8rem; color: var(--color-text-muted); line-height: 1.5; }
+
+  .bestof-list { display: flex; flex-direction: column; gap: 16px; }
+  .bestof-card { display: flex; gap: 16px; align-items: flex-start; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 18px; padding: 24px; flex-wrap: wrap; }
+  .bestof-card-top { border-color: var(--color-accent); box-shadow: 0 0 0 1px var(--color-accent); }
+  .bestof-rank { font-size: 1.5rem; font-weight: 800; min-width: 36px; text-align: center; padding-top: 2px; }
+  .bestof-body { flex: 1; min-width: 260px; }
+  .bestof-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+  .bestof-name { font-size: 1.15rem; font-weight: 700; color: var(--color-text); margin-bottom: 2px; }
+  .bestof-issuer { font-size: 0.78rem; color: var(--color-text-muted); }
+  .bestof-meta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 10px; }
+  .bestof-meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .bestof-meta-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-text-muted); font-weight: 600; }
+  .bestof-meta-val { font-size: 0.85rem; font-weight: 700; color: var(--color-text); }
+  .bonus-val { color: var(--color-accent); }
+  .val-good { color: #10b981; }
+  .val-bad { color: #ef4444; }
+  .bestof-rewards { font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.5; margin-bottom: 6px; }
+  .bestof-best-for { font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); }
+  .bestof-actions { display: flex; flex-direction: column; gap: 8px; align-items: center; flex-shrink: 0; }
+  .bestof-review-btn { display: block; text-align: center; padding: 8px 18px; border: 1px solid var(--color-border); border-radius: 9px; font-size: 0.8rem; font-weight: 600; color: var(--color-text); text-decoration: none; transition: background 0.15s; white-space: nowrap; }
+  .bestof-review-btn:hover { background: var(--color-surface); }
+  .bestof-apply-btn { display: block; text-align: center; background: var(--color-accent); color: white; font-weight: 700; font-size: 0.875rem; padding: 10px 20px; border-radius: 9px; text-decoration: none; white-space: nowrap; transition: background 0.2s; }
+  .bestof-apply-btn:hover { background: #0284c7; }
+  .bestof-affiliate-note { font-size: 0.65rem; color: var(--color-text-muted); text-align: center; }
+
+  .editorial-section { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 28px 32px; }
+  .editorial-heading { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; }
+  .editorial-text { font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.75; }
+
+  .faq-item-simple { border: 1px solid var(--color-border); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+  .faq-q-simple { padding: 16px 20px; font-weight: 600; font-size: 0.9rem; cursor: pointer; list-style: none; color: var(--color-text); }
+  .faq-q-simple::-webkit-details-marker { display: none; }
+  .faq-q-simple::before { content: '+'; margin-right: 10px; color: var(--color-accent); font-weight: 700; }
+  details[open] .faq-q-simple::before { content: '−'; }
+  .faq-a-simple { padding: 0 20px 16px 36px; font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.7; }
+
+  .bottom-cta-bar { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .btn-outline { border: 1px solid var(--color-border); padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 0.875rem; text-decoration: none; color: var(--color-text); transition: background 0.15s; }
+  .btn-outline:hover { background: var(--color-surface); }
+</style>

@@ -1,1261 +1,758 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import RatingBadge from '../components/shared/RatingBadge.astro';
-import banks from "../data/finance/banks.json";
-import creditCards from "../data/finance/credit-cards.json";
-import investing from "../data/finance/investing.json";
-import destinations from "../data/travel/destinations.json";
-
-const title = "Folvr — Finance Smarter. Travel Farther.";
-const description = "Compare banks, credit cards, and investing platforms. Explore the world's best coastal destinations and learn how to fund your travels with the right rewards cards.";
-
-const topBanks = [...banks].sort((a, b) => b.rating - a.rating).slice(0, 4);
-const topCards = [...creditCards].sort((a, b) => b.rating - a.rating).slice(0, 4);
-const topInvesting = [...investing].sort((a, b) => b.rating - a.rating).slice(0, 4);
-const topDestinations = [...destinations].sort((a, b) => b.rating - a.rating).slice(0, 4);
-const travelCards = creditCards.filter(c => ['Travel', 'Premium Travel'].includes(c.category)).slice(0, 3);
-
-// Top Performing Stories — hand-picked editorial
-const leadStory = {
-  href: '/finance/review/fidelity',
-  eyebrow: 'Investing',
-  title: 'Why Fidelity Remains the Gold Standard for Long-Term Investors',
-  desc: 'Zero commissions, no account minimums, and fractional shares — Fidelity keeps pulling ahead of the pack.',
-  tag: 'Editor\'s Pick',
-  rating: 4.8,
-};
-const secondaryStories = [
-  {
-    href: '/finance/review/ally',
-    eyebrow: 'Banking',
-    title: 'Ally Bank Review 2026: Still the Best Online Savings Rate?',
-    tag: 'Top Rated',
-    rating: 4.7,
-  },
-  {
-    href: '/travel/destinations/maldives',
-    eyebrow: 'Travel',
-    title: 'Maldives 2026: The Ultimate Overwater Bungalow Guide',
-    tag: 'Trending',
-    rating: 4.9,
-  },
-];
-const stripStories = [
-  { href: '/finance/review/capital-one-venture-x', eyebrow: 'Credit Cards', title: 'Capital One Venture X: Best All-Around Travel Card?', rating: 4.7 },
-  { href: '/travel/destinations/british-virgin-islands', eyebrow: 'Travel', title: 'BVI Sailing Guide: Hidden Anchorages & Best Months to Go', rating: 4.9 },
-  { href: '/finance/compare/ally-vs-sofi', eyebrow: 'Compare', title: 'Ally vs SoFi 2026: Which High-Yield Account Wins?', rating: null },
-];
-
-const schema = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Folvr",
-  "url": "https://folvr.com",
-  "description": description
-};
+// Greesi — Signal Intelligence Platform
+// Standalone page, no BaseLayout
 ---
 
-<BaseLayout title={title} description={description} schema={schema}>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Greesi — Signal Intelligence</title>
+  <meta name="description" content="Greesi surfaces the signals that move markets before the crowd catches on. Finance, crypto, macro, and alternative data — distilled to what actually matters." />
+  <meta property="og:title" content="Greesi — Signal Intelligence" />
+  <meta property="og:description" content="Signal, not noise." />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://greesi.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
 
-  <!-- ── Hero ──────────────────────────────────────────────────────── -->
-  <section class="hero-root has-noise">
-    <!-- Animated orbs -->
-    <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
-    <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
-    <div class="hero-orb hero-orb-3" aria-hidden="true"></div>
+<!-- ── NAV ─────────────────────────────────────────────── -->
+<nav class="g-nav" id="gnav">
+  <div class="g-nav-inner">
+    <a href="/" class="g-logo" aria-label="Greesi home">
+      <svg width="88" height="28" viewBox="0 0 88 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Pill with diagonal cut mark -->
+        <rect x="0" y="4" width="26" height="20" rx="10" fill="white"/>
+        <line x1="9" y1="4" x2="17" y2="24" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round"/>
+        <text x="32" y="20" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.5" fill="white">greesi</text>
+      </svg>
+    </a>
+    <div class="g-nav-links">
+      <a href="/finance" class="g-nav-link">Finance</a>
+      <a href="/finance/calculators/debt-payoff" class="g-nav-link">Crypto</a>
+      <a href="/tools" class="g-nav-link">Tools</a>
+      <a href="/about" class="g-nav-link">About</a>
+    </div>
+    <div class="g-nav-right">
+      <a href="#access" class="g-btn-access">Get Access</a>
+    </div>
+    <button class="g-hamburger" id="ghamburger" aria-label="Open menu">
+      <span></span><span></span>
+    </button>
+  </div>
+  <div class="g-mobile-menu" id="gmobile">
+    <a href="/finance" class="g-mobile-link">Finance</a>
+    <a href="/finance/calculators/debt-payoff" class="g-mobile-link">Crypto</a>
+    <a href="/tools" class="g-mobile-link">Tools</a>
+    <a href="/about" class="g-mobile-link">About</a>
+    <a href="#access" class="g-mobile-link g-mobile-cta">Get Access</a>
+  </div>
+</nav>
 
-    <div class="hero-inner section-container">
-      <div class="hero-content">
-        <!-- Eyebrow -->
-        <div class="hero-eyebrow reveal-item" style="--delay:0.05s">
-          <span class="eyebrow-dot"></span>
-          Finance · Travel · Smart Money
-        </div>
-
-        <!-- Headline -->
-        <h1 class="hero-headline">
-          <span class="hero-line reveal-item" style="--delay:0.12s">Finance Your Life.</span>
-          <span class="hero-line hero-line-accent reveal-item" style="--delay:0.22s">Travel Smarter.</span>
-        </h1>
-
-        <!-- Subhead -->
-        <p class="hero-sub reveal-item" style="--delay:0.32s">
-          Unbiased comparisons for banks, credit cards, and brokers —
-          plus expert coastal travel guides to help you get more miles out of every dollar.
-        </p>
-
-        <!-- CTAs -->
-        <div class="hero-ctas reveal-item" style="--delay:0.42s">
-          <a href="/finance/banking" class="btn-primary">Compare Banks</a>
-          <a href="/travel" class="btn-ghost">Explore Destinations</a>
-        </div>
-
-        <!-- Floating stat chips -->
-        <div class="hero-chips reveal-item" style="--delay:0.54s">
-          <div class="hero-chip">
-            <span class="chip-num" data-count="25" data-suffix="+">0</span>
-            <span class="chip-label">Products Reviewed</span>
-          </div>
-          <div class="hero-chip">
-            <span class="chip-num" data-count="480" data-prefix="4." data-suffix="%" data-decimals="true">0</span>
-            <span class="chip-label">Top Savings APY</span>
-          </div>
-          <div class="hero-chip">
-            <span class="chip-num" data-count="10" data-suffix=" Destinations">0</span>
-            <span class="chip-label">Coastal Guides</span>
-          </div>
-        </div>
+<!-- ── HERO ────────────────────────────────────────────── -->
+<section class="g-hero">
+  <div class="g-hero-bg-grid" aria-hidden="true"></div>
+  <div class="g-hero-inner">
+    <div class="g-hero-eyebrow reveal">
+      <span class="g-dot"></span>
+      Intelligence Platform
+    </div>
+    <h1 class="g-hero-headline reveal">Signal,<br/>not noise.</h1>
+    <p class="g-hero-sub reveal">Greesi surfaces the patterns, rates, and moves that matter — before the rest of the market catches on. Finance, crypto, macro, and alternative data, distilled to what actually changes your outcome.</p>
+    <div class="g-hero-actions reveal">
+      <a href="#access" class="g-btn-primary">Request Early Access</a>
+      <a href="#method" class="g-btn-ghost">See the method →</a>
+    </div>
+    <div class="g-hero-proof reveal">
+      <div class="g-proof-stat">
+        <span class="g-proof-num">4.80%</span>
+        <span class="g-proof-label">Best tracked APY</span>
       </div>
-    </div>
-
-    <!-- Scroll indicator -->
-    <div class="hero-scroll-hint" aria-hidden="true">
-      <span class="scroll-label">Scroll</span>
-      <div class="scroll-line"></div>
-    </div>
-  </section>
-
-  <!-- ── Top Performing Stories ────────────────────────────────────── -->
-  <section class="stories-root section-container">
-    <div class="stories-header reveal-item">
-      <span class="section-eyebrow">Top Performing Stories</span>
-      <h2 class="stories-title">What Readers Are Exploring</h2>
-    </div>
-
-    <div class="stories-grid">
-      <!-- Lead card -->
-      <a href={leadStory.href} class="story-lead reveal-item card-lift" style="--delay:0.08s">
-        <div class="story-lead-bg" aria-hidden="true"></div>
-        <div class="story-lead-body">
-          <div class="story-meta">
-            <span class="story-eyebrow">{leadStory.eyebrow}</span>
-            <span class="story-tag">{leadStory.tag}</span>
-          </div>
-          <h3 class="story-lead-title">{leadStory.title}</h3>
-          <p class="story-lead-desc">{leadStory.desc}</p>
-          <div class="story-lead-footer">
-            <RatingBadge rating={leadStory.rating} size="sm" />
-            <span class="story-read">Read →</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Secondary stack -->
-      <div class="story-secondary-stack">
-        {secondaryStories.map((s, i) => (
-          <a href={s.href} class="story-secondary reveal-item card-lift" style={`--delay:${0.12 + i * 0.08}s`}>
-            <div class="story-meta">
-              <span class="story-eyebrow">{s.eyebrow}</span>
-              <span class="story-tag">{s.tag}</span>
-            </div>
-            <h3 class="story-secondary-title">{s.title}</h3>
-            <div class="story-secondary-footer">
-              <RatingBadge rating={s.rating} size="sm" />
-              <span class="story-read">Read →</span>
-            </div>
-          </a>
-        ))}
+      <div class="g-proof-div" aria-hidden="true"></div>
+      <div class="g-proof-stat">
+        <span class="g-proof-num">30+</span>
+        <span class="g-proof-label">Products analyzed</span>
       </div>
-    </div>
-
-    <!-- Strip row -->
-    <div class="story-strip">
-      {stripStories.map((s, i) => (
-        <a href={s.href} class="story-strip-item reveal-item card-lift" style={`--delay:${0.06 + i * 0.07}s`}>
-          <span class="story-eyebrow">{s.eyebrow}</span>
-          <h4 class="story-strip-title">{s.title}</h4>
-          {s.rating && <RatingBadge rating={s.rating} size="sm" />}
-          {!s.rating && <span class="story-compare-tag">Compare →</span>}
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <!-- ── Stats Strip ────────────────────────────────────────────────── -->
-  <div class="stats-strip has-noise">
-    <div class="stats-inner section-container">
-      {[
-        { num: 25, suffix: '+', label: 'Financial Products' },
-        { num: 10, suffix: '', label: 'Coastal Destinations' },
-        { num: 94, suffix: '+', label: 'Side-by-Side Comparisons' },
-        { num: 2, suffix: ' Free Calculators', label: 'Planning Tools' },
-      ].map((s, i) => (
-        <div class="stat-item reveal-item" style={`--delay:${i * 0.07}s`}>
-          <span class="stat-num" data-count={s.num} data-suffix={s.suffix}>0</span>
-          <span class="stat-label">{s.label}</span>
-        </div>
-      ))}
+      <div class="g-proof-div" aria-hidden="true"></div>
+      <div class="g-proof-stat">
+        <span class="g-proof-num">100%</span>
+        <span class="g-proof-label">Independent</span>
+      </div>
     </div>
   </div>
+</section>
 
-  <!-- ── Finance Picks (Tabbed) ─────────────────────────────────────── -->
-  <section class="picks-root section-container">
-    <div class="picks-header reveal-item">
-      <div>
-        <span class="section-eyebrow">Finance</span>
-        <h2 class="picks-title">Top Picks for 2026</h2>
+<!-- ── TICKER ──────────────────────────────────────────── -->
+<div class="g-ticker" aria-label="Live signal feed">
+  <div class="g-ticker-track" id="gticker">
+    <span class="g-tick"><span class="g-tick-label up">ALLY HYSA</span> 4.20% APY</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label">BTC/USD</span> +2.4% 7d</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label up">CSP BONUS</span> 80,000 pts live</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label">FED FUNDS</span> 5.25–5.50%</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label up">MARCUS</span> 4.10% → 4.40%</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label">ETH/BTC</span> 0.051 ratio</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label up">WEALTHFRONT</span> 4.80% APY</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label">AMEX PLAT</span> 150k offer expired</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label up">ALLY HYSA</span> 4.20% APY</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label">BTC/USD</span> +2.4% 7d</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label up">CSP BONUS</span> 80,000 pts live</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label">FED FUNDS</span> 5.25–5.50%</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label up">MARCUS</span> 4.10% → 4.40%</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label">ETH/BTC</span> 0.051 ratio</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label up">WEALTHFRONT</span> 4.80% APY</span>
+    <span class="g-tick-sep">·</span>
+    <span class="g-tick"><span class="g-tick-label">AMEX PLAT</span> 150k offer expired</span>
+    <span class="g-tick-sep">·</span>
+  </div>
+</div>
+
+<!-- ── METHOD ──────────────────────────────────────────── -->
+<section class="g-section" id="method">
+  <div class="g-section-inner">
+    <div class="g-label reveal">How it works</div>
+    <h2 class="g-section-headline reveal">Intelligence with a process.</h2>
+    <p class="g-section-sub reveal">We don't aggregate opinions. We build proprietary scoring models across every product category — then surface only what moves the needle.</p>
+    <div class="g-method-grid">
+      <div class="g-method-card reveal">
+        <div class="g-method-num">01</div>
+        <h3 class="g-method-title">Collect</h3>
+        <p class="g-method-body">We monitor rates, bonuses, terms, and fees across 200+ financial products in real time. No stale data. No quarterly reviews.</p>
       </div>
-      <div class="tab-bar" role="tablist">
-        <button class="tab-btn tab-active" data-tab="banks" role="tab">Banks</button>
-        <button class="tab-btn" data-tab="cards" role="tab">Credit Cards</button>
-        <button class="tab-btn" data-tab="investing" role="tab">Investing</button>
+      <div class="g-method-card reveal">
+        <div class="g-method-num">02</div>
+        <h3 class="g-method-title">Score</h3>
+        <p class="g-method-body">Proprietary scoring weights yield, accessibility, fees, and reliability — then normalizes across categories. One number you can actually use.</p>
+      </div>
+      <div class="g-method-card reveal">
+        <div class="g-method-num">03</div>
+        <h3 class="g-method-title">Signal</h3>
+        <p class="g-method-body">When something materially changes — a rate moves, a bonus launches, a risk emerges — you hear about it first. That's the signal.</p>
       </div>
     </div>
+  </div>
+</section>
 
-    <!-- Banks tab -->
-    <div id="tab-banks" class="tab-panel">
-      <div class="picks-grid">
-        {topBanks.map((bank, i) => (
-          <a href={`/finance/review/${bank.slug}`} class={`pick-card reveal-item card-lift${i === 0 ? ' pick-featured' : ''}`} style={`--delay:${i * 0.06}s`}>
-            <div class="pick-rank">#{i + 1}</div>
-            <RatingBadge rating={bank.rating} size="sm" />
-            <h3 class="pick-name">{bank.name}</h3>
-            <p class="pick-type">{bank.type}</p>
-            <div class="pick-stat">
-              <span class="pick-stat-num">{bank.savingsApy}</span>
-              <span class="pick-stat-label">savings APY</span>
-            </div>
-          </a>
-        ))}
-      </div>
-      <div class="picks-viewall">
-        <a href="/finance/banking" class="viewall-link">View All Banks →</a>
-      </div>
-    </div>
+<!-- ── SIGNAL CARDS ─────────────────────────────────────── -->
+<section class="g-section g-section-dark">
+  <div class="g-section-inner">
+    <div class="g-label reveal">Live intelligence</div>
+    <h2 class="g-section-headline reveal">What a signal looks like.</h2>
+    <div class="g-signals-grid">
 
-    <!-- Cards tab -->
-    <div id="tab-cards" class="tab-panel tab-hidden">
-      <div class="picks-grid">
-        {topCards.map((card, i) => (
-          <a href={`/finance/review/${card.slug}`} class={`pick-card reveal-item card-lift${i === 0 ? ' pick-featured' : ''}`} style={`--delay:${i * 0.06}s`}>
-            <div class="pick-rank">#{i + 1}</div>
-            <RatingBadge rating={card.rating} size="sm" />
-            <h3 class="pick-name">{card.name}</h3>
-            <p class="pick-type">{card.category}</p>
-            <div class="pick-stat">
-              <span class="pick-stat-num">{card.annualFee}</span>
-              <span class="pick-stat-label">annual fee</span>
-            </div>
-          </a>
-        ))}
-      </div>
-      <div class="picks-viewall">
-        <a href="/finance/credit-cards" class="viewall-link">View All Cards →</a>
-      </div>
-    </div>
-
-    <!-- Investing tab -->
-    <div id="tab-investing" class="tab-panel tab-hidden">
-      <div class="picks-grid">
-        {topInvesting.map((platform, i) => (
-          <a href={`/finance/review/${platform.slug}`} class={`pick-card reveal-item card-lift${i === 0 ? ' pick-featured' : ''}`} style={`--delay:${i * 0.06}s`}>
-            <div class="pick-rank">#{i + 1}</div>
-            <RatingBadge rating={platform.rating} size="sm" />
-            <h3 class="pick-name">{platform.name}</h3>
-            <p class="pick-type">{platform.type}</p>
-            <p class="pick-bestfor">{platform.bestFor}</p>
-          </a>
-        ))}
-      </div>
-      <div class="picks-viewall">
-        <a href="/finance/investing" class="viewall-link">View All Platforms →</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Travel Destinations ────────────────────────────────────────── -->
-  <section class="travel-root has-noise">
-    <div class="travel-inner section-container">
-      <div class="travel-header reveal-item">
-        <div>
-          <span class="section-eyebrow" style="color: rgba(255,255,255,0.5)">Travel</span>
-          <h2 class="travel-title">Top Coastal Destinations</h2>
-          <p class="travel-sub">Shores, sails, and island escapes — ranked by our editors</p>
+      <div class="g-signal-card reveal">
+        <div class="g-signal-header">
+          <span class="g-signal-category">BANKING</span>
+          <span class="g-signal-badge up">Rate Move</span>
         </div>
-        <a href="/travel" class="travel-viewall">View All →</a>
-      </div>
-
-      <div class="travel-grid-wrapper">
-        <div class="travel-grid">
-          {topDestinations.map((dest, i) => (
-            <a href={`/travel/destinations/${dest.slug}`} class="dest-card reveal-item card-lift" style={`--delay:${i * 0.07}s`}>
-              <div class="dest-card-bg" style={`--hue:${185 + i * 12}deg`} aria-hidden="true"></div>
-              <div class="dest-card-body">
-                <div class="dest-top">
-                  <span class="dest-rank">#{i + 1}</span>
-                  <RatingBadge rating={dest.rating} size="sm" />
-                </div>
-                <div class="dest-bottom">
-                  <span class="dest-region">{dest.region}</span>
-                  <h3 class="dest-name">{dest.name}</h3>
-                  <p class="dest-meta">{dest.budgetLevel} · {dest.bestSeason.split(' ')[0]}</p>
-                </div>
-              </div>
-            </a>
-          ))}
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Travel × Finance Crossover ────────────────────────────────── -->
-  <section class="crossover-root section-container">
-    <div class="crossover-header reveal-item">
-      <span class="section-eyebrow">Travel × Finance</span>
-      <h2 class="crossover-title">Fund Your Next Trip with the Right Card</h2>
-      <p class="crossover-sub">Earn points on everyday spending — redeem for flights, hotels, and upgrades</p>
-    </div>
-
-    <div class="crossover-grid">
-      {travelCards.map((card, i) => (
-        <a href={`/finance/review/${card.slug}`} class="crossover-card reveal-item card-lift" style={`--delay:${i * 0.08}s`}>
-          <div class="crossover-card-top">
-            <span class="crossover-eyebrow">{card.category}</span>
-            <RatingBadge rating={card.rating} size="sm" />
+        <div class="g-signal-body">
+          <p class="g-signal-headline">Wealthfront Cash raised to 4.80% APY — highest tracked rate this quarter</p>
+          <div class="g-signal-metrics">
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">4.80%</span>
+              <span class="g-signal-metric-label">Current APY</span>
+            </div>
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">+34bps</span>
+              <span class="g-signal-metric-label">vs last month</span>
+            </div>
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">#1</span>
+              <span class="g-signal-metric-label">Greesi rank</span>
+            </div>
           </div>
-          <h3 class="crossover-card-name">{card.name}</h3>
-          <p class="crossover-fee">{card.annualFee}/yr · No foreign transaction fee</p>
-          <p class="crossover-desc">{card.bestFor}</p>
-          <span class="crossover-cta">Read Review →</span>
-        </a>
-      ))}
-    </div>
-
-    <div class="crossover-footer reveal-item">
-      <a href="/travel/travel-cards" class="btn-primary">Compare All Travel Cards →</a>
-    </div>
-  </section>
-
-  <!-- ── Popular Comparisons ────────────────────────────────────────── -->
-  <section class="compare-root">
-    <div class="compare-inner section-container">
-      <div class="compare-header reveal-item">
-        <span class="section-eyebrow">Compare</span>
-        <h2 class="compare-title">Head-to-Head Comparisons</h2>
-        <p class="compare-sub">Our most-read side-by-side breakdowns</p>
+          <p class="g-signal-note">National average: 0.46%. This is a 10× spread. For a $25k balance, that's $1,085/yr more than your bank is paying you.</p>
+        </div>
+        <a href="/finance/review/wealthfront" class="g-signal-cta">View analysis →</a>
       </div>
 
-      <div class="compare-grid">
-        {[
-          { a: banks[1], b: banks[4] },
-          { a: creditCards[0], b: creditCards[1] },
-          { a: investing[0], b: investing[1] },
-          { a: banks[0], b: banks[1] },
-          { a: creditCards[2], b: creditCards[7] },
-          { a: investing[3], b: investing[4] },
-        ].map(({ a, b }, i) => (
-          <a href={`/finance/compare/${a.slug}-vs-${b.slug}`} class="compare-card reveal-item card-lift" style={`--delay:${(i % 3) * 0.06}s`}>
-            <div class="compare-names">
-              <span class="compare-name">{a.name}</span>
-              <span class="compare-vs">vs</span>
-              <span class="compare-name">{b.name}</span>
+      <div class="g-signal-card reveal">
+        <div class="g-signal-header">
+          <span class="g-signal-category">CREDIT CARDS</span>
+          <span class="g-signal-badge">Bonus Alert</span>
+        </div>
+        <div class="g-signal-body">
+          <p class="g-signal-headline">Chase Sapphire Preferred at 80,000-point offer — above historical median</p>
+          <div class="g-signal-metrics">
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">80k</span>
+              <span class="g-signal-metric-label">Bonus points</span>
             </div>
-            <div class="compare-ratings">
-              <RatingBadge rating={a.rating} size="sm" />
-              <RatingBadge rating={b.rating} size="sm" />
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">$1,000</span>
+              <span class="g-signal-metric-label">Min. est. value</span>
             </div>
-          </a>
-        ))}
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">4.8★</span>
+              <span class="g-signal-metric-label">Greesi score</span>
+            </div>
+          </div>
+          <p class="g-signal-note">Historical median offer is 60k. At 80k, this bonus covers the $95 annual fee ~10× over. Elevated offers typically last 4–6 weeks.</p>
+        </div>
+        <a href="/finance/review/chase-sapphire-preferred" class="g-signal-cta">View analysis →</a>
+      </div>
+
+      <div class="g-signal-card reveal">
+        <div class="g-signal-header">
+          <span class="g-signal-category">MACRO</span>
+          <span class="g-signal-badge neutral">Rate Watch</span>
+        </div>
+        <div class="g-signal-body">
+          <p class="g-signal-headline">Fed holds at 5.25–5.50% — HYSA rates stable, CD ladder still the play</p>
+          <div class="g-signal-metrics">
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">5.25%</span>
+              <span class="g-signal-metric-label">Fed Funds floor</span>
+            </div>
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">2 cuts</span>
+              <span class="g-signal-metric-label">2026 forecast</span>
+            </div>
+            <div class="g-signal-metric">
+              <span class="g-signal-metric-val">Q3</span>
+              <span class="g-signal-metric-label">First cut est.</span>
+            </div>
+          </div>
+          <p class="g-signal-note">When cuts begin, HYSA rates will drop before CDs. A 12-18 month CD ladder locks in today's rate and hedges against the easing cycle.</p>
+        </div>
+        <a href="/finance/calculators/debt-payoff" class="g-signal-cta">View analysis →</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── CATEGORIES ──────────────────────────────────────── -->
+<section class="g-section">
+  <div class="g-section-inner">
+    <div class="g-label reveal">Coverage</div>
+    <h2 class="g-section-headline reveal">Five domains. One source of truth.</h2>
+    <div class="g-cat-grid">
+      <a href="/finance" class="g-cat-card reveal">
+        <div class="g-cat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        </div>
+        <h3 class="g-cat-title">Finance</h3>
+        <p class="g-cat-body">Banks, credit cards, and investing platforms — scored and ranked by what actually matters.</p>
+        <span class="g-cat-link">Explore →</span>
+      </a>
+      <a href="/finance/credit-cards/best-for-travel" class="g-cat-card reveal">
+        <div class="g-cat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h3 class="g-cat-title">Crypto</h3>
+        <p class="g-cat-body">Signal from on-chain data, funding rates, and macro correlation — not Twitter sentiment.</p>
+        <span class="g-cat-link">Coming soon →</span>
+      </a>
+      <a href="/tools" class="g-cat-card reveal">
+        <div class="g-cat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <h3 class="g-cat-title">Trends</h3>
+        <p class="g-cat-body">Search, spending, and behavioral data that precede market moves by days or weeks.</p>
+        <span class="g-cat-link">Coming soon →</span>
+      </a>
+      <a href="/finance/calculators/budget" class="g-cat-card reveal">
+        <div class="g-cat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <h3 class="g-cat-title">Macro</h3>
+        <p class="g-cat-body">Fed policy, yield curves, and global capital flows — translated into personal financial decisions.</p>
+        <span class="g-cat-link">Coming soon →</span>
+      </a>
+      <a href="/tools/rewards-optimizer" class="g-cat-card reveal">
+        <div class="g-cat-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        </div>
+        <h3 class="g-cat-title">Alt Data</h3>
+        <p class="g-cat-body">Satellite, job postings, web traffic, and proprietary indicators not found in traditional reports.</p>
+        <span class="g-cat-link">Coming soon →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROOF BAR ─────────────────────────────────────────── -->
+<div class="g-proof-bar">
+  <div class="g-proof-bar-inner">
+    <div class="g-proof-item reveal">
+      <span class="g-proof-bar-num" data-count="30" data-suffix="+">30+</span>
+      <span class="g-proof-bar-label">Products tracked</span>
+    </div>
+    <div class="g-proof-item reveal">
+      <span class="g-proof-bar-num" data-count="480" data-suffix="" data-prefix="$">$480</span>
+      <span class="g-proof-bar-label">Avg. annual savings found</span>
+    </div>
+    <div class="g-proof-item reveal">
+      <span class="g-proof-bar-num" data-count="100" data-suffix="%">100%</span>
+      <span class="g-proof-bar-label">Independent, no bank funding</span>
+    </div>
+    <div class="g-proof-item reveal">
+      <span class="g-proof-bar-num" data-count="4" data-suffix=" domains">4 domains</span>
+      <span class="g-proof-bar-label">Finance · Crypto · Macro · Travel</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ACCESS CTA ────────────────────────────────────────── -->
+<section class="g-access" id="access">
+  <div class="g-access-inner">
+    <div class="g-label g-label-light reveal">Early Access</div>
+    <h2 class="g-access-headline reveal">The signal layer<br/>for serious decisions.</h2>
+    <p class="g-access-sub reveal">Greesi is in private beta. Join the waitlist and be first to access the full intelligence platform when it opens.</p>
+    <form class="g-access-form reveal" id="gform" action="#" method="post">
+      <input type="email" class="g-access-input" placeholder="your@email.com" required autocomplete="email" />
+      <button type="submit" class="g-btn-primary">Join Waitlist</button>
+    </form>
+    <p class="g-access-fine reveal">No spam. No pitch. Just the signal.</p>
+  </div>
+</section>
+
+<!-- ── FOOTER ───────────────────────────────────────────── -->
+<footer class="g-footer">
+  <div class="g-footer-inner">
+    <div class="g-footer-brand">
+      <a href="/" class="g-logo" aria-label="Greesi home">
+        <svg width="88" height="28" viewBox="0 0 88 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="0" y="4" width="26" height="20" rx="10" fill="white" opacity="0.9"/>
+          <line x1="9" y1="4" x2="17" y2="24" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round"/>
+          <text x="32" y="20" font-family="Inter, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.5" fill="white" opacity="0.9">greesi</text>
+        </svg>
+      </a>
+      <p class="g-footer-tagline">Signal intelligence for the financially serious.</p>
+    </div>
+    <div class="g-footer-cols">
+      <div class="g-footer-col">
+        <p class="g-footer-col-head">Finance</p>
+        <a href="/finance/banking" class="g-footer-link">Banking</a>
+        <a href="/finance/credit-cards" class="g-footer-link">Credit Cards</a>
+        <a href="/finance/investing" class="g-footer-link">Investing</a>
+        <a href="/finance/glossary" class="g-footer-link">Glossary</a>
+      </div>
+      <div class="g-footer-col">
+        <p class="g-footer-col-head">Tools</p>
+        <a href="/tools/rewards-optimizer" class="g-footer-link">Rewards Optimizer</a>
+        <a href="/finance/calculators/debt-payoff" class="g-footer-link">Debt Payoff</a>
+        <a href="/finance/calculators/budget" class="g-footer-link">Budget Planner</a>
+        <a href="/finance/calculators/points-transfer" class="g-footer-link">Points Transfer</a>
+      </div>
+      <div class="g-footer-col">
+        <p class="g-footer-col-head">Company</p>
+        <a href="/about" class="g-footer-link">About</a>
+        <a href="/methodology" class="g-footer-link">Methodology</a>
+        <a href="/submit-story" class="g-footer-link">Submit a Story</a>
       </div>
     </div>
-  </section>
+  </div>
+  <div class="g-footer-bottom">
+    <p class="g-footer-legal">© 2026 Greesi. All rights reserved. Content is for informational purposes only and does not constitute financial advice. Some links are affiliate links — we may earn a commission at no cost to you.</p>
+  </div>
+</footer>
 
-  <!-- ── Calculators CTA ────────────────────────────────────────────── -->
-  <section class="calc-root section-container">
-    <div class="calc-header reveal-item">
-      <span class="section-eyebrow">Tools</span>
-      <h2 class="calc-title">Free Financial Calculators</h2>
-      <p class="calc-sub">Plan your financial future with our free tools</p>
-    </div>
-    <div class="calc-grid">
-      <a href="/finance/calculators/compound-interest" class="calc-card reveal-item card-lift" style="--delay:0.06s">
-        <div class="calc-icon" aria-hidden="true">%</div>
-        <h3 class="calc-name">Compound Interest</h3>
-        <p class="calc-desc">See how your savings grow over time with compounding returns</p>
-        <span class="calc-link">Open Calculator →</span>
-      </a>
-      <a href="/finance/calculators/loan" class="calc-card reveal-item card-lift" style="--delay:0.12s">
-        <div class="calc-icon" aria-hidden="true">$</div>
-        <h3 class="calc-name">Loan Payment</h3>
-        <p class="calc-desc">Calculate monthly payments and the true cost of any loan</p>
-        <span class="calc-link">Open Calculator →</span>
-      </a>
-    </div>
-  </section>
-
-</BaseLayout>
+</body>
+</html>
 
 <style>
-/* ── Hero ────────────────────────────────────────────────────────── */
-.hero-root {
-  position: relative;
-  min-height: 100svh;
-  background: #0a1628;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+  /* ── Tokens ──────────────────────────────────────────── */
+  :root {
+    --black: #0a0a0a;
+    --black-2: #111111;
+    --black-3: #1a1a1a;
+    --black-4: #222222;
+    --gray-1: #2a2a2a;
+    --gray-2: #3a3a3a;
+    --gray-3: #555555;
+    --gray-4: #888888;
+    --gray-5: #aaaaaa;
+    --white: #ffffff;
+    --white-70: rgba(255,255,255,0.7);
+    --white-40: rgba(255,255,255,0.4);
+    --white-12: rgba(255,255,255,0.12);
+    --white-06: rgba(255,255,255,0.06);
+    --accent: #e8ff5a;
+    --accent-dim: rgba(232,255,90,0.15);
+    --up: #4ade80;
+    --up-dim: rgba(74,222,128,0.15);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
 
-.hero-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  pointer-events: none;
-  animation: orb-drift 18s ease-in-out infinite;
-}
-.hero-orb-1 {
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%);
-  top: -100px; left: -150px;
-  animation-delay: 0s;
-}
-.hero-orb-2 {
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%);
-  bottom: -80px; right: -100px;
-  animation-delay: -6s;
-}
-.hero-orb-3 {
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(16,185,129,0.10) 0%, transparent 70%);
-  top: 40%; left: 55%;
-  animation-delay: -12s;
-}
+  /* ── Reset ───────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-family: var(--font); background: var(--black); color: var(--white); -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+  body { overflow-x: hidden; }
+  a { text-decoration: none; color: inherit; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; }
+  img, svg { display: block; }
 
-.hero-inner {
-  position: relative;
-  z-index: 1;
-  padding-top: 120px;
-  padding-bottom: 80px;
-}
+  /* ── Reveal animation ────────────────────────────────── */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
 
-.hero-content {
-  max-width: 760px;
-}
+  /* ── Nav ─────────────────────────────────────────────── */
+  .g-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background 0.3s, backdrop-filter 0.3s;
+  }
+  .g-nav.scrolled {
+    background: rgba(10,10,10,0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-color: var(--white-12);
+  }
+  .g-nav-inner {
+    max-width: 1160px; margin: 0 auto; padding: 0 24px;
+    height: 64px; display: flex; align-items: center; gap: 32px;
+  }
+  .g-logo { flex-shrink: 0; }
+  .g-nav-links { display: flex; gap: 28px; margin-left: 8px; }
+  .g-nav-link { font-size: 0.82rem; font-weight: 500; color: var(--gray-5); letter-spacing: 0.01em; transition: color 0.2s; }
+  .g-nav-link:hover { color: var(--white); }
+  .g-nav-right { margin-left: auto; }
+  .g-btn-access {
+    background: var(--white); color: var(--black); font-size: 0.78rem; font-weight: 600;
+    padding: 8px 18px; border-radius: 99px; transition: background 0.2s, color 0.2s;
+    letter-spacing: 0.01em;
+  }
+  .g-btn-access:hover { background: var(--gray-5); }
+  .g-hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; margin-left: 12px; }
+  .g-hamburger span { display: block; width: 20px; height: 1.5px; background: var(--white); border-radius: 99px; transition: transform 0.25s; }
+  .g-mobile-menu {
+    display: none; flex-direction: column;
+    padding: 12px 24px 20px;
+    border-top: 1px solid var(--white-12);
+    background: rgba(10,10,10,0.96);
+  }
+  .g-mobile-menu.open { display: flex; }
+  .g-mobile-link { padding: 12px 0; font-size: 0.9rem; font-weight: 500; color: var(--gray-5); border-bottom: 1px solid var(--white-06); }
+  .g-mobile-link:last-child { border-bottom: none; }
+  .g-mobile-cta { color: var(--white); font-weight: 600; margin-top: 8px; }
 
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  margin-bottom: 28px;
-}
-.eyebrow-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--color-accent);
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%       { opacity: 0.5; transform: scale(0.7); }
-}
+  @media (max-width: 680px) {
+    .g-nav-links, .g-nav-right { display: none; }
+    .g-hamburger { display: flex; margin-left: auto; }
+  }
 
-.hero-headline {
-  margin: 0 0 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.hero-line {
-  display: block;
-  font-size: clamp(2.6rem, 6vw, 4.5rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.08;
-  color: white;
-  overflow: hidden;
-}
-.hero-line-accent { color: var(--color-accent); }
+  /* ── Hero ────────────────────────────────────────────── */
+  .g-hero {
+    position: relative; min-height: 100svh;
+    display: flex; align-items: center;
+    background: var(--black);
+    padding: 120px 24px 80px;
+    overflow: hidden;
+  }
+  .g-hero-bg-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+  .g-hero-inner {
+    position: relative; z-index: 1;
+    max-width: 760px; margin: 0 auto; text-align: center;
+  }
+  .g-hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gray-4); margin-bottom: 28px;
+  }
+  .g-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--up);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+  .g-hero-headline {
+    font-size: clamp(3.2rem, 8vw, 6.5rem);
+    font-weight: 700; line-height: 1.0;
+    letter-spacing: -0.04em; color: var(--white);
+    margin-bottom: 28px;
+  }
+  .g-hero-sub {
+    font-size: clamp(0.95rem, 2vw, 1.1rem); font-weight: 400; line-height: 1.7;
+    color: var(--gray-4); max-width: 560px; margin: 0 auto 36px;
+  }
+  .g-hero-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 64px; }
+  .g-btn-primary {
+    background: var(--white); color: var(--black); font-size: 0.875rem; font-weight: 600;
+    padding: 13px 28px; border-radius: 99px; transition: background 0.2s, transform 0.15s;
+    letter-spacing: -0.01em;
+  }
+  .g-btn-primary:hover { background: #e0e0e0; transform: translateY(-1px); }
+  .g-btn-ghost {
+    font-size: 0.875rem; font-weight: 500; color: var(--gray-4); padding: 13px 20px;
+    border-radius: 99px; border: 1px solid var(--white-12); transition: color 0.2s, border-color 0.2s;
+  }
+  .g-btn-ghost:hover { color: var(--white); border-color: var(--white-40); }
+  .g-hero-proof {
+    display: flex; align-items: center; justify-content: center;
+    gap: 28px; flex-wrap: wrap;
+  }
+  .g-proof-stat { text-align: center; }
+  .g-proof-num { display: block; font-size: 1.6rem; font-weight: 700; letter-spacing: -0.03em; color: var(--white); }
+  .g-proof-label { font-size: 0.7rem; color: var(--gray-4); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+  .g-proof-div { width: 1px; height: 32px; background: var(--white-12); }
 
-.hero-sub {
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  color: rgba(255,255,255,0.5);
-  line-height: 1.7;
-  max-width: 580px;
-  margin-bottom: 36px;
-}
+  /* ── Ticker ──────────────────────────────────────────── */
+  .g-ticker {
+    background: var(--black-2); border-top: 1px solid var(--white-06); border-bottom: 1px solid var(--white-06);
+    overflow: hidden; white-space: nowrap; padding: 12px 0;
+  }
+  .g-ticker-track {
+    display: inline-block;
+    animation: ticker 42s linear infinite;
+  }
+  .g-ticker-track:hover { animation-play-state: paused; }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .g-tick { display: inline; font-size: 0.72rem; font-weight: 500; color: var(--gray-4); margin: 0 16px; }
+  .g-tick-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-3); margin-right: 6px; }
+  .g-tick-label.up { color: var(--up); }
+  .g-tick-sep { color: var(--gray-2); font-size: 0.7rem; margin: 0 6px; }
 
-.hero-ctas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 48px;
-}
+  /* ── Sections ────────────────────────────────────────── */
+  .g-section { padding: 100px 24px; }
+  .g-section-dark { background: var(--black-2); border-top: 1px solid var(--white-06); border-bottom: 1px solid var(--white-06); }
+  .g-section-inner { max-width: 1080px; margin: 0 auto; }
+  .g-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--gray-3); margin-bottom: 16px;
+  }
+  .g-label-light { color: var(--gray-4); }
+  .g-section-headline {
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: -0.03em;
+    line-height: 1.15; color: var(--white); margin-bottom: 16px; max-width: 560px;
+  }
+  .g-section-sub {
+    font-size: 0.9rem; color: var(--gray-4); line-height: 1.75; max-width: 480px; margin-bottom: 56px;
+  }
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  background: var(--color-accent);
-  color: white;
-  font-weight: 700;
-  font-size: 0.9rem;
-  padding: 13px 28px;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-  box-shadow: 0 4px 20px rgba(14,165,233,0.35);
-}
-.btn-primary:hover {
-  background: var(--color-accent-dark);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 28px rgba(14,165,233,0.45);
-}
+  /* ── Method grid ─────────────────────────────────────── */
+  .g-method-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2px;
+    border: 1px solid var(--white-06); border-radius: var(--radius); overflow: hidden;
+  }
+  .g-method-card {
+    background: var(--black-2); padding: 40px 32px;
+    border-right: 1px solid var(--white-06);
+    transition: background 0.2s;
+  }
+  .g-method-card:last-child { border-right: none; }
+  .g-method-card:hover { background: var(--black-3); }
+  .g-method-num {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; color: var(--gray-3);
+    text-transform: uppercase; margin-bottom: 20px;
+  }
+  .g-method-title { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: 12px; }
+  .g-method-body { font-size: 0.85rem; color: var(--gray-4); line-height: 1.7; }
 
-.btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.8);
-  font-weight: 600;
-  font-size: 0.9rem;
-  padding: 13px 28px;
-  border-radius: 10px;
-  text-decoration: none;
-  border: 1px solid rgba(255,255,255,0.12);
-  transition: background 0.2s, color 0.2s;
-  backdrop-filter: blur(8px);
-}
-.btn-ghost:hover {
-  background: rgba(255,255,255,0.12);
-  color: white;
-}
+  @media (max-width: 760px) {
+    .g-method-grid { grid-template-columns: 1fr; }
+    .g-method-card { border-right: none; border-bottom: 1px solid var(--white-06); }
+    .g-method-card:last-child { border-bottom: none; }
+  }
 
-.hero-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.hero-chip {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 40px;
-  padding: 8px 16px 8px 14px;
-  backdrop-filter: blur(12px);
-}
-.chip-num {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-.chip-label {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: rgba(255,255,255,0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
+  /* ── Signal cards ────────────────────────────────────── */
+  .g-signals-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px;
+  }
+  .g-signal-card {
+    background: var(--black-3); border: 1px solid var(--white-06); border-radius: var(--radius);
+    padding: 28px; display: flex; flex-direction: column; gap: 20px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .g-signal-card:hover { border-color: var(--white-12); background: var(--black-4); }
+  .g-signal-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .g-signal-category {
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gray-3);
+  }
+  .g-signal-badge {
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 99px; background: var(--white-06); color: var(--gray-5);
+  }
+  .g-signal-badge.up { background: var(--up-dim); color: var(--up); }
+  .g-signal-badge.neutral { background: var(--accent-dim); color: var(--accent); }
+  .g-signal-body { flex: 1; }
+  .g-signal-headline { font-size: 0.95rem; font-weight: 600; line-height: 1.5; color: var(--white); margin-bottom: 20px; }
+  .g-signal-metrics { display: flex; gap: 20px; margin-bottom: 16px; }
+  .g-signal-metric { display: flex; flex-direction: column; gap: 3px; }
+  .g-signal-metric-val { font-size: 1.15rem; font-weight: 700; color: var(--white); letter-spacing: -0.02em; }
+  .g-signal-metric-label { font-size: 0.62rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-3); }
+  .g-signal-note { font-size: 0.78rem; color: var(--gray-4); line-height: 1.65; }
+  .g-signal-cta {
+    font-size: 0.78rem; font-weight: 600; color: var(--gray-4);
+    border-top: 1px solid var(--white-06); padding-top: 16px;
+    transition: color 0.2s;
+  }
+  .g-signal-cta:hover { color: var(--white); }
 
-.hero-scroll-hint {
-  position: absolute;
-  bottom: 36px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  animation: fade-in 1.2s 1.2s both;
-}
-.scroll-label {
-  font-size: 0.65rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
-}
-.scroll-line {
-  width: 1px;
-  height: 40px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
-  animation: scroll-line 1.8s ease-in-out infinite;
-}
-@keyframes scroll-line {
-  0%   { transform: scaleY(0); transform-origin: top; }
-  50%  { transform: scaleY(1); transform-origin: top; }
-  51%  { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
-}
+  /* ── Category grid ───────────────────────────────────── */
+  .g-cat-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;
+  }
+  .g-cat-card {
+    background: var(--black-2); border: 1px solid var(--white-06); border-radius: var(--radius);
+    padding: 28px 24px; display: flex; flex-direction: column; gap: 12px;
+    transition: border-color 0.2s, background 0.2s; cursor: pointer;
+  }
+  .g-cat-card:hover { border-color: var(--white-12); background: var(--black-3); }
+  .g-cat-icon { color: var(--gray-3); width: 40px; height: 40px; display: flex; align-items: center; }
+  .g-cat-title { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+  .g-cat-body { font-size: 0.8rem; color: var(--gray-4); line-height: 1.6; flex: 1; }
+  .g-cat-link { font-size: 0.75rem; font-weight: 600; color: var(--gray-3); margin-top: 4px; transition: color 0.2s; }
+  .g-cat-card:hover .g-cat-link { color: var(--white); }
 
-/* ── Stories ─────────────────────────────────────────────────────── */
-.stories-root {
-  padding: 80px 24px 0;
-}
-.stories-header {
-  margin-bottom: 32px;
-}
-.stories-title {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--color-text);
-  margin: 6px 0 0;
-}
+  /* ── Proof bar ───────────────────────────────────────── */
+  .g-proof-bar {
+    background: var(--black-2); border-top: 1px solid var(--white-06); border-bottom: 1px solid var(--white-06);
+    padding: 48px 24px;
+  }
+  .g-proof-bar-inner {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 32px;
+  }
+  .g-proof-item { text-align: center; display: flex; flex-direction: column; gap: 6px; }
+  .g-proof-bar-num { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.04em; color: var(--white); }
+  .g-proof-bar-label { font-size: 0.72rem; color: var(--gray-4); font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; }
 
-.stories-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-@media (min-width: 768px) {
-  .stories-grid { grid-template-columns: 1.7fr 1fr; }
-}
+  /* ── Access CTA ──────────────────────────────────────── */
+  .g-access {
+    padding: 120px 24px;
+    background: var(--black);
+    text-align: center;
+  }
+  .g-access-inner { max-width: 560px; margin: 0 auto; }
+  .g-access-headline {
+    font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; letter-spacing: -0.035em;
+    line-height: 1.1; color: var(--white); margin-bottom: 18px;
+  }
+  .g-access-sub { font-size: 0.9rem; color: var(--gray-4); line-height: 1.75; margin-bottom: 36px; }
+  .g-access-form {
+    display: flex; gap: 10px; max-width: 420px; margin: 0 auto 14px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .g-access-input {
+    flex: 1; min-width: 200px; background: var(--black-3); border: 1px solid var(--white-12);
+    border-radius: 99px; padding: 13px 20px; font-size: 0.875rem; font-family: var(--font);
+    color: var(--white); outline: none; transition: border-color 0.2s;
+  }
+  .g-access-input::placeholder { color: var(--gray-3); }
+  .g-access-input:focus { border-color: var(--white-40); }
+  .g-access-fine { font-size: 0.72rem; color: var(--gray-3); letter-spacing: 0.02em; }
 
-/* Lead card */
-.story-lead {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  min-height: 320px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  text-decoration: none;
-  background: #0a1628;
-}
-.story-lead-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, #0d2340 0%, #0a4f6e 50%, #0ea5e9 100%);
-  opacity: 0.85;
-}
-.story-lead-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(10,22,40,0.9) 0%, transparent 60%);
-}
-.story-lead-body {
-  position: relative;
-  z-index: 1;
-  padding: 28px;
-}
-.story-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.story-eyebrow {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-}
-.story-tag {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 20px;
-  background: rgba(14,165,233,0.2);
-  color: var(--color-accent);
-  border: 1px solid rgba(14,165,233,0.3);
-}
-.story-lead-title {
-  font-size: clamp(1.1rem, 2.2vw, 1.4rem);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  color: white;
-  line-height: 1.25;
-  margin-bottom: 10px;
-}
-.story-lead-desc {
-  font-size: 0.875rem;
-  color: rgba(255,255,255,0.55);
-  line-height: 1.6;
-  margin-bottom: 16px;
-}
-.story-lead-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.story-read {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-accent);
-  letter-spacing: 0.02em;
-}
+  /* ── Footer ──────────────────────────────────────────── */
+  .g-footer {
+    background: var(--black-2); border-top: 1px solid var(--white-06);
+    padding: 64px 24px 0;
+  }
+  .g-footer-inner {
+    max-width: 1080px; margin: 0 auto;
+    display: flex; gap: 64px; flex-wrap: wrap; margin-bottom: 48px;
+  }
+  .g-footer-brand { flex: 0 0 220px; display: flex; flex-direction: column; gap: 16px; }
+  .g-footer-tagline { font-size: 0.78rem; color: var(--gray-3); line-height: 1.6; }
+  .g-footer-cols { display: flex; gap: 48px; flex: 1; flex-wrap: wrap; }
+  .g-footer-col { display: flex; flex-direction: column; gap: 10px; min-width: 120px; }
+  .g-footer-col-head { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-3); margin-bottom: 4px; }
+  .g-footer-link { font-size: 0.8rem; color: var(--gray-4); transition: color 0.2s; }
+  .g-footer-link:hover { color: var(--white); }
+  .g-footer-bottom {
+    max-width: 1080px; margin: 0 auto;
+    border-top: 1px solid var(--white-06); padding: 24px 0;
+  }
+  .g-footer-legal { font-size: 0.72rem; color: var(--gray-3); line-height: 1.65; }
 
-/* Secondary stack */
-.story-secondary-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.story-secondary {
-  flex: 1;
-  border-radius: 16px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: 20px;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: border-color 0.2s;
-}
-.story-secondary:hover { border-color: var(--color-accent); }
-.story-secondary-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--color-text);
-  line-height: 1.3;
-  margin: 8px 0 12px;
-}
-.story-secondary-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Strip */
-.story-strip {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1px;
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  overflow: hidden;
-  margin-bottom: 0;
-}
-@media (min-width: 640px) {
-  .story-strip { grid-template-columns: repeat(3, 1fr); }
-}
-.story-strip-item {
-  background: white;
-  padding: 20px;
-  text-decoration: none;
-  border-right: 1px solid var(--color-border);
-  transition: background 0.2s;
-}
-.story-strip-item:last-child { border-right: none; }
-.story-strip-item:hover { background: var(--color-surface); }
-.story-strip-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  color: var(--color-text);
-  line-height: 1.4;
-  margin: 6px 0 10px;
-}
-.story-compare-tag {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-accent);
-}
-
-/* ── Stats Strip ──────────────────────────────────────────────────── */
-.stats-strip {
-  background: #0a1628;
-  margin-top: 72px;
-  padding: 48px 0;
-}
-.stats-inner {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
-}
-@media (min-width: 768px) {
-  .stats-inner { grid-template-columns: repeat(4, 1fr); }
-}
-.stat-item {
-  text-align: center;
-}
-.stat-num {
-  display: block;
-  font-size: clamp(2rem, 4vw, 2.8rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  color: white;
-  font-variant-numeric: tabular-nums;
-}
-.stat-label {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgba(255,255,255,0.35);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-top: 4px;
-}
-
-/* ── Finance Picks ───────────────────────────────────────────────── */
-.picks-root {
-  padding: 80px 24px;
-}
-.picks-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 32px;
-}
-.picks-title {
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 6px 0 0;
-}
-.tab-bar {
-  display: flex;
-  gap: 4px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  padding: 4px;
-}
-.tab-btn {
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 7px 16px;
-  border-radius: 7px;
-  border: none;
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-.tab-btn.tab-active {
-  background: white;
-  color: var(--color-primary);
-  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
-}
-.tab-panel { display: block; }
-.tab-hidden { display: none; }
-
-.picks-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
-}
-@media (min-width: 768px) {
-  .picks-grid { grid-template-columns: repeat(4, 1fr); }
-}
-.pick-card {
-  background: white;
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  padding: 20px;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.pick-rank {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--color-text-muted);
-}
-.pick-name {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--color-text);
-  letter-spacing: -0.015em;
-  margin: 4px 0 0;
-}
-.pick-type {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
-}
-.pick-stat {
-  margin-top: auto;
-  padding-top: 10px;
-}
-.pick-stat-num {
-  display: block;
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--color-accent);
-  letter-spacing: -0.02em;
-}
-.pick-stat-label {
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
-}
-.pick-bestfor {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  line-height: 1.5;
-  margin-top: auto;
-  padding-top: 10px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.picks-viewall { text-align: right; }
-.viewall-link {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-accent);
-  text-decoration: none;
-}
-.viewall-link:hover { color: var(--color-accent-dark); }
-
-/* ── Travel ──────────────────────────────────────────────────────── */
-.travel-root {
-  background: #06101e;
-  padding: 80px 0;
-}
-.travel-inner { padding: 0 24px; }
-.travel-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 32px;
-}
-.travel-title {
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: white;
-  margin: 6px 0 4px;
-}
-.travel-sub {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.35);
-}
-.travel-viewall {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--color-accent);
-  text-decoration: none;
-  white-space: nowrap;
-  align-self: center;
-}
-
-.travel-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-@media (min-width: 768px) {
-  .travel-grid { grid-template-columns: repeat(4, 1fr); }
-}
-.dest-card {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  aspect-ratio: 3 / 4;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-.dest-card-bg {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, hsl(var(--hue, 185deg) 70% 22%) 0%, hsl(var(--hue, 185deg) 60% 38%) 100%);
-}
-.dest-card-bg::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 55%);
-}
-.dest-card-body {
-  position: relative;
-  z-index: 1;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
-}
-.dest-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.dest-rank {
-  font-size: 0.65rem;
-  font-weight: 700;
-  color: rgba(255,255,255,0.5);
-}
-.dest-bottom {}
-.dest-region {
-  display: block;
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  margin-bottom: 3px;
-}
-.dest-name {
-  font-size: 1rem;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -0.02em;
-  margin: 0 0 3px;
-}
-.dest-meta {
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.45);
-}
-
-/* ── Crossover ───────────────────────────────────────────────────── */
-.crossover-root {
-  padding: 80px 24px;
-}
-.crossover-header {
-  margin-bottom: 32px;
-}
-.crossover-title {
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 6px 0 8px;
-}
-.crossover-sub {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
-}
-.crossover-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-bottom: 28px;
-}
-@media (min-width: 640px) {
-  .crossover-grid { grid-template-columns: repeat(3, 1fr); }
-}
-.crossover-card {
-  background: linear-gradient(135deg, #0a1628 0%, #0d2340 100%);
-  border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px;
-  padding: 24px;
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  transition: border-color 0.2s;
-}
-.crossover-card:hover { border-color: rgba(14,165,233,0.4); }
-.crossover-card-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
-.crossover-eyebrow {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-}
-.crossover-card-name {
-  font-size: 1rem;
-  font-weight: 800;
-  color: white;
-  letter-spacing: -0.02em;
-}
-.crossover-fee {
-  font-size: 0.75rem;
-  color: rgba(255,255,255,0.35);
-}
-.crossover-desc {
-  font-size: 0.8rem;
-  color: rgba(255,255,255,0.5);
-  line-height: 1.5;
-  flex: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.crossover-cta {
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--color-accent);
-  margin-top: 8px;
-}
-.crossover-footer { text-align: center; }
-
-/* ── Comparisons ─────────────────────────────────────────────────── */
-.compare-root {
-  background: var(--color-surface);
-  padding: 80px 0;
-}
-.compare-inner { padding: 0 24px; }
-.compare-header { margin-bottom: 32px; }
-.compare-title {
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 6px 0 6px;
-}
-.compare-sub { font-size: 0.9rem; color: var(--color-text-muted); }
-.compare-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-}
-@media (min-width: 640px) { .compare-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .compare-grid { grid-template-columns: repeat(3, 1fr); } }
-.compare-card {
-  background: white;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 16px 18px;
-  text-decoration: none;
-  transition: border-color 0.2s;
-}
-.compare-card:hover { border-color: var(--color-accent); }
-.compare-names {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.compare-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--color-text);
-  flex: 1;
-}
-.compare-name:last-child { text-align: right; }
-.compare-vs {
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  background: var(--color-surface);
-  padding: 2px 7px;
-  border-radius: 20px;
-  border: 1px solid var(--color-border);
-}
-.compare-ratings {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-/* ── Calculators ─────────────────────────────────────────────────── */
-.calc-root {
-  padding: 80px 24px 96px;
-}
-.calc-header { margin-bottom: 32px; }
-.calc-title {
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 6px 0 6px;
-}
-.calc-sub { font-size: 0.9rem; color: var(--color-text-muted); }
-.calc-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  max-width: 600px;
-}
-@media (min-width: 640px) { .calc-grid { grid-template-columns: repeat(2, 1fr); } }
-.calc-card {
-  background: white;
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  padding: 28px;
-  text-decoration: none;
-  transition: border-color 0.2s;
-}
-.calc-card:hover { border-color: var(--color-accent); }
-.calc-icon {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: var(--color-accent);
-  margin-bottom: 12px;
-  opacity: 0.8;
-}
-.calc-name {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--color-text);
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
-}
-.calc-desc {
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-  line-height: 1.6;
-  margin-bottom: 16px;
-}
-.calc-link {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--color-accent);
-}
+  @media (max-width: 600px) {
+    .g-footer-inner { flex-direction: column; gap: 40px; }
+    .g-footer-brand { flex: none; }
+    .g-access-form { flex-direction: column; align-items: stretch; }
+    .g-btn-primary { border-radius: 99px; }
+  }
 </style>
 
 <script>
-  // ── Number Scramble ───────────────────────────────────────────────
-  const DIGITS = '0123456789';
-  function scramble(el: Element) {
-    const d       = el as HTMLElement;
-    const target  = parseInt(d.dataset.count  || '0');
-    const suffix  = d.dataset.suffix  || '';
-    const prefix  = d.dataset.prefix  || '';
-    const isDecim = d.dataset.decimals === 'true';
-    const dur = 1500, t0 = performance.now();
-    function tick(now: number) {
-      const p    = Math.min((now - t0) / dur, 1);
-      const ease = 1 - Math.pow(1 - p, 4);
-      const val  = Math.round(ease * target);
-      if (p < 0.75) {
-        const noise = Math.max(0, Math.floor((1 - p / 0.75) * 2));
-        let tail = '';
-        for (let i = 0; i < noise; i++) tail += DIGITS[Math.floor(Math.random() * 10)];
-        d.textContent = isDecim
-          ? `${prefix}${(val / 100).toFixed(2)}${tail}${suffix}`
-          : `${prefix}${val}${tail}${suffix}`;
-      } else {
-        d.textContent = isDecim
-          ? `${prefix}${(target / 100).toFixed(2)}${suffix}`
-          : `${prefix}${val}${suffix}`;
-      }
-      if (p < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
-  const scrambleObs = new IntersectionObserver(
-    entries => entries.forEach(e => { if (e.isIntersecting) { scramble(e.target); scrambleObs.unobserve(e.target); } }),
-    { threshold: 0.5 }
-  );
-  document.querySelectorAll('[data-count]').forEach(el => scrambleObs.observe(el));
+  // ── Nav scroll ──────────────────────────────────────────
+  const nav = document.getElementById('gnav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
 
-  // ── Tab Switcher ──────────────────────────────────────────────────
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = (btn as HTMLElement).dataset.tab;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
-      btn.classList.add('tab-active');
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('tab-hidden'));
-      const panel = document.getElementById(`tab-${tab}`);
-      if (panel) {
-        panel.classList.remove('tab-hidden');
-        panel.querySelectorAll('.reveal-item:not(.revealed)').forEach((el, i) => {
-          setTimeout(() => el.classList.add('revealed'), i * 55);
-        });
+  // ── Hamburger ───────────────────────────────────────────
+  document.getElementById('ghamburger').addEventListener('click', () => {
+    document.getElementById('gmobile').classList.toggle('open');
+  });
+
+  // ── Reveal on scroll ────────────────────────────────────
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        observer.unobserve(e.target);
       }
     });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ── Staggered reveal within grids ───────────────────────
+  document.querySelectorAll('.g-method-card, .g-signal-card, .g-cat-card, .g-proof-item').forEach((el, i) => {
+    el.style.transitionDelay = `${(i % 5) * 80}ms`;
+  });
+
+  // ── Proof bar count-up ───────────────────────────────────
+  const counters = document.querySelectorAll('.g-proof-bar-num[data-count]');
+  const countObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || '';
+      const prefix = el.dataset.prefix || '';
+      const start = performance.now();
+      const dur = 1200;
+      const tick = (now) => {
+        const t = Math.min((now - start) / dur, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        el.textContent = prefix + Math.round(ease * target) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      countObserver.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => countObserver.observe(c));
+
+  // ── Form submit ─────────────────────────────────────────
+  document.getElementById('gform').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button');
+    btn.textContent = 'You\'re on the list.';
+    btn.disabled = true;
+    e.target.querySelector('input').disabled = true;
   });
 </script>

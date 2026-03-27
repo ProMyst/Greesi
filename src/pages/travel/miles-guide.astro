@@ -1,0 +1,720 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdSlot from '../../components/shared/AdSlot.astro';
+
+const title = "The Complete Guide to Airline Miles & Hotel Points 2026";
+const description = "Everything you need to know about earning, transferring, and redeeming travel rewards. Learn the best programs, sweet spots, and strategies to fly business class for less.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": title,
+      "description": description,
+      "datePublished": "2026-01-01",
+      "dateModified": "2026-03-01",
+      "author": { "@type": "Organization", "name": "Greesi" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the best airline miles program?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "It depends on your home airport and preferred airlines. Alaska Mileage Plan and American AAdvantage consistently offer the highest value per mile at ~1.8¢ and ~1.4¢ respectively. For overall flexibility, Chase Ultimate Rewards is often considered the best transferable currency due to its breadth of transfer partners including Hyatt, United, and Southwest."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I transfer credit card points to airline miles?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Most major credit card rewards programs — Chase Ultimate Rewards, Amex Membership Rewards, Capital One Miles, and Citi ThankYou Points — allow you to transfer points directly to airline and hotel loyalty programs, usually at a 1:1 ratio. Log into your credit card portal, find the 'Transfer Points' section, select your airline or hotel partner, enter the amount, and the miles typically appear within minutes to a few days."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the difference between airline miles and credit card points?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Airline miles are earned directly from flying or an airline co-branded credit card, and can only be redeemed within that airline's ecosystem. Credit card points (like Chase UR or Amex MR) are earned from everyday spending and offer more flexibility — you can transfer them to multiple airline and hotel programs, giving you the ability to pick the best redemption option at any time."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do airline miles expire?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Policies vary by program. Many programs (United, Delta, American) now have activity-based expiration — miles stay active as long as you earn or redeem within an 18–24 month window. Southwest Rapid Rewards miles never expire as long as your account is active. Alaska miles expire after 24 months of inactivity. Always check your program's current policy."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the best way to redeem miles for maximum value?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The highest-value redemptions are almost always international business or first class flights, not domestic economy. For example, redeeming 70,000 Chase Ultimate Rewards points for a United business class flight to Europe (worth $3,000+) yields over 4¢ per point — far above the typical 1¢ baseline. Hotel redemptions in luxury categories (like Park Hyatt properties via World of Hyatt) also deliver exceptional value."
+          }
+        }
+      ]
+    }
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+
+  <section class="bg-primary text-white py-20 has-noise">
+    <div class="section-container text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Travel Rewards Guide · 2026</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 max-w-3xl mx-auto">The Complete Guide to Airline Miles &amp; Hotel Points 2026</h1>
+      <p class="text-white/70 text-lg max-w-2xl mx-auto">Everything you need to know about earning, transferring, and redeeming travel rewards.</p>
+      <div class="flex flex-wrap justify-center gap-3 mt-6 text-sm">
+        <a href="#why-points" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20">Why Points Matter</a>
+        <a href="#currencies" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20">Points Currencies</a>
+        <a href="#airlines" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20">Airline Programs</a>
+        <a href="#hotels" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20">Hotel Programs</a>
+        <a href="#sweet-spots" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20">Sweet Spots</a>
+        <a href="#first-card" class="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors border border-white/20">First Card</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-container py-10">
+
+    <nav class="text-sm text-text-muted mb-10">
+      <a href="/" class="hover:text-accent">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/travel" class="hover:text-accent">Travel</a>
+      <span class="mx-2">/</span>
+      <span>Miles &amp; Points Guide</span>
+    </nav>
+
+    <!-- ── 1. Why Points Matter ─────────────────────────────────────────────── -->
+    <section id="why-points" class="mb-14 scroll-mt-6">
+      <span class="section-eyebrow">Introduction</span>
+      <h2 class="text-3xl font-bold mb-4">Why Points &amp; Miles Matter</h2>
+      <div class="grid md:grid-cols-2 gap-8 items-start">
+        <div>
+          <p class="text-text-muted mb-4">Most people leave enormous value on the table every year — not by spending more, but simply by not optimizing how they're rewarded for spending they already do.</p>
+          <p class="text-text-muted mb-4">Here's the core case: a round-trip business class flight to Europe costs <strong class="text-text">$4,000–$8,000 in cash</strong>. With the right points strategy — earned largely through credit card sign-up bonuses and everyday spending — the same seat can be booked for <strong class="text-text">under $200 in taxes and fees</strong>.</p>
+          <p class="text-text-muted">That's not a loophole or a trick. It's a system that airlines and hotels deliberately created to build loyalty — and the best travelers know exactly how to use it.</p>
+        </div>
+        <div class="bg-primary text-white rounded-xl p-6">
+          <p class="text-accent font-semibold text-xs uppercase tracking-wide mb-3">Real-World Example</p>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between border-b border-white/10 pb-2">
+              <span class="text-white/70">Cash price: Round-trip business to Paris</span>
+              <span class="font-bold text-danger">$5,200</span>
+            </div>
+            <div class="flex justify-between border-b border-white/10 pb-2">
+              <span class="text-white/70">Points needed (United via Chase UR)</span>
+              <span class="font-bold">70,000 pts</span>
+            </div>
+            <div class="flex justify-between border-b border-white/10 pb-2">
+              <span class="text-white/70">Taxes &amp; fees</span>
+              <span class="font-bold">~$180</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-white/70">Value per point</span>
+              <span class="font-bold text-accent">~7.2¢</span>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-white/60">Those 70k points can come from a single credit card welcome bonus — earned in 3 months of normal spending.</div>
+        </div>
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="miles-guide-1" />
+
+    <!-- ── 2. Points Currencies ────────────────────────────────────────────── -->
+    <section id="currencies" class="mb-14 scroll-mt-6">
+      <span class="section-eyebrow">Transferable Points</span>
+      <h2 class="text-3xl font-bold mb-2">The Major Points Currencies</h2>
+      <p class="text-text-muted mb-8">These four "bank currencies" are the most powerful because you can transfer them to <em>multiple</em> airlines and hotels — giving you flexibility to always pick the best deal.</p>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+
+        <div class="bg-surface rounded-xl border border-border p-6 card-lift">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="text-lg font-bold">Chase Ultimate Rewards</h3>
+              <p class="text-text-muted text-sm">Best all-around transferable currency</p>
+            </div>
+            <span class="text-xs font-bold bg-accent/10 text-accent px-2 py-1 rounded-full">Top Pick</span>
+          </div>
+          <div class="mb-4">
+            <p class="text-xs text-text-muted uppercase tracking-wide mb-2 font-semibold">Best Transfer Partners</p>
+            <div class="flex flex-wrap gap-1.5">
+              {['World of Hyatt', 'United MileagePlus', 'Southwest RR', 'British Airways Avios', 'Air France KLM'].map(p => (
+                <span class="text-xs bg-surface-alt border border-border px-2 py-0.5 rounded-full">{p}</span>
+              ))}
+            </div>
+          </div>
+          <p class="text-sm text-text-muted">Transfers are instant to most partners. Hyatt is the crown jewel — Chase UR → Hyatt is arguably the single best transfer ratio in all of points &amp; miles. <strong class="text-text">Transfers at 1:1.</strong></p>
+          <div class="mt-4 pt-4 border-t border-border text-xs text-text-muted">Best cards: Chase Sapphire Preferred, Chase Sapphire Reserve, Chase Ink Business Preferred</div>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-6 card-lift">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="text-lg font-bold">Amex Membership Rewards</h3>
+              <p class="text-text-muted text-sm">Best for premium international awards</p>
+            </div>
+            <span class="text-xs font-bold bg-primary/10 text-primary px-2 py-1 rounded-full">Premium</span>
+          </div>
+          <div class="mb-4">
+            <p class="text-xs text-text-muted uppercase tracking-wide mb-2 font-semibold">Best Transfer Partners</p>
+            <div class="flex flex-wrap gap-1.5">
+              {['Singapore KrisFlyer', 'Delta SkyMiles', 'Air France KLM', 'ANA', 'Cathay Asia Miles'].map(p => (
+                <span class="text-xs bg-surface-alt border border-border px-2 py-0.5 rounded-full">{p}</span>
+              ))}
+            </div>
+          </div>
+          <p class="text-sm text-text-muted">Transfer to Singapore Airlines KrisFlyer for some of the best first-class redemptions on the planet. Singapore Suites to Asia for 85,000 KrisFlyer miles round-trip. <strong class="text-text">Transfers at 1:1.</strong></p>
+          <div class="mt-4 pt-4 border-t border-border text-xs text-text-muted">Best cards: Amex Platinum, Amex Gold, Amex Green</div>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-6 card-lift">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="text-lg font-bold">Capital One Miles</h3>
+              <p class="text-text-muted text-sm">Underrated with excellent partner access</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <p class="text-xs text-text-muted uppercase tracking-wide mb-2 font-semibold">Best Transfer Partners</p>
+            <div class="flex flex-wrap gap-1.5">
+              {['Air Canada Aeroplan', 'Turkish Airlines Miles&Smiles', 'British Airways Avios', 'Avianca LifeMiles', 'TAP Air Portugal'].map(p => (
+                <span class="text-xs bg-surface-alt border border-border px-2 py-0.5 rounded-full">{p}</span>
+              ))}
+            </div>
+          </div>
+          <p class="text-sm text-text-muted">Turkish Miles&amp;Smiles offers incredible Star Alliance redemptions — fly United business class to Europe for 45,000 miles round-trip (vs. 70,000 direct). <strong class="text-text">Transfers at 1:1.</strong></p>
+          <div class="mt-4 pt-4 border-t border-border text-xs text-text-muted">Best cards: Capital One Venture X, Capital One Venture</div>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-6 card-lift">
+          <div class="flex items-start justify-between mb-3">
+            <div>
+              <h3 class="text-lg font-bold">Citi ThankYou Points</h3>
+              <p class="text-text-muted text-sm">Great for budget-conscious redemptions</p>
+            </div>
+          </div>
+          <div class="mb-4">
+            <p class="text-xs text-text-muted uppercase tracking-wide mb-2 font-semibold">Best Transfer Partners</p>
+            <div class="flex flex-wrap gap-1.5">
+              {['Turkish Airlines', 'Avianca LifeMiles', 'Air France KLM', 'Virgin Atlantic', 'Singapore KrisFlyer'].map(p => (
+                <span class="text-xs bg-surface-alt border border-border px-2 py-0.5 rounded-full">{p}</span>
+              ))}
+            </div>
+          </div>
+          <p class="text-sm text-text-muted">Citi's Turkish Airlines partnership mirrors Capital One's — access to Star Alliance at bargain rates. Avianca LifeMiles is excellent for Star Alliance redemptions with no fuel surcharges. <strong class="text-text">Most transfers at 1:1.</strong></p>
+          <div class="mt-4 pt-4 border-t border-border text-xs text-text-muted">Best cards: Citi Strata Premier, Citi Prestige</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. Best Airline Programs ────────────────────────────────────────── -->
+    <section id="airlines" class="mb-14 scroll-mt-6">
+      <span class="section-eyebrow">Loyalty Programs</span>
+      <h2 class="text-3xl font-bold mb-2">Best Airline Programs</h2>
+      <p class="text-text-muted mb-6">Values are approximate cents-per-mile (CPM) based on typical redemptions. Business/first class redemptions often yield 2–5× higher value.</p>
+
+      <div class="overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-primary text-white">
+              <th class="p-4 text-left">Airline</th>
+              <th class="p-4 text-left">Program</th>
+              <th class="p-4 text-center">Avg. Value</th>
+              <th class="p-4 text-left hidden md:table-cell">Best For</th>
+              <th class="p-4 text-left hidden lg:table-cell">Partner Cards</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border hover:bg-surface-alt transition-colors">
+              <td class="p-4 font-semibold">United</td>
+              <td class="p-4 text-text-muted">MileagePlus</td>
+              <td class="p-4 text-center"><span class="font-bold text-accent">~1.2¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Domestic awards &amp; Star Alliance partners</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Chase UR (transfer)</td>
+            </tr>
+            <tr class="border-b border-border bg-surface hover:bg-surface-alt transition-colors">
+              <td class="p-4 font-semibold">Delta</td>
+              <td class="p-4 text-text-muted">SkyMiles</td>
+              <td class="p-4 text-center"><span class="font-bold text-accent">~1.1¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Delta flights &amp; SkyTeam partners</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Amex MR (transfer), Amex Delta cards</td>
+            </tr>
+            <tr class="border-b border-border hover:bg-surface-alt transition-colors">
+              <td class="p-4 font-semibold">American</td>
+              <td class="p-4 text-text-muted">AAdvantage</td>
+              <td class="p-4 text-center"><span class="font-bold text-accent">~1.4¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">oneworld partners (Cathay, JAL, Iberia)</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Citi AAdvantage, Barclays AA</td>
+            </tr>
+            <tr class="border-b border-border bg-surface hover:bg-surface-alt transition-colors">
+              <td class="p-4 font-semibold">Southwest</td>
+              <td class="p-4 text-text-muted">Rapid Rewards</td>
+              <td class="p-4 text-center"><span class="font-bold text-accent">~1.5¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Companion Pass strategy, domestic flexibility</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Chase UR (transfer), Chase SW cards</td>
+            </tr>
+            <tr class="border-b border-border hover:bg-surface-alt transition-colors">
+              <td class="p-4 font-semibold">Alaska</td>
+              <td class="p-4 text-text-muted">Mileage Plan</td>
+              <td class="p-4 text-center"><span class="font-bold text-success">~1.8¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Partner awards: Cathay Pacific, Emirates, BA</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Bank of America Alaska card</td>
+            </tr>
+            <tr class="hover:bg-surface-alt bg-surface transition-colors">
+              <td class="p-4 font-semibold">British Airways</td>
+              <td class="p-4 text-text-muted">Avios</td>
+              <td class="p-4 text-center"><span class="font-bold text-success">~1.8¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Short-haul &amp; distance-based partner awards</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Chase UR, Amex MR, Cap One (transfer)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 grid sm:grid-cols-3 gap-4 text-sm">
+        <div class="bg-surface rounded-lg border border-border p-4">
+          <p class="font-semibold mb-1">Alaska Mileage Plan</p>
+          <p class="text-text-muted text-xs">Consistently rated the highest value program. The Cathay Pacific first-class redemption (50,000 Alaska miles one-way to Asia) is legendary among points enthusiasts.</p>
+        </div>
+        <div class="bg-surface rounded-lg border border-border p-4">
+          <p class="font-semibold mb-1">Southwest Companion Pass</p>
+          <p class="text-text-muted text-xs">Earn 135,000 Rapid Rewards points in a calendar year and bring a companion on every flight for free for the rest of that year and all of next year. Worth thousands.</p>
+        </div>
+        <div class="bg-surface rounded-lg border border-border p-4">
+          <p class="font-semibold mb-1">British Airways Avios</p>
+          <p class="text-text-muted text-xs">Avios is distance-based: short flights under 650 miles cost just 4,500–7,500 Avios. Perfect for short domestic hops on American or short-haul European flights.</p>
+        </div>
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="miles-guide-2" />
+
+    <!-- ── 4. Best Hotel Programs ──────────────────────────────────────────── -->
+    <section id="hotels" class="mb-14 scroll-mt-6">
+      <span class="section-eyebrow">Hotel Loyalty</span>
+      <h2 class="text-3xl font-bold mb-2">Best Hotel Programs</h2>
+      <p class="text-text-muted mb-6">Hotel points tend to depreciate faster than airline miles, but the top programs still offer exceptional value — especially at luxury properties.</p>
+
+      <div class="overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-primary text-white">
+              <th class="p-4 text-left">Program</th>
+              <th class="p-4 text-center">Avg. Points Value</th>
+              <th class="p-4 text-left hidden md:table-cell">Best For</th>
+              <th class="p-4 text-left hidden lg:table-cell">Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border hover:bg-surface-alt transition-colors">
+              <td class="p-4">
+                <p class="font-semibold">World of Hyatt</p>
+                <p class="text-text-muted text-xs mt-0.5">Hyatt Hotels &amp; Resorts</p>
+              </td>
+              <td class="p-4 text-center"><span class="font-bold text-success">~2.1¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Best value in luxury — Park Hyatt, Alila, Andaz</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Transfer partner of Chase UR (1:1). Fixed award chart. Globalist status is genuinely valuable.</td>
+            </tr>
+            <tr class="border-b border-border bg-surface hover:bg-surface-alt transition-colors">
+              <td class="p-4">
+                <p class="font-semibold">Marriott Bonvoy</p>
+                <p class="text-text-muted text-xs mt-0.5">Marriott, Ritz-Carlton, St. Regis, W</p>
+              </td>
+              <td class="p-4 text-center"><span class="font-bold text-accent">~0.7¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Large footprint, 30+ brands, global coverage</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Dynamic pricing makes award value variable. Free night certificates (from co-brand cards) often worth $300+.</td>
+            </tr>
+            <tr class="border-b border-border hover:bg-surface-alt transition-colors">
+              <td class="p-4">
+                <p class="font-semibold">Hilton Honors</p>
+                <p class="text-text-muted text-xs mt-0.5">Hilton, Conrad, Waldorf Astoria</p>
+              </td>
+              <td class="p-4 text-center"><span class="font-bold text-warning">~0.5¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Free night certificates, 5th night free on awards</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">Low per-point value, but Amex Hilton cards offer 100k–175k sign-up bonuses. 5th night free on awards boosts value significantly.</td>
+            </tr>
+            <tr class="hover:bg-surface-alt bg-surface transition-colors">
+              <td class="p-4">
+                <p class="font-semibold">IHG One Rewards</p>
+                <p class="text-text-muted text-xs mt-0.5">IHG, InterContinental, Kimpton, Six Senses</p>
+              </td>
+              <td class="p-4 text-center"><span class="font-bold text-accent">~0.8¢</span></td>
+              <td class="p-4 text-text-muted hidden md:table-cell">Budget luxury, Six Senses resorts</td>
+              <td class="p-4 text-text-muted hidden lg:table-cell">IHG Premier card includes anniversary free night certificate valid at any IHG property (including $500+ InterContinentals).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-5 bg-surface rounded-xl border border-border p-5">
+        <h3 class="font-bold mb-2">Why World of Hyatt Wins</h3>
+        <p class="text-sm text-text-muted">Hyatt's fixed award chart means you always know what you're paying — dynamic pricing has eroded the value of most competing programs. The Park Hyatt New York costs 30,000 points/night vs. $1,000+ cash (~3.3¢/point). The Maldives properties, listed below in Sweet Spots, are legendary for value. And because Chase Ultimate Rewards transfers 1:1 to Hyatt, you can easily accumulate points through everyday credit card spending.</p>
+      </div>
+    </section>
+
+    <!-- ── 5. Sweet Spots ──────────────────────────────────────────────────── -->
+    <section id="sweet-spots" class="mb-14 scroll-mt-6">
+      <span class="section-eyebrow">Best Redemptions</span>
+      <h2 class="text-3xl font-bold mb-2">5 Incredible Sweet Spots</h2>
+      <p class="text-text-muted mb-8">These are specific, bookable redemptions that consistently deliver exceptional value — often 3–7¢ per point or more.</p>
+
+      <div class="space-y-5">
+
+        <div class="bg-surface rounded-xl border-l-4 border-accent border border-border overflow-hidden">
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-7 h-7 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shrink-0">1</span>
+                  <h3 class="font-bold text-lg">ANA Business Class to Japan</h3>
+                </div>
+                <p class="text-text-muted text-sm ml-9">Fly ANA's award-winning "The Room" business class (flat-bed, direct aisle access) from the US to Japan for <strong class="text-text">88,000 Virgin Atlantic points round-trip</strong> — transferred from Amex Membership Rewards.</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-xs text-text-muted">Cash value</p>
+                <p class="text-xl font-bold text-success">$6,000+</p>
+                <p class="text-xs text-text-muted">~6.8¢/pt</p>
+              </div>
+            </div>
+            <div class="ml-9 mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Amex MR → Virgin Atlantic (1:1)</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Book on virginatlantic.com</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">No fuel surcharges</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border-l-4 border-success border border-border overflow-hidden">
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-7 h-7 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shrink-0">2</span>
+                  <h3 class="font-bold text-lg">Park Hyatt Maldives</h3>
+                </div>
+                <p class="text-text-muted text-sm ml-9">Stay in an overwater villa at one of the world's most beautiful resorts for <strong class="text-text">25,000 World of Hyatt points per night</strong> — transferred from Chase Ultimate Rewards. Cash rate: $700–$1,200/night.</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-xs text-text-muted">Cash value</p>
+                <p class="text-xl font-bold text-success">$900/night</p>
+                <p class="text-xs text-text-muted">~3.6¢/pt</p>
+              </div>
+            </div>
+            <div class="ml-9 mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Chase UR → Hyatt (1:1)</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Category 7 property</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Book on world.hyatt.com</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border-l-4 border-warning border border-border overflow-hidden">
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-7 h-7 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shrink-0">3</span>
+                  <h3 class="font-bold text-lg">Round-Trip Domestic Southwest</h3>
+                </div>
+                <p class="text-text-muted text-sm ml-9">Fly anywhere Southwest operates round-trip for approximately <strong class="text-text">7,500–15,000 Rapid Rewards points</strong> depending on the fare. Southwest's pricing is revenue-based, so points cost is proportional to cash price — book cheap flights early for the best CPM.</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-xs text-text-muted">Cash value</p>
+                <p class="text-xl font-bold text-success">$150–$300</p>
+                <p class="text-xs text-text-muted">~1.5¢/pt</p>
+              </div>
+            </div>
+            <div class="ml-9 mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Chase UR → Southwest (1:1)</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">No blackout dates</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Miles never expire</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border-l-4 border-accent border border-border overflow-hidden">
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-7 h-7 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shrink-0">4</span>
+                  <h3 class="font-bold text-lg">Europe Business Class on United</h3>
+                </div>
+                <p class="text-text-muted text-sm ml-9">Fly United Polaris business class to Europe for <strong class="text-text">70,000 Chase UR points one-way</strong> (transferred to United MileagePlus). Flat-bed seats, premium dining, and direct lie-flat access. Cash price: $3,500–$6,000.</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-xs text-text-muted">Cash value</p>
+                <p class="text-xl font-bold text-success">$4,000+</p>
+                <p class="text-xs text-text-muted">~5.7¢/pt</p>
+              </div>
+            </div>
+            <div class="ml-9 mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Chase UR → United (1:1)</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Book on united.com</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Saver award space required</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border-l-4 border-success border border-border overflow-hidden">
+          <div class="p-5">
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="w-7 h-7 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shrink-0">5</span>
+                  <h3 class="font-bold text-lg">Greek Islands via Hyatt</h3>
+                </div>
+                <p class="text-text-muted text-sm ml-9">Stay at Hyatt Regency Mykonos, Andronis Boutique Santorini, or other Hyatt-affiliated Greek properties for <strong class="text-text">12,000–20,000 World of Hyatt points per night</strong>. Cash rates run $400–$800+ in high season.</p>
+              </div>
+              <div class="text-right shrink-0">
+                <p class="text-xs text-text-muted">Cash value</p>
+                <p class="text-xl font-bold text-success">$500/night</p>
+                <p class="text-xs text-text-muted">~2.5–4¢/pt</p>
+              </div>
+            </div>
+            <div class="ml-9 mt-3 flex flex-wrap gap-2 text-xs">
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Chase UR → Hyatt (1:1)</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Category 3–5 properties</span>
+              <span class="bg-surface-alt border border-border px-2 py-1 rounded-full">Book early for summer dates</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="miles-guide-3" />
+
+    <!-- ── 6. Earn More Faster ─────────────────────────────────────────────── -->
+    <section id="earn-more" class="mb-14 scroll-mt-6">
+      <span class="section-eyebrow">Earning Strategy</span>
+      <h2 class="text-3xl font-bold mb-6">How to Earn More Miles Faster</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <div class="bg-surface rounded-xl border border-border p-5 card-lift">
+          <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+          </div>
+          <h3 class="font-bold mb-2">Welcome Bonuses First</h3>
+          <p class="text-sm text-text-muted">A single credit card welcome bonus (60,000–100,000 points) can be worth more than 2 years of everyday spending. Prioritize new cards over optimizing spend on existing ones.</p>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-5 card-lift">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <h3 class="font-bold mb-2">Use Category Bonuses</h3>
+          <p class="text-sm text-text-muted">Amex Gold earns 4x at restaurants and grocery stores. Chase Sapphire Reserve earns 3x on travel and dining. Ink Business Cash earns 5x at office supply stores. Stack the right card for each category.</p>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-5 card-lift">
+          <div class="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+          </div>
+          <h3 class="font-bold mb-2">Shopping Portals</h3>
+          <p class="text-sm text-text-muted">Every major airline and Chase/Amex have online shopping portals. Click through before buying at retailers like Nike, Apple, or Gap and earn 3–20x extra miles per dollar on top of your card rewards.</p>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-5 card-lift">
+          <div class="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+          </div>
+          <h3 class="font-bold mb-2">Dining Programs</h3>
+          <p class="text-sm text-text-muted">Register your credit card with airline dining programs (United MileagePlus Dining, Delta SkyMiles Dining, etc.) and earn 3–5 miles per dollar at registered restaurants — automatically on top of your card rewards.</p>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-5 card-lift">
+          <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="font-bold mb-2">Pay Bills &amp; Rent with Points Cards</h3>
+          <p class="text-sm text-text-muted">Use services like Plastiq or your card's bill pay to earn points on rent, utility bills, and other expenses that don't normally accept credit cards. Even at a 2x card, this can add 10,000+ points/year.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7. Which Card First ─────────────────────────────────────────────── -->
+    <section id="first-card" class="mb-14 scroll-mt-6">
+      <span class="section-eyebrow">Getting Started</span>
+      <h2 class="text-3xl font-bold mb-2">Which Card Should You Get First?</h2>
+      <p class="text-text-muted mb-8">The best first travel card depends on your spending patterns and travel goals. Use this quick guide to find your match.</p>
+
+      <div class="grid md:grid-cols-2 gap-6">
+
+        <div class="bg-surface rounded-xl border border-border p-6 card-lift">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-8 h-8 rounded-lg bg-accent/10 text-accent flex items-center justify-center shrink-0 text-sm font-bold">A</div>
+            <div>
+              <h3 class="font-bold">You want maximum flexibility</h3>
+              <p class="text-text-muted text-sm mt-0.5">You travel multiple airlines and want to choose the best deal each time</p>
+            </div>
+          </div>
+          <div class="bg-accent/5 rounded-lg border border-accent/20 p-4">
+            <p class="font-bold text-accent mb-1">Chase Sapphire Preferred</p>
+            <p class="text-sm text-text-muted">95/yr annual fee, 3x dining/2x travel, 60,000–80,000 point welcome bonus. Transfers to 14 partners including Hyatt, United, Southwest. Best all-around first card.</p>
+          </div>
+          <a href="/finance/review/chase-sapphire-preferred" class="inline-flex items-center gap-1 text-sm text-accent font-medium mt-3 hover:underline">
+            Read full review
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-6 card-lift">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 text-sm font-bold">B</div>
+            <div>
+              <h3 class="font-bold">You spend a lot on food &amp; dining</h3>
+              <p class="text-text-muted text-sm mt-0.5">Restaurants and groceries are your biggest spending categories</p>
+            </div>
+          </div>
+          <div class="bg-primary/5 rounded-lg border border-primary/20 p-4">
+            <p class="font-bold text-primary mb-1">American Express Gold Card</p>
+            <p class="text-sm text-text-muted">$250/yr, 4x restaurants, 4x US supermarkets (up to $25k/yr), 3x flights. Up to $240 in annual dining credits effectively offset the fee. Transfers to airlines.</p>
+          </div>
+          <a href="/finance/review/amex-gold" class="inline-flex items-center gap-1 text-sm text-accent font-medium mt-3 hover:underline">
+            Read full review
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-6 card-lift">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-8 h-8 rounded-lg bg-success/10 text-success flex items-center justify-center shrink-0 text-sm font-bold">C</div>
+            <div>
+              <h3 class="font-bold">You fly domestically most</h3>
+              <p class="text-text-muted text-sm mt-0.5">Most of your trips are domestic, and you value flexibility over premium cabins</p>
+            </div>
+          </div>
+          <div class="bg-success/5 rounded-lg border border-success/20 p-4">
+            <p class="font-bold text-success mb-1">Chase Southwest Rapid Rewards Plus</p>
+            <p class="text-sm text-text-muted">$69/yr, 2x Southwest purchases. Accumulate toward the Companion Pass — the most valuable perk in domestic travel. Earn 135k points across two SW cards' welcome bonuses.</p>
+          </div>
+          <a href="/finance/credit-cards" class="inline-flex items-center gap-1 text-sm text-accent font-medium mt-3 hover:underline">
+            View all travel cards
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border p-6 card-lift">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-8 h-8 rounded-lg bg-warning/10 text-warning flex items-center justify-center shrink-0 text-sm font-bold">D</div>
+            <div>
+              <h3 class="font-bold">You want luxury travel &amp; lounge access</h3>
+              <p class="text-text-muted text-sm mt-0.5">Premium perks, lounge access, and high-value credits justify a premium fee</p>
+            </div>
+          </div>
+          <div class="bg-warning/5 rounded-lg border border-warning/20 p-4">
+            <p class="font-bold text-warning mb-1">Amex Platinum or Chase Sapphire Reserve</p>
+            <p class="text-sm text-text-muted">$550–$695/yr. Access to Centurion Lounges (Amex) or Priority Pass (both). Up to $300–$695 in annual travel credits offset the fee for frequent travelers. Massive welcome bonuses.</p>
+          </div>
+          <a href="/travel/travel-cards" class="inline-flex items-center gap-1 text-sm text-accent font-medium mt-3 hover:underline">
+            Compare premium cards
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="mt-6 bg-primary text-white rounded-xl p-6 flex gap-4 items-start">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-accent shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div>
+          <p class="font-bold mb-1">General Rule: Start with Chase</p>
+          <p class="text-white/75 text-sm">Chase enforces a "5/24 rule" — if you've opened 5+ credit cards in the past 24 months, Chase will deny new applications. This means you should generally apply for Chase cards <em>first</em>, before moving to Amex or Capital One. Once you have a Sapphire and one or two Ink business cards, you can diversify to other issuers freely.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
+      <div class="space-y-4" id="faqAccordion">
+
+        <div class="bg-surface rounded-xl border border-border overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between px-5 py-4 font-semibold text-left hover:bg-surface-alt transition-colors">
+            <span>What is the best airline miles program?</span>
+            <svg class="faq-chevron w-5 h-5 text-text-muted transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body hidden px-5 pb-4 text-sm text-text-muted">
+            It depends on your home airport and preferred airlines. Alaska Mileage Plan and American AAdvantage consistently offer the highest value per mile at ~1.8¢ and ~1.4¢ respectively. For overall flexibility, Chase Ultimate Rewards is often considered the best transferable currency due to its breadth of transfer partners including Hyatt, United, and Southwest.
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between px-5 py-4 font-semibold text-left hover:bg-surface-alt transition-colors">
+            <span>How do I transfer credit card points to airline miles?</span>
+            <svg class="faq-chevron w-5 h-5 text-text-muted transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body hidden px-5 pb-4 text-sm text-text-muted">
+            Most major credit card rewards programs — Chase Ultimate Rewards, Amex Membership Rewards, Capital One Miles, and Citi ThankYou Points — allow you to transfer points directly to airline and hotel loyalty programs, usually at a 1:1 ratio. Log into your credit card portal, find the "Transfer Points" section, select your airline or hotel partner, enter the amount, and the miles typically appear within minutes to a few days.
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between px-5 py-4 font-semibold text-left hover:bg-surface-alt transition-colors">
+            <span>What is the difference between airline miles and credit card points?</span>
+            <svg class="faq-chevron w-5 h-5 text-text-muted transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body hidden px-5 pb-4 text-sm text-text-muted">
+            Airline miles are earned directly from flying or an airline co-branded credit card, and can only be redeemed within that airline's ecosystem. Credit card points (like Chase UR or Amex MR) are earned from everyday spending and offer more flexibility — you can transfer them to multiple airline and hotel programs, giving you the ability to pick the best redemption option at any time.
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between px-5 py-4 font-semibold text-left hover:bg-surface-alt transition-colors">
+            <span>Do airline miles expire?</span>
+            <svg class="faq-chevron w-5 h-5 text-text-muted transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body hidden px-5 pb-4 text-sm text-text-muted">
+            Policies vary by program. Many programs (United, Delta, American) now have activity-based expiration — miles stay active as long as you earn or redeem within an 18–24 month window. Southwest Rapid Rewards miles never expire as long as your account is active. Alaska miles expire after 24 months of inactivity. Always check your program's current policy.
+          </div>
+        </div>
+
+        <div class="bg-surface rounded-xl border border-border overflow-hidden">
+          <button class="faq-toggle w-full flex items-center justify-between px-5 py-4 font-semibold text-left hover:bg-surface-alt transition-colors">
+            <span>What is the best way to redeem miles for maximum value?</span>
+            <svg class="faq-chevron w-5 h-5 text-text-muted transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div class="faq-body hidden px-5 pb-4 text-sm text-text-muted">
+            The highest-value redemptions are almost always international business or first class flights, not domestic economy. For example, redeeming 70,000 Chase Ultimate Rewards points for a United business class flight to Europe (worth $3,000+) yields over 4¢ per point — far above the typical 1¢ baseline. Hotel redemptions in luxury categories (like Park Hyatt properties via World of Hyatt) also deliver exceptional value.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="miles-guide-bottom" />
+
+    <section class="border-t border-border pt-8">
+      <h3 class="text-lg font-semibold mb-4">Related Reading</h3>
+      <div class="flex flex-wrap gap-2">
+        <a href="/travel/travel-cards" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Best Travel Credit Cards 2026</a>
+        <a href="/finance/calculators/compound-interest" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Compound Interest Calculator</a>
+        <a href="/finance/credit-cards" class="text-sm bg-surface hover:bg-surface-alt px-3 py-1.5 rounded-full border border-border transition-colors">Best Credit Cards</a>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    // FAQ accordion
+    document.querySelectorAll('.faq-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const body = btn.nextElementSibling as HTMLElement;
+        const chevron = btn.querySelector('.faq-chevron') as HTMLElement;
+        const isOpen = !body.classList.contains('hidden');
+        body.classList.toggle('hidden', isOpen);
+        chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+      });
+    });
+  </script>
+
+</BaseLayout>

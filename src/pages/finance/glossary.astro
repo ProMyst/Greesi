@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Finance Glossary: 35+ Terms Explained Simply | Greesi";
+const description = "Plain-English definitions for every finance term you'll ever need — APY, APR, ETF, compound interest, FDIC, and more. No jargon.";
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://greesi.com" },
+    { "@type": "ListItem", "position": 2, "name": "Finance", "item": "https://greesi.com/finance" },
+    { "@type": "ListItem", "position": 3, "name": "Glossary", "item": "https://greesi.com/finance/glossary" },
+  ]
+};
+
+const terms = [
+  { letter: 'A', term: 'APR', def: "Annual Percentage Rate. The yearly cost of borrowing money, expressed as a percentage. Unlike APY, APR doesn't account for compounding. Used for credit cards and loans.", related: 'APY, Compound Interest' },
+  { letter: 'A', term: 'APY', def: 'Annual Percentage Yield. The real rate of return on savings, accounting for compound interest. A savings account with 4.00% APY earns more than one with 4.00% APR because of compounding.', related: 'APR, High-Yield Savings' },
+  { letter: 'B', term: 'Balance Transfer', def: 'Moving debt from one credit card to another — usually to take advantage of a 0% introductory APR period. Can save hundreds in interest if you pay off the balance before the promo period ends.', related: 'APR, Credit Card' },
+  { letter: 'B', term: 'Bear Market', def: 'A market decline of 20% or more from recent highs, typically lasting at least two months. Bear markets are a normal part of investing cycles — the S&P 500 has recovered from every one in history.', related: 'Bull Market, Index Fund' },
+  { letter: 'B', term: 'Bull Market', def: 'A sustained period of rising stock prices — generally defined as a 20%+ gain from a recent low. Bull markets tend to last longer than bear markets historically.', related: 'Bear Market' },
+  { letter: 'C', term: 'Capital Gains', def: 'The profit you make when you sell an asset for more than you paid. Short-term gains (held under 1 year) are taxed as ordinary income. Long-term gains (over 1 year) get preferential tax rates of 0%, 15%, or 20%.', related: 'Roth IRA, Index Fund' },
+  { letter: 'C', term: 'Cash Back', def: 'A credit card reward that gives you a percentage of your purchases back as cash or statement credits. Simple and always worth exactly what it says — no points conversion needed.', related: 'APR, Rewards Rate' },
+  { letter: 'C', term: 'Compound Interest', def: 'Earning interest on your interest. A $10,000 deposit at 4% APY earns $400 the first year — but then earns interest on $10,400 the next year. Over decades, compounding creates exponential growth.', related: 'APY, High-Yield Savings' },
+  { letter: 'C', term: 'Credit Score', def: 'A 3-digit number (300–850) that represents your creditworthiness. The most common model is FICO. Scores above 670 are "good," above 740 are "very good," and above 800 are "exceptional." Lenders use it to set rates and approval decisions.', related: 'Credit Utilization, APR' },
+  { letter: 'C', term: 'Credit Utilization', def: 'The percentage of your available credit you\'re using. If you have a $10,000 limit and carry a $3,000 balance, your utilization is 30%. Keeping it under 30% — ideally under 10% — significantly boosts your credit score.', related: 'Credit Score' },
+  { letter: 'D', term: 'Diversification', def: 'Spreading investments across different assets, sectors, and geographies to reduce risk. "Don\'t put all your eggs in one basket." A diversified portfolio loses less when one sector crashes.', related: 'Index Fund, ETF, Portfolio Rebalancing' },
+  { letter: 'D', term: 'Dividend', def: 'A portion of a company\'s profits paid to shareholders, typically quarterly. Dividend-paying stocks (like utilities and large blue-chips) can provide steady income on top of price appreciation.', related: 'Stock, Index Fund' },
+  { letter: 'D', term: 'Dollar-Cost Averaging', def: 'Investing a fixed amount on a regular schedule regardless of market conditions. Buying $500 of index funds every month means you automatically buy more shares when prices are low and fewer when high. Removes emotional timing decisions.', related: 'Index Fund, ETF' },
+  { letter: 'E', term: 'ETF', def: 'Exchange-Traded Fund. A basket of securities (stocks, bonds, commodities) that trades on an exchange like a stock. ETFs typically have very low expense ratios — the Vanguard S&P 500 ETF (VOO) charges just 0.03% per year.', related: 'Index Fund, Mutual Fund, Expense Ratio' },
+  { letter: 'E', term: 'Expense Ratio', def: 'The annual fee charged by a mutual fund or ETF, expressed as a percentage of assets. A 1.00% expense ratio on a $100,000 portfolio costs $1,000/year. Index ETFs often charge 0.03%–0.20% — far less than actively managed funds.', related: 'ETF, Mutual Fund, Index Fund' },
+  { letter: 'F', term: 'FDIC Insurance', def: 'Federal Deposit Insurance Corporation. A U.S. government agency that insures deposits up to $250,000 per depositor, per bank. If your FDIC-insured bank fails, your money (up to $250k) is fully protected.', related: 'High-Yield Savings, SIPC Insurance' },
+  { letter: 'F', term: 'Fiduciary', def: 'A financial advisor who is legally required to act in your best interest, not just recommend "suitable" products. Always ask your advisor if they are a fiduciary. Fee-only financial planners are typically fiduciaries; commission-based brokers may not be.', related: 'Portfolio Rebalancing' },
+  { letter: 'F', term: 'Fractional Shares', def: 'Buying a partial share of a stock or ETF. Instead of needing $500+ to buy one share of a company, you can invest any dollar amount. Enables diversification even with small amounts. Available at Fidelity, Schwab, and Robinhood.', related: 'ETF, Stock, Dollar-Cost Averaging' },
+  { letter: 'H', term: 'High-Yield Savings Account', def: 'A savings account that pays significantly more interest than the national average (currently 0.46% APY). Online banks like Ally and Marcus consistently offer 3.75%–4.50% APY — earning 8–10x more than a traditional bank savings account.', related: 'APY, FDIC Insurance' },
+  { letter: 'I', term: 'Index Fund', def: 'A fund that tracks a market index like the S&P 500, holding all (or a sample of) the stocks in that index. Instead of picking individual stocks, you own a tiny slice of 500 large companies. Warren Buffett recommends them for most investors.', related: 'ETF, Diversification, Expense Ratio' },
+  { letter: 'I', term: 'Inflation', def: 'The rate at which prices rise over time, reducing the purchasing power of money. The Fed targets 2% annual inflation. Cash sitting in a 0.01% savings account loses real value every year — a key reason to invest.', related: 'High-Yield Savings, APY, Index Fund' },
+  { letter: 'I', term: 'IRA', def: 'Individual Retirement Account. A tax-advantaged account for retirement savings. Two main types: Traditional IRA (pre-tax contributions, pay taxes on withdrawal) and Roth IRA (after-tax contributions, tax-free in retirement). 2026 contribution limit: $7,000/year ($8,000 if 50+).', related: 'Roth IRA, Traditional IRA, 401(k)' },
+  { letter: 'L', term: 'Liquidity', def: 'How quickly and easily an asset can be converted to cash without significantly affecting its price. Cash is perfectly liquid. Stocks are very liquid. Real estate is illiquid — it can take months to sell. Emergency funds should always be in liquid accounts.', related: 'High-Yield Savings, Money Market' },
+  { letter: 'M', term: 'Market Capitalization', def: 'The total market value of a company\'s outstanding shares. Calculated as share price × shares outstanding. Companies are classified as large-cap ($10B+), mid-cap ($2B–$10B), or small-cap ($300M–$2B).', related: 'Stock, Index Fund, ETF' },
+  { letter: 'M', term: 'Mutual Fund', def: 'A pooled investment vehicle managed by a professional fund manager. Unlike ETFs, mutual funds are priced once per day after market close and often have higher expense ratios. Index mutual funds (like Vanguard\'s) are a low-cost exception.', related: 'ETF, Expense Ratio, Index Fund' },
+  { letter: 'N', term: 'Net Worth', def: 'Everything you own (assets) minus everything you owe (liabilities). Net Worth = Assets − Liabilities. Tracking your net worth monthly is one of the most motivating financial habits you can build.', related: 'Liquidity, Diversification' },
+  { letter: 'O', term: 'Options', def: 'Contracts giving the buyer the right (but not the obligation) to buy or sell a stock at a specific price before a specific date. Highly flexible but complex — options can amplify gains and losses significantly. Not recommended for beginners.', related: 'Stock, Diversification' },
+  { letter: 'R', term: 'Portfolio Rebalancing', def: 'Restoring your portfolio to its target asset allocation by selling over-performers and buying under-performers. If stocks rise and drift from 80% to 90% of your portfolio, you\'d sell some stocks and buy bonds to return to 80/20.', related: 'Diversification, Index Fund, ETF' },
+  { letter: 'R', term: 'Roth IRA', def: 'An IRA funded with after-tax dollars. Your investments grow tax-free and qualified withdrawals in retirement are completely tax-free. Generally best for younger investors or those who expect to be in a higher tax bracket in retirement. Income limits apply.', related: 'IRA, Traditional IRA' },
+  { letter: 'S', term: 'SIPC Insurance', def: 'Securities Investor Protection Corporation. Protects brokerage accounts up to $500,000 ($250,000 cash) if a brokerage fails. It does NOT protect against investment losses — only against brokerage failure or theft of assets.', related: 'FDIC Insurance, Brokerage' },
+  { letter: 'S', term: 'Stock', def: 'A share of ownership in a company. Owning stock means you own a small piece of that business and can benefit from its growth. Stocks have historically returned ~10% annually (7% inflation-adjusted) over long periods — but with significant short-term volatility.', related: 'ETF, Index Fund, Dividend, Market Capitalization' },
+  { letter: 'T', term: 'Traditional IRA', def: 'An IRA funded with pre-tax dollars (if eligible). Contributions may be tax-deductible, reducing your taxable income now. You pay taxes when you withdraw in retirement. Best if you expect to be in a lower tax bracket later.', related: 'Roth IRA, IRA' },
+  { letter: 'Y', term: 'Yield', def: 'The income generated by an investment over a period, usually expressed as a percentage of the investment\'s cost. A bond that costs $1,000 and pays $50/year has a 5% yield. Savings account APY is a type of yield.', related: 'APY, Dividend, Bond' },
+];
+
+const letters = [...new Set(terms.map(t => t.letter))].sort();
+---
+
+<BaseLayout title={title} description={description} schema={breadcrumbSchema}>
+
+  <section class="bg-primary text-white py-14 has-noise">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Reference</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Finance Glossary</h1>
+      <p class="text-white/65 text-lg max-w-xl mx-auto">Every financial term explained in plain English. No jargon, no fluff.</p>
+    </div>
+  </section>
+
+  <div class="max-w-3xl mx-auto px-4 py-12">
+
+    <!-- Search -->
+    <div class="gloss-search-wrap mb-8">
+      <svg class="gloss-search-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="gloss-search" class="gloss-search-input" placeholder="Search terms… (e.g. APY, ETF, Roth IRA)" aria-label="Search glossary" />
+    </div>
+
+    <!-- Alphabet nav -->
+    <div class="alpha-nav" id="alpha-nav">
+      {letters.map(l => (
+        <a href={`#letter-${l}`} class="alpha-link">{l}</a>
+      ))}
+    </div>
+
+    <!-- Terms grouped by letter -->
+    <div id="gloss-list">
+      {letters.map(letter => (
+        <div class="letter-group" id={`letter-${letter}`}>
+          <h2 class="letter-heading">{letter}</h2>
+          {terms.filter(t => t.letter === letter).map(t => (
+            <div class="gloss-term" data-term={t.term.toLowerCase()}>
+              <h3 class="gloss-term-name">{t.term}</h3>
+              <p class="gloss-term-def">{t.def}</p>
+              {t.related && <p class="gloss-related">Related: <span>{t.related}</span></p>}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+
+    <p class="gloss-no-results" id="gloss-no-results" hidden>No terms found matching your search.</p>
+
+    <div class="bottom-cta-bar mt-14">
+      <div>
+        <p class="font-bold">Want to put these terms to work?</p>
+        <p class="text-text-muted text-sm">Explore our tools and calculators.</p>
+      </div>
+      <a href="/tools" class="btn-primary">Browse All Tools</a>
+    </div>
+
+  </div>
+</BaseLayout>
+
+<script>
+  const search = document.getElementById('gloss-search') as HTMLInputElement | null;
+  const terms  = Array.from(document.querySelectorAll('.gloss-term')) as HTMLElement[];
+  const groups = Array.from(document.querySelectorAll('.letter-group')) as HTMLElement[];
+  const noResults = document.getElementById('gloss-no-results');
+
+  search?.addEventListener('input', () => {
+    const q = search.value.toLowerCase().trim();
+    let visible = 0;
+    terms.forEach(el => {
+      const match = !q || el.dataset.term?.includes(q) || el.querySelector('.gloss-term-def')?.textContent?.toLowerCase().includes(q);
+      el.style.display = match ? '' : 'none';
+      if (match) visible++;
+    });
+    groups.forEach(g => {
+      const anyVisible = [...g.querySelectorAll('.gloss-term')].some(t => (t as HTMLElement).style.display !== 'none');
+      (g as HTMLElement).style.display = anyVisible ? '' : 'none';
+    });
+    if (noResults) noResults.hidden = visible > 0;
+  });
+</script>
+
+<style>
+  .gloss-search-wrap { position: relative; }
+  .gloss-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); pointer-events: none; }
+  .gloss-search-input { width: 100%; padding: 13px 16px 13px 44px; border: 1px solid var(--color-border); border-radius: 12px; font-size: 0.95rem; background: var(--color-surface); color: var(--color-text); transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit; }
+  .gloss-search-input:focus { outline: none; border-color: var(--color-accent); box-shadow: 0 0 0 3px rgba(14,165,233,0.12); }
+
+  .alpha-nav { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 32px; }
+  .alpha-link { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--color-border); font-weight: 700; font-size: 0.8rem; color: var(--color-text-muted); text-decoration: none; transition: all 0.15s; }
+  .alpha-link:hover { background: var(--color-accent); color: white; border-color: var(--color-accent); }
+
+  .letter-group { margin-bottom: 40px; }
+  .letter-heading { font-size: 2rem; font-weight: 800; color: var(--color-accent); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--color-border); }
+  .gloss-term { padding: 18px 0; border-bottom: 1px solid var(--color-border); }
+  .gloss-term:last-child { border-bottom: none; }
+  .gloss-term-name { font-size: 1.05rem; font-weight: 700; color: var(--color-text); margin-bottom: 6px; }
+  .gloss-term-def { font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.75; margin-bottom: 6px; }
+  .gloss-related { font-size: 0.75rem; color: var(--color-text-muted); }
+  .gloss-related span { color: var(--color-accent); }
+  .gloss-no-results { text-align: center; color: var(--color-text-muted); padding: 40px 0; }
+
+  .bottom-cta-bar { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; padding: 24px 28px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+</style>

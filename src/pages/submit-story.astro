@@ -1,0 +1,195 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Submit Your Story | Share Your Travel & Finance Experience";
+const description = "Have a great travel story, a money hack that changed your life, or a destination tip? Submit it to Greesi — the best stories get featured on our site.";
+---
+
+<BaseLayout title={title} description={description}>
+
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Community</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Share Your Story</h1>
+      <p class="text-white/65 text-lg max-w-xl mx-auto">You've been there. You've done it. Now tell us about it — the best trips, the best money moves, and the lessons you learned along the way.</p>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-4 py-16">
+
+    <!-- What we're looking for -->
+    <div class="submit-types-grid mb-14">
+      <div class="submit-type-card">
+        <span class="submit-type-icon">✈️</span>
+        <h3>Travel Stories</h3>
+        <p>Hidden gems, overwater bungalows, sailing adventures, road trips. If it gave you that feeling, we want it.</p>
+      </div>
+      <div class="submit-type-card">
+        <span class="submit-type-icon">💸</span>
+        <h3>Money Wins</h3>
+        <p>How you paid for a trip with points, found a high-yield account, or paid off debt. Real stories, real numbers.</p>
+      </div>
+      <div class="submit-type-card">
+        <span class="submit-type-icon">📸</span>
+        <h3>Cool Stuff</h3>
+        <p>Stunning photos, local secrets, gear recommendations, or anything that made your trip unforgettable.</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="submit-form-wrap">
+      <h2 class="text-2xl font-bold mb-2">Submit Your Story</h2>
+      <p class="text-text-muted mb-8">We review every submission. Featured stories are published with full credit to you. No fluff, no filler — just good writing and real experiences.</p>
+
+      <form id="submit-story-form" class="submit-form" novalidate>
+        <div class="submit-row">
+          <div class="submit-field">
+            <label class="submit-label" for="sub-name">Your Name *</label>
+            <input type="text" id="sub-name" class="submit-input" placeholder="Jane Doe" required />
+          </div>
+          <div class="submit-field">
+            <label class="submit-label" for="sub-email">Email Address *</label>
+            <input type="email" id="sub-email" class="submit-input" placeholder="jane@example.com" required />
+          </div>
+        </div>
+
+        <div class="submit-field">
+          <label class="submit-label" for="sub-type">Story Type *</label>
+          <select id="sub-type" class="submit-input" required>
+            <option value="">Select a category...</option>
+            <option value="travel">Travel Story / Destination Guide</option>
+            <option value="finance">Finance Tip / Money Win</option>
+            <option value="points">Points & Rewards Strategy</option>
+            <option value="photos">Photo Feature</option>
+            <option value="other">Something Else</option>
+          </select>
+        </div>
+
+        <div class="submit-field">
+          <label class="submit-label" for="sub-title">Story Title *</label>
+          <input type="text" id="sub-title" class="submit-input" placeholder="e.g. How I Flew Business Class to Bali for $47" required />
+        </div>
+
+        <div class="submit-field">
+          <label class="submit-label" for="sub-body">Your Story *</label>
+          <textarea id="sub-body" class="submit-textarea" rows="10" placeholder="Tell us everything. The more detail the better — where you went, what you did, what you learned, what you'd tell a friend." required></textarea>
+          <p class="submit-hint">Minimum 200 words. First-person, conversational, honest.</p>
+        </div>
+
+        <div class="submit-field">
+          <label class="submit-label" for="sub-photos">Photos (optional)</label>
+          <input type="url" id="sub-photos" class="submit-input" placeholder="Link to Google Drive, Dropbox, or anywhere we can download your photos" />
+          <p class="submit-hint">High-res preferred. We'll credit you as the photographer.</p>
+        </div>
+
+        <div class="submit-field">
+          <label class="submit-label" for="sub-social">Your Instagram or Social (optional)</label>
+          <input type="text" id="sub-social" class="submit-input" placeholder="@yourhandle" />
+          <p class="submit-hint">We'll link to your profile in the published story if you'd like.</p>
+        </div>
+
+        <div class="submit-agree">
+          <input type="checkbox" id="sub-agree" required />
+          <label for="sub-agree">I confirm this is my original work and I give Greesi permission to publish it with attribution.</label>
+        </div>
+
+        <button type="submit" class="submit-btn">Send My Story →</button>
+      </form>
+
+      <div class="submit-success" id="submit-success" hidden>
+        <div class="submit-success-icon">🎉</div>
+        <h3>Story received!</h3>
+        <p>We'll review your submission and reach out within 5–7 business days if we'd like to feature it. Thank you for sharing.</p>
+      </div>
+    </div>
+
+    <!-- Social proof -->
+    <div class="submit-footer-note">
+      <p>Have questions? Email us at <a href="mailto:stories@greesi.com" class="text-accent hover:underline">stories@greesi.com</a></p>
+    </div>
+
+  </div>
+
+</BaseLayout>
+
+<style>
+  .submit-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .submit-type-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .submit-type-icon {
+    display: block; font-size: 2rem; margin-bottom: 12px;
+  }
+  .submit-type-card h3 {
+    font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--color-text);
+  }
+  .submit-type-card p {
+    font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.6;
+  }
+
+  .submit-form-wrap {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 24px;
+  }
+  .submit-form { display: flex; flex-direction: column; gap: 20px; }
+  .submit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 600px) { .submit-row { grid-template-columns: 1fr; } }
+  .submit-field { display: flex; flex-direction: column; gap: 6px; }
+  .submit-label { font-size: 0.875rem; font-weight: 600; color: var(--color-text); }
+  .submit-input, .submit-textarea {
+    padding: 10px 14px; border: 1px solid var(--color-border); border-radius: 10px;
+    background: var(--color-bg); color: var(--color-text); font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s; font-family: inherit;
+  }
+  .submit-input:focus, .submit-textarea:focus {
+    outline: none; border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.12);
+  }
+  .submit-textarea { resize: vertical; min-height: 200px; line-height: 1.6; }
+  .submit-hint { font-size: 0.78rem; color: var(--color-text-muted); }
+  .submit-agree {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.5;
+  }
+  .submit-agree input { margin-top: 2px; flex-shrink: 0; }
+  .submit-btn {
+    background: var(--color-accent); color: white;
+    font-weight: 700; font-size: 1rem; padding: 14px 32px;
+    border: none; border-radius: 12px; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    align-self: flex-start;
+  }
+  .submit-btn:hover { background: #0284c7; transform: translateY(-1px); }
+  .submit-success {
+    text-align: center; padding: 48px 24px;
+  }
+  .submit-success-icon { font-size: 3rem; margin-bottom: 16px; }
+  .submit-success h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 8px; }
+  .submit-success p { color: var(--color-text-muted); }
+  .submit-footer-note {
+    text-align: center; color: var(--color-text-muted); font-size: 0.875rem; margin-top: 24px;
+  }
+</style>
+
+<script>
+  const form = document.getElementById('submit-story-form') as HTMLFormElement | null;
+  const success = document.getElementById('submit-success');
+  form?.addEventListener('submit', e => {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (form) form.style.display = 'none';
+    if (success) success.hidden = false;
+    // TODO: connect to Formspree / Netlify Forms / email API
+  });
+</script>

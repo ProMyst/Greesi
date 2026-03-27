@@ -1,0 +1,397 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+import creditCards from '../../../data/finance/credit-cards.json';
+
+const noFeeCards = creditCards
+  .filter(c => c.annualFee === '$0')
+  .sort((a, b) => b.rating - a.rating);
+
+const topPick = noFeeCards[0];
+
+const title = "Best No Annual Fee Credit Cards 2026";
+const description = "The best no annual fee credit cards offer generous rewards, cash back, and sign-up bonuses without charging you $0/year. Compare our top picks for 2026.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://greesi.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Finance", "item": "https://greesi.com/finance" },
+    { "@type": "ListItem", "position": 3, "name": "Credit Cards", "item": "https://greesi.com/finance/credit-cards" },
+    { "@type": "ListItem", "position": 4, "name": "Best No Annual Fee Credit Cards 2026", "item": "https://greesi.com/finance/credit-cards/best-no-fee" }
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+
+  <!-- Hero -->
+  <section class="hero-section bg-primary text-white has-noise">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="section-container hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span>
+        <a href="/finance">Finance</a><span>/</span>
+        <a href="/finance/credit-cards">Credit Cards</a><span>/</span>
+        <span>Best No Annual Fee</span>
+      </nav>
+      <div class="hero-badge">Updated March 2026</div>
+      <h1 class="hero-title">Best No Annual Fee Credit Cards of 2026</h1>
+      <p class="hero-subtitle">
+        Why pay to earn rewards? The best no-fee cards offer generous cash back and sign-up bonuses — <strong>all for $0/year</strong>. No math required to justify keeping them in your wallet.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value">{noFeeCards.length}</span>
+          <span class="hero-stat-label">Top Picks</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">$0</span>
+          <span class="hero-stat-label">Annual Fee</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">2%+</span>
+          <span class="hero-stat-label">Best Rewards Rate</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-container page-body">
+
+    <!-- Top Pick Banner -->
+    <section class="top-pick-banner reveal-item" style="--delay:0.04s">
+      <div class="top-pick-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Editor's Top Pick
+      </div>
+      <div class="top-pick-content">
+        <div class="top-pick-info">
+          <h2 class="top-pick-name">{topPick.name}</h2>
+          <p class="top-pick-issuer">{topPick.issuer} · {topPick.category}</p>
+          <p class="top-pick-desc">{topPick.bestFor}</p>
+          <div class="top-pick-highlights">
+            <div class="highlight-chip">
+              <span class="highlight-val">{topPick.annualFee}</span>
+              <span class="highlight-lbl">Annual Fee</span>
+            </div>
+            <div class="highlight-chip">
+              <span class="highlight-val">{topPick.rewardsRate.split(',')[0]}</span>
+              <span class="highlight-lbl">Top Rewards Rate</span>
+            </div>
+            <div class="highlight-chip">
+              <span class="highlight-val">{topPick.signupBonus.split(' after')[0]}</span>
+              <span class="highlight-lbl">Sign-Up Bonus</span>
+            </div>
+          </div>
+        </div>
+        <div class="top-pick-ctas">
+          <a href={`/finance/review/${topPick.slug}`} class="btn-secondary">Read Full Review</a>
+          <a href={topPick.affiliateUrl} target="_blank" rel="noopener sponsored" class="btn-primary">Apply Now</a>
+        </div>
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="top-no-fee" />
+
+    <!-- Ranked Cards -->
+    <section class="ranked-section">
+      <h2 class="section-title">Best No Annual Fee Cards — Ranked</h2>
+      <p class="section-subtitle">All cards below charge $0 per year. Sorted by our editorial rating.</p>
+
+      <div class="card-list">
+        {noFeeCards.map((card, i) => (
+          <div class="credit-card reveal-item" style={`--delay:${i * 0.06}s`}>
+            <div class="credit-card-rank">
+              <span class="rank-num">#{i + 1}</span>
+            </div>
+            <div class="credit-card-body">
+              <div class="credit-card-header">
+                <div class="credit-card-title-group">
+                  <a href={`/finance/review/${card.slug}`} class="credit-card-name">{card.name}</a>
+                  <div class="credit-card-meta">
+                    <span class="card-issuer">{card.issuer}</span>
+                    <span class="card-category-badge">{card.category}</span>
+                  </div>
+                </div>
+                <RatingBadge rating={card.rating} size="sm" />
+              </div>
+              <p class="credit-card-best-for">{card.bestFor}</p>
+              <div class="credit-card-stats">
+                <div class="card-stat">
+                  <span class="card-stat-val cash-back">{card.rewardsRate.split(',')[0]}</span>
+                  <span class="card-stat-lbl">Rewards Rate</span>
+                </div>
+                <div class="card-stat">
+                  <span class="card-stat-val fee-zero">{card.annualFee}</span>
+                  <span class="card-stat-lbl">Annual Fee</span>
+                </div>
+                <div class="card-stat">
+                  <span class="card-stat-val">{card.foreignTransactionFee === 'None' ? 'No FTF' : card.foreignTransactionFee}</span>
+                  <span class="card-stat-lbl">Foreign Trans.</span>
+                </div>
+                <div class="card-stat">
+                  <span class="card-stat-val credit-score">{card.creditScore}</span>
+                  <span class="card-stat-lbl">Credit Score</span>
+                </div>
+              </div>
+              <div class="credit-card-bonus">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                {card.signupBonus}
+              </div>
+            </div>
+            <div class="credit-card-actions">
+              <a href={`/finance/review/${card.slug}`} class="btn-outline-sm">Read Review</a>
+              <a href={card.affiliateUrl} target="_blank" rel="noopener sponsored" class="btn-accent-sm">Apply Now</a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="mid-no-fee" />
+
+    <!-- Editorial -->
+    <section class="editorial-section reveal-item" style="--delay:0.08s">
+      <span class="section-eyebrow">Our Take</span>
+      <h2 class="section-title">Are No Annual Fee Cards Worth It?</h2>
+      <div class="editorial-content">
+        <p>Absolutely — for most people, a no-fee card is the smartest choice. Annual fee cards justify their cost by offering premium benefits (lounge access, travel credits, high-earn categories), but you only come out ahead if you actually use those benefits. A $95 annual fee card needs to deliver at least $95 in value above what a free card would earn you, just to break even.</p>
+        <p>For everyday spenders, no-fee cards like the Citi Double Cash (2% back on everything) or Chase Freedom Unlimited (1.5–5% depending on category) deliver exceptional value without any math required. You never have to wonder if you're "getting your money's worth" — because the card costs nothing.</p>
+        <div class="value-comparison">
+          <div class="value-row">
+            <span class="value-label">No-fee card at 2% back on $20,000 annual spend</span>
+            <span class="value-amount positive">$400/yr rewards</span>
+          </div>
+          <div class="value-row">
+            <span class="value-label">$95 annual fee card at 3% back on $20,000 spend</span>
+            <span class="value-amount neutral">$600 − $95 = $505/yr net</span>
+          </div>
+          <div class="value-row">
+            <span class="value-label">Extra value from paying the fee</span>
+            <span class="value-amount accent">$105/yr more (if you maximize it)</span>
+          </div>
+        </div>
+        <p>The case for an annual fee card is real — but only if you consistently earn those bonus categories. No-fee cards are the right default, especially as your first card, your everyday card, or a card you keep open to maintain your credit history.</p>
+        <h3>When to consider an annual fee card</h3>
+        <ul class="editorial-list">
+          <li>You spend heavily in one category (dining, travel, groceries) and the bonus rate clearly exceeds the fee</li>
+          <li>You can use the statement credits or travel perks to offset the cost</li>
+          <li>You're a frequent traveler who needs lounge access or trip insurance</li>
+          <li>You've already maximized your no-fee options and want an additional card</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section reveal-item" style="--delay:0.08s">
+      <span class="section-eyebrow">Common Questions</span>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary class="faq-question">Can a no annual fee card have good rewards?</summary>
+          <div class="faq-answer">
+            <p>Yes. The Citi Double Cash earns 2% on every purchase — flat rate, no categories to track — for $0/year. The Chase Freedom Unlimited earns 5% on travel, 3% on dining and drugstores, and 1.5% on everything else. These rates rival or beat many paid cards at their base earn rates, making them excellent choices for most consumers.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">Do no annual fee cards help build credit?</summary>
+          <div class="faq-answer">
+            <p>Yes, a no-fee card can be one of the best credit-building tools available. Because there's no annual fee, you can keep the account open indefinitely, which benefits your credit score through: increased average age of accounts, available credit (lowering your utilization ratio), and a long history of on-time payments. Never close a no-fee card in good standing — keep it active with occasional small purchases.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">What credit score do I need for these cards?</summary>
+          <div class="faq-answer">
+            <p>Most no-fee cash back cards require good to excellent credit (670+ FICO score). The Discover it Cash Back is often recommended as one of the more accessible options for those starting to build credit. If your score is below 670, consider a secured credit card first, which typically requires a refundable deposit and graduates to an unsecured card after 6–12 months of responsible use.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">What is a foreign transaction fee and which cards charge it?</summary>
+          <div class="faq-answer">
+            <p>A foreign transaction fee (FTF) is a surcharge of typically 3% added to purchases made in a foreign currency or processed through a foreign bank. If you travel internationally, always use a card with no FTF. Of the no-fee cards on this list, Discover it charges no FTF. Citi Double Cash, Chase Freedom Unlimited, and Wells Fargo Active Cash all charge 3%, so keep a no-FTF card in your wallet for international trips.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">How do I maximize rewards with a no-fee card?</summary>
+          <div class="faq-answer">
+            <p>Use your card for every eligible purchase and pay the full balance each month (never carry a balance — interest charges will always outweigh rewards). For flat-rate cards like the Citi Double Cash (2%), simply use it for everything. For cards with bonus categories like Chase Freedom Unlimited, align your big spend to the 3%+ categories. Set up autopay to ensure you never miss a payment, which would trigger interest charges and a credit score ding.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section reveal-item" style="--delay:0.08s">
+      <div class="cta-grid">
+        <a href="/finance/credit-cards/best-cash-back" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div>
+            <h3>Best Cash Back Cards</h3>
+            <p>Compare all cash back cards including options with annual fees.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+        <a href="/finance/credit-cards/best-for-travel" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </div>
+          <div>
+            <h3>Best Travel Credit Cards</h3>
+            <p>See which cards offer the most value for frequent travelers.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+        <a href="/finance/credit-cards" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div>
+            <h3>All Credit Cards</h3>
+            <p>Browse our full credit card comparison database.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    <p class="disclosure">
+      <strong>Advertiser Disclosure:</strong> Greesi is reader-supported. Some links on this page are affiliate links. Editorial rankings are independent of any commercial relationships. Rates and terms were accurate as of March 2026 and are subject to change.
+    </p>
+  </div>
+</BaseLayout>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).classList.add('revealed'); observer.unobserve(e.target); } }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
+</script>
+
+<style>
+.hero-section { position: relative; padding: 80px 0 72px; overflow: hidden; background: linear-gradient(135deg, var(--color-primary) 0%, #0d2744 100%); }
+.hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 1; }
+.hero-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%); top: -120px; right: -100px; }
+.hero-orb-2 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(14,165,233,0.10) 0%, transparent 70%); bottom: -80px; left: -80px; }
+.hero-inner { position: relative; z-index: 3; text-align: center; }
+.breadcrumb { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 20px; flex-wrap: wrap; }
+.breadcrumb a { color: rgba(255,255,255,0.65); text-decoration: none; transition: color 0.2s; }
+.breadcrumb a:hover { color: var(--color-accent); }
+.hero-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); background: rgba(14,165,233,0.12); border: 1px solid rgba(14,165,233,0.25); padding: 4px 14px; border-radius: 100px; margin-bottom: 20px; }
+.hero-title { font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; color: #fff; margin-bottom: 16px; max-width: 720px; margin-left: auto; margin-right: auto; }
+.hero-subtitle { font-size: 1.05rem; color: rgba(255,255,255,0.72); max-width: 600px; margin: 0 auto 36px; line-height: 1.6; }
+.hero-subtitle strong { color: #fff; }
+.hero-stats { display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.hero-stat { text-align: center; }
+.hero-stat-value { display: block; font-size: 1.75rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 4px; }
+.hero-stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.08em; }
+.hero-stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.15); }
+
+.page-body { padding-top: 48px; padding-bottom: 72px; }
+.section-title { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: var(--color-text); margin-bottom: 8px; }
+.section-subtitle { font-size: 0.95rem; color: var(--color-text-muted); margin-bottom: 28px; }
+
+/* Top Pick */
+.top-pick-banner { background: linear-gradient(135deg, var(--color-primary) 0%, #163558 100%); border-radius: 16px; padding: 24px 28px; color: white; margin-bottom: 40px; }
+.top-pick-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); background: rgba(14,165,233,0.15); border: 1px solid rgba(14,165,233,0.25); padding: 4px 12px; border-radius: 100px; margin-bottom: 16px; }
+.top-pick-content { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+.top-pick-name { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.top-pick-issuer { font-size: 0.85rem; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+.top-pick-desc { font-size: 0.9rem; color: rgba(255,255,255,0.75); margin-bottom: 16px; max-width: 500px; }
+.top-pick-highlights { display: flex; gap: 20px; flex-wrap: wrap; }
+.highlight-chip { display: flex; flex-direction: column; gap: 2px; }
+.highlight-val { font-size: 0.95rem; font-weight: 700; color: var(--color-accent); }
+.highlight-lbl { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: rgba(255,255,255,0.5); }
+.top-pick-ctas { display: flex; flex-direction: column; gap: 10px; min-width: 170px; }
+.btn-primary { display: inline-flex; align-items: center; justify-content: center; background: var(--color-accent); color: #fff; font-weight: 700; font-size: 0.9rem; padding: 12px 24px; border-radius: 10px; text-decoration: none; transition: background 0.2s, transform 0.15s; }
+.btn-primary:hover { background: var(--color-accent-dark); transform: translateY(-1px); }
+.btn-secondary { display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; font-size: 0.9rem; padding: 12px 24px; border-radius: 10px; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); transition: background 0.2s; }
+.btn-secondary:hover { background: rgba(255,255,255,0.18); }
+
+/* Card List */
+.ranked-section { margin-bottom: 56px; }
+.card-list { display: flex; flex-direction: column; gap: 14px; }
+.credit-card { display: flex; align-items: stretch; background: #fff; border: 1.5px solid var(--color-border); border-radius: 14px; overflow: hidden; transition: box-shadow 0.25s, transform 0.25s; }
+.credit-card:hover { box-shadow: 0 8px 32px rgba(30,58,95,0.10); transform: translateY(-2px); }
+.credit-card-rank { display: flex; align-items: center; justify-content: center; width: 60px; min-width: 60px; background: var(--color-surface); border-right: 1.5px solid var(--color-border); }
+.rank-num { font-size: 1.25rem; font-weight: 800; color: var(--color-text-muted); }
+.credit-card-body { flex: 1; padding: 18px 20px; }
+.credit-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.credit-card-name { font-size: 1.1rem; font-weight: 700; color: var(--color-text); text-decoration: none; transition: color 0.2s; }
+.credit-card-name:hover { color: var(--color-accent); }
+.credit-card-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.card-issuer { font-size: 0.8rem; color: var(--color-text-muted); }
+.card-category-badge { font-size: 0.68rem; font-weight: 600; background: var(--color-surface); border: 1px solid var(--color-border); padding: 2px 7px; border-radius: 5px; color: var(--color-text-muted); }
+.credit-card-best-for { font-size: 0.83rem; color: var(--color-text-muted); margin-bottom: 12px; }
+.credit-card-stats { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; }
+.card-stat { display: flex; flex-direction: column; gap: 2px; }
+.card-stat-val { font-size: 0.92rem; font-weight: 700; color: var(--color-text); }
+.cash-back { color: var(--color-accent) !important; font-size: 0.85rem !important; }
+.fee-zero { color: var(--color-success) !important; }
+.credit-score { font-size: 0.78rem !important; }
+.card-stat-lbl { font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); }
+.credit-card-bonus { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; color: var(--color-success); background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); padding: 4px 10px; border-radius: 100px; }
+.credit-card-actions { display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 18px 16px; border-left: 1.5px solid var(--color-border); min-width: 145px; }
+.btn-accent-sm { display: inline-flex; align-items: center; justify-content: center; background: var(--color-accent); color: #fff; font-weight: 600; font-size: 0.82rem; padding: 9px 16px; border-radius: 8px; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+.btn-accent-sm:hover { background: var(--color-accent-dark); }
+.btn-outline-sm { display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--color-accent); font-weight: 600; font-size: 0.82rem; padding: 9px 16px; border-radius: 8px; text-decoration: none; border: 1.5px solid var(--color-accent); transition: background 0.2s, color 0.2s; white-space: nowrap; }
+.btn-outline-sm:hover { background: var(--color-accent); color: #fff; }
+
+/* Editorial */
+.editorial-section { margin-bottom: 56px; }
+.editorial-content p { font-size: 0.95rem; line-height: 1.75; color: var(--color-text); margin-bottom: 16px; }
+.editorial-content h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; margin-top: 24px; }
+.editorial-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.editorial-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.5; }
+.editorial-list li::before { content: '→'; color: var(--color-accent); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+.value-comparison { background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: 12px; overflow: hidden; margin: 20px 0; }
+.value-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; gap: 12px; }
+.value-row + .value-row { border-top: 1px solid var(--color-border); }
+.value-label { font-size: 0.88rem; color: var(--color-text-muted); }
+.value-amount { font-size: 0.92rem; font-weight: 700; white-space: nowrap; }
+.value-amount.positive { color: var(--color-success); }
+.value-amount.neutral { color: var(--color-text); }
+.value-amount.accent { color: var(--color-accent); }
+
+/* FAQ */
+.faq-section { margin-bottom: 56px; }
+.faq-list { margin-top: 24px; border: 1.5px solid var(--color-border); border-radius: 14px; overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--color-border); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; list-style: none; gap: 12px; transition: background 0.15s; }
+.faq-question:hover { background: var(--color-surface); }
+.faq-question::after { content: '+'; font-size: 1.2rem; color: var(--color-accent); flex-shrink: 0; }
+details[open] .faq-question::after { content: '−'; }
+.faq-answer { padding: 0 22px 18px; }
+.faq-answer p { font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.75; }
+
+/* CTA */
+.cta-section { margin-bottom: 40px; }
+.cta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 768px) { .cta-grid { grid-template-columns: 1fr; } }
+.cta-card { display: flex; align-items: center; gap: 14px; background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: 12px; padding: 18px 14px; text-decoration: none; color: var(--color-text); transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s; }
+.cta-card:hover { box-shadow: 0 4px 20px rgba(14,165,233,0.12); transform: translateY(-2px); border-color: var(--color-accent); }
+.cta-card-icon { width: 42px; height: 42px; min-width: 42px; background: rgba(14,165,233,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--color-accent); }
+.cta-card h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 3px; }
+.cta-card p { font-size: 0.76rem; color: var(--color-text-muted); line-height: 1.4; }
+.cta-arrow { margin-left: auto; color: var(--color-accent); font-size: 1.1rem; flex-shrink: 0; }
+.disclosure { font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.6; border-top: 1px solid var(--color-border); padding-top: 20px; margin-top: 8px; }
+
+html[data-theme='dark'] .credit-card { background: var(--color-surface); }
+html[data-theme='dark'] .top-pick-banner { background: linear-gradient(135deg, #0d1f35 0%, #0f2540 100%); }
+
+@media (max-width: 640px) {
+  .credit-card { flex-direction: column; }
+  .credit-card-rank { width: 100%; min-width: unset; height: 36px; border-right: none; border-bottom: 1.5px solid var(--color-border); }
+  .credit-card-actions { border-left: none; border-top: 1.5px solid var(--color-border); flex-direction: row; }
+  .hero-stat-divider { display: none; }
+}
+</style>

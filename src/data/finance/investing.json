@@ -17,7 +17,7 @@
     "cons": ["Platform can feel complex", "Crypto not directly available", "International trading limited"],
     "bestFor": "Long-term investors and retirement planners who want comprehensive tools",
     "rating": 4.8,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.fidelity.com/open-account/overview"
   },
   {
     "slug": "charles-schwab",
@@ -37,7 +37,7 @@
     "cons": ["Fractional shares limited to S&P 500", "No crypto trading", "Website can be overwhelming"],
     "bestFor": "Investors who want a one-stop shop for banking and investing",
     "rating": 4.7,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.schwab.com/open-an-account"
   },
   {
     "slug": "vanguard",
@@ -57,7 +57,7 @@
     "cons": ["Outdated interface", "Limited trading tools", "Higher options fees", "Slower platform"],
     "bestFor": "Buy-and-hold index fund investors focused on low costs",
     "rating": 4.5,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://investor.vanguard.com/accounts-plans/brokerages/open-account"
   },
   {
     "slug": "robinhood",
@@ -77,7 +77,7 @@
     "cons": ["Limited research tools", "No mutual funds", "Basic charting", "Customer service issues", "Gamified interface"],
     "bestFor": "Beginners and casual investors who want a simple mobile experience",
     "rating": 3.8,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://join.robinhood.com"
   },
   {
     "slug": "webull",
@@ -97,7 +97,7 @@
     "cons": ["No mutual funds", "No bonds", "Limited retirement options", "Customer service"],
     "bestFor": "Active traders who want advanced charts and free options",
     "rating": 4.0,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.webull.com/activity"
   },
   {
     "slug": "m1-finance",
@@ -117,7 +117,7 @@
     "cons": ["One trade window per day (free)", "No tax-loss harvesting", "Limited research", "No options trading"],
     "bestFor": "Set-it-and-forget-it investors who want custom automated portfolios",
     "rating": 4.3,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://m1.com"
   },
   {
     "slug": "etrade",
@@ -137,6 +137,6 @@
     "cons": ["No fractional shares", "Higher options fees for low volume", "Mobile app less intuitive than competitors"],
     "bestFor": "Options traders and investors who want a robust desktop platform",
     "rating": 4.2,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://us.etrade.com/what-we-offer/our-accounts"
   }
 ]

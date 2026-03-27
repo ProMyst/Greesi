@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Our Methodology | How Greesi Reviews & Rates Financial Products";
+const description = "Learn how Greesi evaluates banks, credit cards, and investing platforms. Our transparent, unbiased scoring methodology is built on real data and editorial independence.";
+---
+
+<BaseLayout title={title} description={description}>
+
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+      <p class="text-accent font-semibold text-sm tracking-wide uppercase mb-3">Transparency First</p>
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">How We Rate & Review</h1>
+      <p class="text-white/65 text-lg max-w-xl mx-auto">Our ratings are data-driven, independently produced, and never influenced by advertisers. Here's exactly how we do it.</p>
+    </div>
+  </section>
+
+  <div class="max-w-3xl mx-auto px-4 py-16">
+
+    <!-- Editorial independence -->
+    <div class="method-card mb-10">
+      <div class="method-icon" style="background: rgba(14,165,233,0.1); color: #0ea5e9">✦</div>
+      <div>
+        <h2 class="method-heading">Editorial Independence</h2>
+        <p class="method-text">Greesi's editorial team operates completely independently from our business team. Advertisers have zero input on our ratings, rankings, or review content. Affiliate relationships may exist with some products we review — we disclose this clearly — but they never affect our scores.</p>
+      </div>
+    </div>
+
+    <!-- How we score banks -->
+    <div class="method-card mb-10">
+      <div class="method-icon" style="background: rgba(16,185,129,0.1); color: #10b981">🏦</div>
+      <div>
+        <h2 class="method-heading">How We Score Banks</h2>
+        <p class="method-text mb-4">Each bank is scored across five weighted categories:</p>
+        <div class="method-score-grid">
+          <div class="method-score-row"><span>Rates & Fees</span><span class="method-weight">30%</span></div>
+          <div class="method-score-row"><span>Account Features</span><span class="method-weight">25%</span></div>
+          <div class="method-score-row"><span>Digital Banking</span><span class="method-weight">20%</span></div>
+          <div class="method-score-row"><span>Customer Service</span><span class="method-weight">15%</span></div>
+          <div class="method-score-row"><span>Account Access / ATMs</span><span class="method-weight">10%</span></div>
+        </div>
+        <p class="method-text mt-4">We compare savings APY against the national average, evaluate fee structures, test mobile apps, and analyze FDIC insurance and ATM reimbursement policies.</p>
+      </div>
+    </div>
+
+    <!-- How we score credit cards -->
+    <div class="method-card mb-10">
+      <div class="method-icon" style="background: rgba(99,102,241,0.1); color: #6366f1">💳</div>
+      <div>
+        <h2 class="method-heading">How We Score Credit Cards</h2>
+        <p class="method-text mb-4">Credit cards are evaluated on:</p>
+        <div class="method-score-grid">
+          <div class="method-score-row"><span>Rewards Value</span><span class="method-weight">35%</span></div>
+          <div class="method-score-row"><span>Annual Fee vs. Benefits</span><span class="method-weight">25%</span></div>
+          <div class="method-score-row"><span>Approval Accessibility</span><span class="method-weight">20%</span></div>
+          <div class="method-score-row"><span>Perks & Travel Benefits</span><span class="method-weight">20%</span></div>
+        </div>
+        <p class="method-text mt-4">We calculate real-world rewards value based on a $2,000/mo spend profile, then weigh signup bonuses, foreign transaction fees, travel credits, and APR ranges.</p>
+      </div>
+    </div>
+
+    <!-- How we score investing -->
+    <div class="method-card mb-10">
+      <div class="method-icon" style="background: rgba(245,158,11,0.1); color: #f59e0b">📈</div>
+      <div>
+        <h2 class="method-heading">How We Score Investing Platforms</h2>
+        <p class="method-text mb-4">Brokerage and investing platform scores are based on:</p>
+        <div class="method-score-grid">
+          <div class="method-score-row"><span>Fees & Commissions</span><span class="method-weight">30%</span></div>
+          <div class="method-score-row"><span>Investment Selection</span><span class="method-weight">25%</span></div>
+          <div class="method-score-row"><span>Platform & Tools</span><span class="method-weight">25%</span></div>
+          <div class="method-score-row"><span>Account Minimums</span><span class="method-weight">20%</span></div>
+        </div>
+        <p class="method-text mt-4">We test each platform's interface, evaluate research tools, check options and fractional share availability, and compare robo-advisor fees against industry benchmarks.</p>
+      </div>
+    </div>
+
+    <!-- Update schedule -->
+    <div class="method-card mb-10">
+      <div class="method-icon" style="background: rgba(239,68,68,0.1); color: #ef4444">🔄</div>
+      <div>
+        <h2 class="method-heading">How Often We Update</h2>
+        <p class="method-text">All reviews are audited monthly and updated whenever a product changes its rates, fees, or features. APY rates are checked weekly against published bank data. Each review shows a "Last Reviewed" date so you always know how fresh the information is.</p>
+      </div>
+    </div>
+
+    <!-- Star ratings -->
+    <div class="method-card mb-10">
+      <div class="method-icon" style="background: rgba(14,165,233,0.1); color: #0ea5e9">★</div>
+      <div>
+        <h2 class="method-heading">What Our Star Ratings Mean</h2>
+        <div class="method-score-grid mt-2">
+          <div class="method-score-row"><span>⭐⭐⭐⭐⭐ 4.5–5.0</span><span class="method-weight text-success">Best in class</span></div>
+          <div class="method-score-row"><span>⭐⭐⭐⭐ 4.0–4.4</span><span class="method-weight text-accent">Excellent</span></div>
+          <div class="method-score-row"><span>⭐⭐⭐ 3.0–3.9</span><span class="method-weight text-warning">Good — some tradeoffs</span></div>
+          <div class="method-score-row"><span>⭐⭐ 2.0–2.9</span><span class="method-weight text-text-muted">Below average</span></div>
+          <div class="method-score-row"><span>⭐ Below 2.0</span><span class="method-weight text-error">Not recommended</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Affiliate disclosure -->
+    <div class="method-disclosure">
+      <strong>Affiliate Disclosure:</strong> Some links on Greesi are affiliate links. If you apply for or open an account through our links, we may earn a commission at no extra cost to you. This has no effect on our editorial scores, rankings, or recommendations.
+      If you have questions about our methodology, <a href="mailto:editorial@greesi.com" class="text-accent hover:underline">contact our editorial team</a>.
+    </div>
+
+  </div>
+
+</BaseLayout>
+
+<style>
+  .method-card {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .method-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; flex-shrink: 0;
+  }
+  .method-heading {
+    font-size: 1.2rem; font-weight: 700; margin-bottom: 10px;
+    color: var(--color-text);
+  }
+  .method-text {
+    color: var(--color-text-muted); line-height: 1.7; font-size: 0.95rem;
+  }
+  .method-score-grid {
+    border: 1px solid var(--color-border); border-radius: 10px; overflow: hidden;
+  }
+  .method-score-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 14px; font-size: 0.875rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .method-score-row:last-child { border-bottom: none; }
+  .method-score-row:nth-child(odd) { background: var(--color-bg); }
+  .method-weight { font-weight: 700; color: var(--color-primary); }
+  html[data-theme='dark'] .method-weight { color: var(--color-accent); }
+  .method-disclosure {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+  .text-success { color: #10b981; }
+  .text-warning { color: #f59e0b; }
+  .text-error   { color: #ef4444; }
+</style>

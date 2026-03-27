@@ -14,7 +14,7 @@
     "cons": ["Very low savings APY", "Monthly fees unless waived", "Minimum balance requirements"],
     "bestFor": "People who want a large branch network and full-service banking",
     "rating": 4.0,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.chase.com/personal/checking"
   },
   {
     "slug": "ally",
@@ -31,7 +31,7 @@
     "cons": ["No physical branches", "No cash deposits", "No sign-up bonus"],
     "bestFor": "Savers who want high APY with no fees",
     "rating": 4.7,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.ally.com/bank/online-savings-account/"
   },
   {
     "slug": "discover",
@@ -48,7 +48,7 @@
     "cons": ["No physical branches", "Limited product range", "Fewer account types"],
     "bestFor": "Fee-conscious consumers who want high yields",
     "rating": 4.5,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.discover.com/online-banking/savings-account/"
   },
   {
     "slug": "marcus",
@@ -65,7 +65,7 @@
     "cons": ["No checking account", "No ATM access", "Limited product range"],
     "bestFor": "Savers focused purely on maximizing interest earnings",
     "rating": 4.3,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.marcus.com/us/en/savings/high-yield-savings"
   },
   {
     "slug": "capital-one",
@@ -82,7 +82,7 @@
     "cons": ["Limited branch access", "Customer service can be slow", "No interest on checking"],
     "bestFor": "People who want an online bank with some physical presence",
     "rating": 4.4,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.capitalone.com/bank/savings-accounts/online-performance-savings-account/"
   },
   {
     "slug": "sofi",
@@ -99,7 +99,7 @@
     "cons": ["No physical branches", "Newer bank", "Limited cash deposit options"],
     "bestFor": "People who want banking, investing, and loans in one place",
     "rating": 4.6,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.sofi.com/banking/"
   },
   {
     "slug": "wells-fargo",
@@ -116,7 +116,7 @@
     "cons": ["Very low savings APY", "Monthly fees", "Past controversy", "Minimum balance requirements"],
     "bestFor": "People who need extensive branch access nationwide",
     "rating": 3.5,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.wellsfargo.com/checking/"
   },
   {
     "slug": "bank-of-america",
@@ -133,7 +133,7 @@
     "cons": ["Low savings APY", "Monthly fees", "High minimum balances for perks"],
     "bestFor": "Customers with high balances who can benefit from Preferred Rewards",
     "rating": 3.8,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.bankofamerica.com/deposits/checking/"
   },
   {
     "slug": "citi",
@@ -150,7 +150,7 @@
     "cons": ["Low savings APY", "Monthly fees", "Complex fee structure"],
     "bestFor": "High-balance customers who want large sign-up bonuses",
     "rating": 3.7,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://online.citi.com/US/banking/checking-account.do"
   },
   {
     "slug": "wealthfront",
@@ -167,6 +167,6 @@
     "cons": ["No physical branches", "Limited customer service hours", "Newer to banking"],
     "bestFor": "Tech-savvy investors who want banking and automated investing together",
     "rating": 4.4,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.wealthfront.com/cash"
   }
 ]

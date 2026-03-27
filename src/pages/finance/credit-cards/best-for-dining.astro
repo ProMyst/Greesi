@@ -1,0 +1,505 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import creditCards from '../../../data/finance/credit-cards.json';
+
+const title = "Best Credit Cards for Dining & Restaurants 2026";
+const description = "Find the best credit cards for dining out in 2026. Compare dining rewards rates, annual fees, and sign-up bonuses to maximize every restaurant dollar you spend.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://greesi.com" },
+    { "@type": "ListItem", "position": 2, "name": "Finance", "item": "https://greesi.com/finance" },
+    { "@type": "ListItem", "position": 3, "name": "Credit Cards", "item": "https://greesi.com/finance/credit-cards" },
+    { "@type": "ListItem", "position": 4, "name": "Best for Dining", "item": "https://greesi.com/finance/credit-cards/best-for-dining" },
+  ]
+};
+
+// Dining picks: slug, dining-specific rewards label, and why it ranks here
+const diningPicks = [
+  {
+    slug: 'amex-gold',
+    diningRate: '4x points at restaurants',
+    diningNote: 'Best dining rate available — 4x on every restaurant swipe worldwide',
+    rank: 1,
+  },
+  {
+    slug: 'chase-sapphire-preferred',
+    diningRate: '3x points on dining',
+    diningNote: 'Flexible Chase Ultimate Rewards points transferable to 14+ airline & hotel partners',
+    rank: 2,
+  },
+  {
+    slug: 'chase-freedom-unlimited',
+    diningRate: '3% cash back on dining',
+    diningNote: 'Best no-annual-fee dining card — 3% back with zero cost to carry',
+    rank: 3,
+  },
+  {
+    slug: 'capital-one-venture-x',
+    diningRate: '2x miles on everything',
+    diningNote: 'Great all-rounder — dining, travel, and $300 travel credit offset the $395 fee',
+    rank: 4,
+  },
+  {
+    slug: 'citi-double-cash',
+    diningRate: '2% cash back on everything',
+    diningNote: 'Simplest option — flat 2% with no annual fee, no tracking categories',
+    rank: 5,
+  },
+];
+
+// Monthly dining spend for "math" section
+const MONTHLY_DINING = 400;
+const ANNUAL_DINING = MONTHLY_DINING * 12;
+
+const mathCards = [
+  { name: 'Amex Gold', rate: 4, pointValue: 0.02, annualFee: 250, netFee: 130, rateLabel: '4x (worth ~2¢/pt)' },
+  { name: 'Chase Sapphire Preferred', rate: 3, pointValue: 0.02, annualFee: 95, netFee: 95, rateLabel: '3x (worth ~2¢/pt)' },
+  { name: 'Chase Freedom Unlimited', rate: 0.03, pointValue: 1, annualFee: 0, netFee: 0, rateLabel: '3% cash back', isCash: true },
+  { name: 'Capital One Venture X', rate: 2, pointValue: 0.0185, annualFee: 395, netFee: 95, rateLabel: '2x (worth ~1.85¢/mi)' },
+  { name: 'Citi Double Cash', rate: 0.02, pointValue: 1, annualFee: 0, netFee: 0, rateLabel: '2% cash back', isCash: true },
+];
+
+const faqs = [
+  {
+    q: 'What counts as "dining" for credit card rewards?',
+    a: 'Most cards define dining as purchases at restaurants, fast food, cafes, bars, and food delivery apps (DoorDash, Uber Eats, etc.). Coffee shops typically qualify too. Grocery stores and wholesale clubs are usually excluded from dining categories — they have their own bonus categories.',
+  },
+  {
+    q: 'Is the Amex Gold worth $250 a year just for dining?',
+    a: 'For heavy restaurant spenders, yes. The card includes a $120 annual dining credit (for participating restaurants via Resy or Uber Eats) and $120 in Uber Cash annually, bringing the effective annual fee down to around $10 if you use those credits. At 4x on dining, spending $400/month earns ~96,000 Membership Rewards points per year — worth $1,920+ through transfer partners.',
+  },
+  {
+    q: 'Which dining card is best if I have no annual fee requirement?',
+    a: 'The Chase Freedom Unlimited earns 3% on dining with no annual fee and no spending caps — making it the strongest no-fee dining card. If you already have a Chase Sapphire card, your Freedom Unlimited points can be converted to transferable Ultimate Rewards points, significantly boosting their value.',
+  },
+  {
+    q: 'Can I use multiple cards to maximize dining rewards?',
+    a: 'Absolutely. A popular combo: use the Amex Gold for restaurants (4x), Chase Sapphire Preferred for dining abroad (3x, no foreign transaction fee), and Chase Freedom Unlimited as a backup for places that don\'t accept Amex. Many points optimizers run 2-3 cards simultaneously for different categories.',
+  },
+  {
+    q: 'Do food delivery apps count as dining?',
+    a: 'Usually yes — DoorDash, Uber Eats, Grubhub, and similar apps typically code as "restaurants" and earn dining bonus rates on most cards. However, some cards are more lenient than others. The Amex Gold and Chase Sapphire Preferred both reliably earn 3-4x on major delivery apps. Always double-check the card\'s category definitions if this matters for your spending.',
+  },
+];
+
+// Merge picks with card data
+const rankedCards = diningPicks.map(pick => {
+  const card = creditCards.find(c => c.slug === pick.slug)!;
+  return { ...card, ...pick };
+});
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+
+  <!-- Hero -->
+  <section class="bg-primary text-white py-16 has-noise">
+    <div class="max-w-4xl mx-auto px-4">
+      <nav class="text-sm text-white/50 mb-5">
+        <a href="/" class="hover:text-white/80 transition-colors">Home</a>
+        <span class="mx-2">/</span>
+        <a href="/finance" class="hover:text-white/80 transition-colors">Finance</a>
+        <span class="mx-2">/</span>
+        <a href="/finance/credit-cards" class="hover:text-white/80 transition-colors">Credit Cards</a>
+        <span class="mx-2">/</span>
+        <span class="text-white/70">Best for Dining</span>
+      </nav>
+      <p class="text-accent font-semibold text-sm tracking-widest uppercase mb-3">2026 Ranking</p>
+      <h1 class="text-3xl md:text-4xl font-bold mb-4 leading-tight">Best Credit Cards for Dining<br class="hidden md:block" /> & Restaurants</h1>
+      <p class="text-white/70 text-lg max-w-2xl">If you spend $300–$600/month dining out, the right card can earn you hundreds in rewards. We ranked every option by the math, not affiliate payouts.</p>
+      <div class="hero-meta">
+        <span>Updated March 2026</span>
+        <span class="meta-dot">·</span>
+        <span>Reviewed by Sarah Chen, CFP</span>
+        <span class="meta-dot">·</span>
+        <span>5 cards compared</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-4xl mx-auto px-4 py-10">
+
+    <!-- Quick summary box -->
+    <div class="summary-box">
+      <h2 class="summary-title">Quick Picks</h2>
+      <ul class="summary-list">
+        <li><strong>Best overall dining card:</strong> American Express Gold — 4x at restaurants</li>
+        <li><strong>Best for travel + dining:</strong> Chase Sapphire Preferred — 3x dining, flexible points</li>
+        <li><strong>Best no-annual-fee:</strong> Chase Freedom Unlimited — 3% dining, $0 fee</li>
+        <li><strong>Best all-rounder:</strong> Capital One Venture X — 2x on everything + $300 travel credit</li>
+        <li><strong>Best for simplicity:</strong> Citi Double Cash — flat 2% on all purchases</li>
+      </ul>
+    </div>
+
+    <!-- Ranked cards -->
+    <section class="mt-10">
+      <h2 class="section-h2">Top 5 Dining Credit Cards Ranked</h2>
+      <div class="space-y-5">
+        {rankedCards.map((card) => (
+          <div class="card-row">
+            <div class="card-rank">#{card.rank}</div>
+            <div class="card-body">
+              <div class="card-header">
+                <div>
+                  <div class="card-title-row">
+                    <a href={`/finance/review/${card.slug}`} class="card-name">{card.name}</a>
+                    <RatingBadge rating={card.rating} size="sm" />
+                  </div>
+                  <p class="card-note">{card.diningNote}</p>
+                </div>
+              </div>
+              <div class="card-stats">
+                <div class="card-stat">
+                  <div class="stat-label">Dining Rate</div>
+                  <div class="stat-val accent">{card.diningRate}</div>
+                </div>
+                <div class="card-stat">
+                  <div class="stat-label">Annual Fee</div>
+                  <div class="stat-val">{card.annualFee}</div>
+                </div>
+                <div class="card-stat">
+                  <div class="stat-label">Sign-up Bonus</div>
+                  <div class="stat-val bonus">{card.signupBonus ? card.signupBonus.split(' after')[0] : 'None'}</div>
+                </div>
+                <div class="card-stat">
+                  <div class="stat-label">All Rewards</div>
+                  <div class="stat-val small">{card.rewardsRate}</div>
+                </div>
+              </div>
+              <div class="card-actions">
+                <a href={`/finance/review/${card.slug}`} class="btn-review">Read Full Review</a>
+                <a href={card.affiliateUrl} target="_blank" rel="noopener sponsored" class="btn-apply">Apply Now →</a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- The Math section -->
+    <section class="mt-14">
+      <h2 class="section-h2">Why Dining Rewards Add Up Fast</h2>
+      <p class="text-text-muted mb-6 leading-relaxed">
+        The average American household spends around <strong>$3,500/year</strong> on food away from home. If you're spending <strong>${MONTHLY_DINING}/month (${ANNUAL_DINING}/year)</strong> on dining, here's exactly what each card earns you:
+      </p>
+      <div class="math-table-wrap">
+        <table class="math-table">
+          <thead>
+            <tr>
+              <th>Card</th>
+              <th>Rate</th>
+              <th>Annual Rewards on ${ANNUAL_DINING}</th>
+              <th>Annual Fee</th>
+              <th>Net Gain</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mathCards.map((c) => {
+              const rawRewards = c.isCash
+                ? ANNUAL_DINING * c.rate
+                : ANNUAL_DINING * c.rate * c.pointValue;
+              const net = rawRewards - c.netFee;
+              return (
+                <tr>
+                  <td class="font-semibold">{c.name}</td>
+                  <td class="text-accent">{c.rateLabel}</td>
+                  <td class="font-semibold">${rawRewards.toFixed(0)}</td>
+                  <td class="text-text-muted">${c.annualFee}</td>
+                  <td class={net >= 0 ? 'net-pos' : 'net-neg'}>{net >= 0 ? '+' : ''}${net.toFixed(0)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p class="math-note">
+        * Net gain assumes points redeemed at estimated value (Amex/Chase points ~2¢, Venture miles ~1.85¢). Amex Gold and Venture X net fee reflects offset credits ($120 dining + Uber Cash for Gold; $300 travel credit for Venture X). Actual value varies by redemption.
+      </p>
+    </section>
+
+    <!-- FAQ -->
+    <section class="mt-14">
+      <h2 class="section-h2">Frequently Asked Questions</h2>
+      <div class="faq-list">
+        {faqs.map((faq, i) => (
+          <details class="faq-item" open={i === 0}>
+            <summary class="faq-q">{faq.q}</summary>
+            <p class="faq-a">{faq.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="cta-block mt-14">
+      <h3 class="cta-heading">Not sure which card is right for you?</h3>
+      <p class="cta-sub">Take our 5-question quiz and get a personalized recommendation based on how you actually spend.</p>
+      <div class="cta-actions">
+        <a href="/finance/quiz/credit-card" class="btn-primary-lg">Take the Quiz →</a>
+        <a href="/finance/credit-cards" class="btn-ghost-lg">See All Cards</a>
+      </div>
+    </section>
+
+  </div>
+
+</BaseLayout>
+
+<style>
+  /* Hero meta */
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.55);
+  }
+  .meta-dot { opacity: 0.4; }
+
+  /* Summary box */
+  .summary-box {
+    background: rgba(14,165,233,0.07);
+    border: 1px solid rgba(14,165,233,0.25);
+    border-left: 4px solid var(--color-accent);
+    border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .summary-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-accent);
+    margin-bottom: 12px;
+  }
+  .summary-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .summary-list li {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    padding-left: 16px;
+    position: relative;
+  }
+  .summary-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    top: 1px;
+  }
+  .summary-list li strong { color: var(--color-text); }
+
+  /* Section headings */
+  .section-h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-text);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  /* Card rows */
+  .card-row {
+    display: flex;
+    gap: 16px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  html[data-theme='dark'] .card-row { background: var(--color-surface); }
+  .card-row:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.09); transform: translateY(-1px); }
+
+  .card-rank {
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: var(--color-border);
+    min-width: 40px;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+  .card-body { flex: 1; min-width: 0; }
+  .card-header { margin-bottom: 12px; }
+  .card-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+  .card-name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .card-name:hover { color: var(--color-accent); }
+  .card-note { font-size: 0.85rem; color: var(--color-text-muted); }
+
+  .card-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+    background: var(--color-surface);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 14px;
+  }
+  .card-stat {}
+  .stat-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    margin-bottom: 3px;
+  }
+  .stat-val {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.3;
+  }
+  .stat-val.accent { color: var(--color-accent); }
+  .stat-val.bonus { color: #10b981; }
+  .stat-val.small { font-size: 0.78rem; font-weight: 400; color: var(--color-text-muted); }
+
+  .card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn-review {
+    padding: 9px 18px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+    text-decoration: none;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-review:hover { border-color: var(--color-accent); color: var(--color-accent); }
+  .btn-apply {
+    padding: 9px 18px;
+    background: var(--color-accent);
+    color: #fff;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .btn-apply:hover { opacity: 0.88; }
+
+  /* Math table */
+  .math-table-wrap { overflow-x: auto; margin-bottom: 12px; }
+  .math-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .math-table th {
+    background: var(--color-surface);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-text-muted);
+    border-bottom: 2px solid var(--color-border);
+    white-space: nowrap;
+  }
+  .math-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+  .math-table tr:last-child td { border-bottom: none; }
+  .math-table tr:hover td { background: var(--color-surface); }
+  .net-pos { color: #10b981; font-weight: 700; }
+  .net-neg { color: #ef4444; font-weight: 700; }
+  .math-note {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    padding: 10px 14px;
+    border-left: 3px solid var(--color-border);
+    margin-top: 4px;
+  }
+
+  /* FAQ */
+  .faq-list { display: flex; flex-direction: column; gap: 8px; }
+  .faq-item {
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .faq-item[open] { border-color: var(--color-accent); }
+  .faq-q {
+    padding: 16px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+  }
+  .faq-q::after {
+    content: '+';
+    font-size: 1.25rem;
+    color: var(--color-accent);
+    font-weight: 300;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .faq-item[open] .faq-q::after { transform: rotate(45deg); }
+  .faq-a {
+    padding: 0 18px 16px;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* Bottom CTA */
+  .cta-block {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 32px;
+    text-align: center;
+  }
+  .cta-heading { font-size: 1.25rem; font-weight: 800; color: var(--color-text); margin-bottom: 8px; }
+  .cta-sub { font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 20px; }
+  .cta-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary-lg {
+    padding: 12px 24px;
+    background: var(--color-accent);
+    color: #fff;
+    font-weight: 700;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: opacity 0.15s;
+  }
+  .btn-primary-lg:hover { opacity: 0.88; }
+  .btn-ghost-lg {
+    padding: 12px 24px;
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-weight: 600;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn-ghost-lg:hover { border-color: var(--color-accent); color: var(--color-accent); }
+</style>

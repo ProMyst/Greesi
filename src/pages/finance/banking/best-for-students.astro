@@ -1,0 +1,475 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+import banks from '../../../data/finance/banks.json';
+
+const studentBanks = banks
+  .filter(b => b.checkingFee === '$0' || b.checkingFee.toLowerCase().includes('waivable'))
+  .sort((a, b) => b.rating - a.rating);
+
+const noFee = studentBanks.filter(b => b.checkingFee === '$0');
+const withBonus = studentBanks.filter(b => b.signupBonus !== 'None');
+const onlineBanks = studentBanks.filter(b => b.type === 'Online Bank');
+
+const title = "Best Bank Accounts for Students 2026";
+const description = "The best student bank accounts have zero monthly fees, no minimum balance, and sign-up bonuses. We compared top options to find the best picks for college students in 2026.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://greesi.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Finance", "item": "https://greesi.com/finance" },
+    { "@type": "ListItem", "position": 3, "name": "Banking", "item": "https://greesi.com/finance/banking" },
+    { "@type": "ListItem", "position": 4, "name": "Best Bank Accounts for Students 2026", "item": "https://greesi.com/finance/banking/best-for-students" }
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+
+  <!-- Hero -->
+  <section class="hero-section bg-primary text-white has-noise">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="section-container hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a><span>/</span>
+        <a href="/finance">Finance</a><span>/</span>
+        <a href="/finance/banking">Banking</a><span>/</span>
+        <span>Best for Students</span>
+      </nav>
+      <div class="hero-badge">Updated March 2026</div>
+      <h1 class="hero-title">Best Bank Accounts for Students 2026</h1>
+      <p class="hero-subtitle">
+        You shouldn't pay fees to store your own money. Every pick on this list charges <strong>$0/month</strong> — and several offer sign-up bonuses just for opening an account.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value">{studentBanks.length}</span>
+          <span class="hero-stat-label">Picks</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">$0</span>
+          <span class="hero-stat-label">Monthly Fees</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{withBonus.length}</span>
+          <span class="hero-stat-label">Offer Bonuses</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-container page-body">
+
+    <AdSlot format="horizontal" slot="top-students" />
+
+    <!-- Curated Picks Tabs -->
+    <section class="picks-section">
+      <h2 class="section-title">Our Top Picks for Students</h2>
+      <p class="section-subtitle">All accounts below have no monthly fee (or easily waivable fees) and are open to students.</p>
+
+      <!-- No Fee Banks -->
+      <div class="picks-group reveal-item" style="--delay:0.04s">
+        <div class="picks-group-header">
+          <span class="picks-badge picks-badge-free">$0 Monthly Fee</span>
+          <h3>Best Zero-Fee Accounts</h3>
+          <p>These accounts never charge monthly maintenance fees — no balance requirements, no direct deposit needed.</p>
+        </div>
+        <div class="ranked-list">
+          {noFee.map((bank, i) => (
+            <div class="bank-card reveal-item" style={`--delay:${i * 0.05}s`}>
+              <div class="bank-card-rank">
+                <span class="rank-badge">#{i + 1}</span>
+              </div>
+              <div class="bank-card-body">
+                <div class="bank-card-header">
+                  <div>
+                    <a href={`/finance/review/${bank.slug}`} class="bank-card-name">{bank.name}</a>
+                    <span class="bank-card-type">{bank.type}</span>
+                  </div>
+                  <RatingBadge rating={bank.rating} size="sm" />
+                </div>
+                <p class="bank-card-best-for">{bank.bestFor}</p>
+                <div class="bank-card-stats">
+                  <div class="bank-stat">
+                    <span class="bank-stat-value fee-free">$0/mo</span>
+                    <span class="bank-stat-label">Monthly Fee</span>
+                  </div>
+                  <div class="bank-stat">
+                    <span class="bank-stat-value">{bank.minDeposit}</span>
+                    <span class="bank-stat-label">Min. Deposit</span>
+                  </div>
+                  <div class="bank-stat">
+                    <span class="bank-stat-value apy-val">{bank.savingsApy}</span>
+                    <span class="bank-stat-label">Savings APY</span>
+                  </div>
+                  <div class="bank-stat">
+                    <span class="bank-stat-value atm-val">{bank.atmNetwork}</span>
+                    <span class="bank-stat-label">ATM Network</span>
+                  </div>
+                </div>
+                {bank.signupBonus !== 'None' && (
+                  <div class="bank-bonus">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    {bank.signupBonus}
+                  </div>
+                )}
+              </div>
+              <div class="bank-card-actions">
+                <a href={`/finance/review/${bank.slug}`} class="btn-outline-sm">Read Review</a>
+                <a href={bank.affiliateUrl} target="_blank" rel="noopener sponsored" class="btn-accent-sm">Apply Now</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Banks with Bonuses -->
+      {withBonus.length > 0 && (
+        <div class="picks-group reveal-item" style="--delay:0.08s">
+          <div class="picks-group-header">
+            <span class="picks-badge picks-badge-bonus">Sign-Up Bonuses</span>
+            <h3>Best Sign-Up Bonuses for Students</h3>
+            <p>These accounts offer cash or rewards just for opening an account and meeting basic requirements like setting up direct deposit.</p>
+          </div>
+          <div class="ranked-list">
+            {withBonus.map((bank, i) => (
+              <div class="bank-card reveal-item" style={`--delay:${i * 0.05}s`}>
+                <div class="bank-card-rank">
+                  <span class="rank-badge">#{i + 1}</span>
+                </div>
+                <div class="bank-card-body">
+                  <div class="bank-card-header">
+                    <div>
+                      <a href={`/finance/review/${bank.slug}`} class="bank-card-name">{bank.name}</a>
+                      <span class="bank-card-type">{bank.type}</span>
+                    </div>
+                    <RatingBadge rating={bank.rating} size="sm" />
+                  </div>
+                  <p class="bank-card-best-for">{bank.bestFor}</p>
+                  <div class="bank-card-stats">
+                    <div class="bank-stat">
+                      <span class="bank-stat-value bonus-val">{bank.signupBonus}</span>
+                      <span class="bank-stat-label">Sign-Up Bonus</span>
+                    </div>
+                    <div class="bank-stat">
+                      <span class="bank-stat-value">{bank.checkingFee}</span>
+                      <span class="bank-stat-label">Monthly Fee</span>
+                    </div>
+                    <div class="bank-stat">
+                      <span class="bank-stat-value">{bank.minDeposit}</span>
+                      <span class="bank-stat-label">Min. Deposit</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="bank-card-actions">
+                  <a href={`/finance/review/${bank.slug}`} class="btn-outline-sm">Read Review</a>
+                  <a href={bank.affiliateUrl} target="_blank" rel="noopener sponsored" class="btn-accent-sm">Apply Now</a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <!-- Online Banks -->
+      <div class="picks-group reveal-item" style="--delay:0.1s">
+        <div class="picks-group-header">
+          <span class="picks-badge picks-badge-online">Online Banks</span>
+          <h3>Best Online Banks for Students</h3>
+          <p>No physical branches, but significantly higher savings rates, bigger ATM networks, and better mobile apps than traditional banks.</p>
+        </div>
+        <div class="ranked-list">
+          {onlineBanks.map((bank, i) => (
+            <div class="bank-card reveal-item" style={`--delay:${i * 0.05}s`}>
+              <div class="bank-card-rank">
+                <span class="rank-badge">#{i + 1}</span>
+              </div>
+              <div class="bank-card-body">
+                <div class="bank-card-header">
+                  <div>
+                    <a href={`/finance/review/${bank.slug}`} class="bank-card-name">{bank.name}</a>
+                    <span class="bank-card-type">{bank.type}</span>
+                  </div>
+                  <RatingBadge rating={bank.rating} size="sm" />
+                </div>
+                <p class="bank-card-best-for">{bank.bestFor}</p>
+                <div class="bank-card-stats">
+                  <div class="bank-stat featured">
+                    <span class="bank-stat-value">{bank.savingsApy}</span>
+                    <span class="bank-stat-label">Savings APY</span>
+                  </div>
+                  <div class="bank-stat">
+                    <span class="bank-stat-value">{bank.checkingFee}</span>
+                    <span class="bank-stat-label">Monthly Fee</span>
+                  </div>
+                  <div class="bank-stat">
+                    <span class="bank-stat-value atm-val">{bank.atmNetwork}</span>
+                    <span class="bank-stat-label">ATM Network</span>
+                  </div>
+                </div>
+              </div>
+              <div class="bank-card-actions">
+                <a href={`/finance/review/${bank.slug}`} class="btn-outline-sm">Read Review</a>
+                <a href={bank.affiliateUrl} target="_blank" rel="noopener sponsored" class="btn-accent-sm">Apply Now</a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="mid-students" />
+
+    <!-- What to Look For -->
+    <section class="factors-section reveal-item" style="--delay:0.06s">
+      <span class="section-eyebrow">Buying Guide</span>
+      <h2 class="section-title">What to Look for in a Student Bank Account</h2>
+      <p class="section-subtitle">These four factors separate great student accounts from average ones.</p>
+      <div class="factors-grid">
+        <div class="factor-card">
+          <div class="factor-num">01</div>
+          <div class="factor-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3>No Monthly Fees</h3>
+          <p>A $10–$15/month fee adds up to $120–$180/year — money that should stay in your pocket. Look for accounts with no maintenance fee or fees that are waived with a student ID or any direct deposit amount.</p>
+        </div>
+        <div class="factor-card">
+          <div class="factor-num">02</div>
+          <div class="factor-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          </div>
+          <h3>Large ATM Network</h3>
+          <p>Out-of-network ATM fees average $4.73 per transaction. Choose a bank with a large fee-free ATM network (Allpoint, MoneyPass) or one that reimburses ATM fees so you can access cash anywhere on campus or in your city.</p>
+        </div>
+        <div class="factor-card">
+          <div class="factor-num">03</div>
+          <div class="factor-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <h3>Strong Mobile App</h3>
+          <p>As a student, your phone is your bank branch. Look for mobile check deposit, instant transfer notifications, spending insights, and an easy-to-use interface. Online banks consistently outperform traditional banks on mobile features.</p>
+        </div>
+        <div class="factor-card">
+          <div class="factor-num">04</div>
+          <div class="factor-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>FDIC Insurance</h3>
+          <p>Make sure your bank is FDIC-insured. This federally-backed guarantee protects your deposits up to $250,000 if the bank ever fails. All banks on this list carry full FDIC coverage.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section reveal-item" style="--delay:0.08s">
+      <span class="section-eyebrow">Common Questions</span>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary class="faq-question">Can I open a bank account as a college student?</summary>
+          <div class="faq-answer">
+            <p>Yes — anyone 18 or older can open a bank account independently. If you're under 18, you'll need a parent or guardian to open a joint account. Most online banks approve applications in minutes and only require a government-issued ID, your Social Security Number, and a US address. There's typically no credit check required for a checking or savings account.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">Do I need a minimum balance to avoid fees?</summary>
+          <div class="faq-answer">
+            <p>The accounts on this list require no minimum balance at all — zero dollars. Traditional banks like Chase and Bank of America typically require $300–$1,500 to waive their monthly fee. This is why we specifically filtered for accounts with $0 fees or easily waivable fees, so you don't have to worry about your balance falling too low during finals week.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">Should I use an online bank or a traditional bank as a student?</summary>
+          <div class="faq-answer">
+            <p>Online banks generally offer better rates, fewer fees, and better mobile apps. Traditional banks offer in-person branches, which can be helpful if you need to deposit cash frequently or prefer face-to-face support. Many students use both: an online bank for their main savings and spending, and a traditional bank account for occasional cash deposits. If you rarely deposit cash, an online bank is usually the better choice.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">How do sign-up bonuses work for bank accounts?</summary>
+          <div class="faq-answer">
+            <p>Bank sign-up bonuses typically require you to meet a condition within a set time period — usually setting up direct deposit (like a paycheck or financial aid refund) above a minimum threshold. For example, "Receive $300 with a direct deposit of $500+ within 90 days." The bonus is paid as a deposit to your account. Always read the fine print: bonuses may be taxable as income and often require you to keep the account open for a minimum period.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">What happens to my student bank account after I graduate?</summary>
+          <div class="faq-answer">
+            <p>Most banks automatically convert student accounts to regular accounts after you graduate or turn 24. The accounts on this list charge $0/month regardless of student status, so there's nothing to worry about — your account works exactly the same after graduation. You won't be hit with surprise fees once you enter the workforce.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section reveal-item" style="--delay:0.08s">
+      <div class="cta-grid">
+        <a href="/finance/banking/best-high-yield" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div>
+            <h3>Best High-Yield Savings</h3>
+            <p>Start earning 4.00% APY on your emergency fund right now.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+        <a href="/finance/credit-cards/best-no-fee" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div>
+            <h3>Best No-Fee Credit Cards</h3>
+            <p>Build credit and earn rewards with $0 annual fee cards.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+        <a href="/finance/calculators/compound-interest" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+          </div>
+          <div>
+            <h3>Savings Calculator</h3>
+            <p>See how your savings can grow with higher APY rates.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    <p class="disclosure">
+      <strong>Advertiser Disclosure:</strong> Greesi is reader-supported. Some links on this page are affiliate links. Our rankings are independent of any commercial relationships. Rates and fees were accurate as of March 2026.
+    </p>
+  </div>
+</BaseLayout>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).classList.add('revealed'); observer.unobserve(e.target); } }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
+</script>
+
+<style>
+.hero-section {
+  position: relative;
+  padding: 80px 0 72px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #0d2744 100%);
+}
+.hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 1; }
+.hero-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%); top: -120px; right: -100px; }
+.hero-orb-2 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(14,165,233,0.10) 0%, transparent 70%); bottom: -80px; left: -80px; }
+.hero-inner { position: relative; z-index: 3; text-align: center; }
+.breadcrumb { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.8rem; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+.breadcrumb a { color: rgba(255,255,255,0.65); text-decoration: none; transition: color 0.2s; }
+.breadcrumb a:hover { color: var(--color-accent); }
+.hero-badge { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); background: rgba(14,165,233,0.12); border: 1px solid rgba(14,165,233,0.25); padding: 4px 14px; border-radius: 100px; margin-bottom: 20px; }
+.hero-title { font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; color: #fff; margin-bottom: 16px; max-width: 720px; margin-left: auto; margin-right: auto; }
+.hero-subtitle { font-size: 1.05rem; color: rgba(255,255,255,0.72); max-width: 580px; margin: 0 auto 36px; line-height: 1.6; }
+.hero-subtitle strong { color: #fff; }
+.hero-stats { display: flex; align-items: center; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.hero-stat { text-align: center; }
+.hero-stat-value { display: block; font-size: 1.75rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 4px; }
+.hero-stat-label { font-size: 0.75rem; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.08em; }
+.hero-stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.15); }
+
+.page-body { padding-top: 48px; padding-bottom: 72px; }
+
+.section-title { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; color: var(--color-text); margin-bottom: 8px; }
+.section-subtitle { font-size: 0.95rem; color: var(--color-text-muted); margin-bottom: 28px; }
+
+.picks-section { margin-bottom: 56px; }
+.picks-group { margin-bottom: 48px; }
+.picks-group-header { margin-bottom: 20px; }
+.picks-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 12px;
+  border-radius: 100px;
+  margin-bottom: 10px;
+}
+.picks-badge-free { color: var(--color-success); background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); }
+.picks-badge-bonus { color: var(--color-warning); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
+.picks-badge-online { color: var(--color-accent); background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2); }
+.picks-group-header h3 { font-size: 1.2rem; font-weight: 700; color: var(--color-text); margin-bottom: 6px; }
+.picks-group-header p { font-size: 0.9rem; color: var(--color-text-muted); }
+
+.ranked-list { display: flex; flex-direction: column; gap: 14px; }
+.bank-card { display: flex; align-items: stretch; background: #fff; border: 1.5px solid var(--color-border); border-radius: 14px; overflow: hidden; transition: box-shadow 0.25s, transform 0.25s; }
+.bank-card:hover { box-shadow: 0 8px 32px rgba(30,58,95,0.10); transform: translateY(-2px); }
+.bank-card-rank { display: flex; align-items: center; justify-content: center; width: 56px; min-width: 56px; background: var(--color-surface); border-right: 1.5px solid var(--color-border); }
+.rank-badge { font-size: 1.2rem; font-weight: 800; color: var(--color-text-muted); }
+.bank-card-body { flex: 1; padding: 18px 18px; }
+.bank-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.bank-card-name { font-size: 1.1rem; font-weight: 700; color: var(--color-text); text-decoration: none; transition: color 0.2s; }
+.bank-card-name:hover { color: var(--color-accent); }
+.bank-card-type { display: inline-block; font-size: 0.68rem; font-weight: 600; background: var(--color-surface); border: 1px solid var(--color-border); padding: 2px 7px; border-radius: 5px; color: var(--color-text-muted); margin-left: 8px; }
+.bank-card-best-for { font-size: 0.83rem; color: var(--color-text-muted); margin-bottom: 12px; }
+.bank-card-stats { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; }
+.bank-stat { display: flex; flex-direction: column; gap: 2px; }
+.bank-stat-value { font-size: 0.95rem; font-weight: 700; color: var(--color-text); }
+.bank-stat.featured .bank-stat-value { font-size: 1.3rem; color: var(--color-accent); }
+.fee-free { color: var(--color-success) !important; }
+.apy-val { color: var(--color-accent) !important; }
+.bonus-val { color: var(--color-success) !important; font-size: 0.9rem !important; }
+.atm-val { font-size: 0.82rem !important; }
+.bank-stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); }
+.bank-bonus { display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 600; color: var(--color-success); background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); padding: 3px 10px; border-radius: 100px; }
+.bank-card-actions { display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 18px 16px; border-left: 1.5px solid var(--color-border); min-width: 145px; }
+
+.btn-accent-sm { display: inline-flex; align-items: center; justify-content: center; background: var(--color-accent); color: #fff; font-weight: 600; font-size: 0.82rem; padding: 9px 16px; border-radius: 8px; text-decoration: none; transition: background 0.2s; white-space: nowrap; }
+.btn-accent-sm:hover { background: var(--color-accent-dark); }
+.btn-outline-sm { display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--color-accent); font-weight: 600; font-size: 0.82rem; padding: 9px 16px; border-radius: 8px; text-decoration: none; border: 1.5px solid var(--color-accent); transition: background 0.2s, color 0.2s; white-space: nowrap; }
+.btn-outline-sm:hover { background: var(--color-accent); color: #fff; }
+
+.factors-section { margin-bottom: 56px; }
+.factors-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 24px; }
+@media (max-width: 640px) { .factors-grid { grid-template-columns: 1fr; } }
+.factor-card { background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: 14px; padding: 24px; position: relative; }
+.factor-num { position: absolute; top: 16px; right: 18px; font-size: 2.5rem; font-weight: 900; color: var(--color-border); line-height: 1; }
+.factor-icon { width: 44px; height: 44px; background: rgba(14,165,233,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--color-accent); margin-bottom: 14px; }
+.factor-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.factor-card p { font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.7; }
+
+.faq-section { margin-bottom: 56px; }
+.faq-list { display: flex; flex-direction: column; gap: 0; margin-top: 24px; border: 1.5px solid var(--color-border); border-radius: 14px; overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--color-border); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; font-size: 0.95rem; font-weight: 600; cursor: pointer; list-style: none; gap: 12px; transition: background 0.15s; }
+.faq-question:hover { background: var(--color-surface); }
+.faq-question::after { content: '+'; font-size: 1.2rem; color: var(--color-accent); flex-shrink: 0; }
+details[open] .faq-question::after { content: '−'; }
+.faq-answer { padding: 0 22px 18px; }
+.faq-answer p { font-size: 0.9rem; color: var(--color-text-muted); line-height: 1.75; }
+
+.cta-section { margin-bottom: 40px; }
+.cta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 768px) { .cta-grid { grid-template-columns: 1fr; } }
+.cta-card { display: flex; align-items: center; gap: 14px; background: var(--color-surface); border: 1.5px solid var(--color-border); border-radius: 12px; padding: 18px 14px; text-decoration: none; color: var(--color-text); transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s; }
+.cta-card:hover { box-shadow: 0 4px 20px rgba(14,165,233,0.12); transform: translateY(-2px); border-color: var(--color-accent); }
+.cta-card-icon { width: 42px; height: 42px; min-width: 42px; background: rgba(14,165,233,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--color-accent); }
+.cta-card h3 { font-size: 0.88rem; font-weight: 700; margin-bottom: 3px; }
+.cta-card p { font-size: 0.76rem; color: var(--color-text-muted); line-height: 1.4; }
+.cta-arrow { margin-left: auto; color: var(--color-accent); font-size: 1.1rem; flex-shrink: 0; }
+
+.disclosure { font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.6; border-top: 1px solid var(--color-border); padding-top: 20px; margin-top: 8px; }
+
+html[data-theme='dark'] .bank-card { background: var(--color-surface); }
+html[data-theme='dark'] .factor-card { background: var(--color-surface-alt); }
+
+@media (max-width: 640px) {
+  .bank-card { flex-direction: column; }
+  .bank-card-rank { width: 100%; min-width: unset; height: 36px; border-right: none; border-bottom: 1.5px solid var(--color-border); }
+  .bank-card-actions { border-left: none; border-top: 1.5px solid var(--color-border); flex-direction: row; }
+  .hero-stat-divider { display: none; }
+}
+</style>

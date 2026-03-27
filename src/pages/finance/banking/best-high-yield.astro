@@ -1,0 +1,820 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import RatingBadge from '../../../components/shared/RatingBadge.astro';
+import AdSlot from '../../../components/shared/AdSlot.astro';
+import banks from '../../../data/finance/banks.json';
+
+const highYield = banks
+  .filter(b => b.type === 'Online Bank' && parseFloat(b.savingsApy) >= 3.5)
+  .sort((a, b) => parseFloat(b.savingsApy) - parseFloat(a.savingsApy));
+
+const topPick = highYield[0];
+
+const title = "Best High-Yield Savings Accounts of 2026";
+const description = "The best high-yield savings accounts earn 8x–10x the national average APY of 0.46%. Compare top rates from online banks and start earning more on your money today.";
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://greesi.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Finance", "item": "https://greesi.com/finance" },
+    { "@type": "ListItem", "position": 3, "name": "Banking", "item": "https://greesi.com/finance/banking" },
+    { "@type": "ListItem", "position": 4, "name": "Best High-Yield Savings Accounts 2026", "item": "https://greesi.com/finance/banking/best-high-yield" }
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} schema={schema}>
+
+  <!-- Hero -->
+  <section class="hero-section bg-primary text-white has-noise">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="section-container hero-inner">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="/">Home</a>
+        <span>/</span>
+        <a href="/finance">Finance</a>
+        <span>/</span>
+        <a href="/finance/banking">Banking</a>
+        <span>/</span>
+        <span>Best High-Yield Savings</span>
+      </nav>
+      <div class="hero-badge">Updated March 2026</div>
+      <h1 class="hero-title">Best High-Yield Savings Accounts of 2026</h1>
+      <p class="hero-subtitle">
+        The national average savings rate sits at just <strong>0.46% APY</strong>. These accounts pay up to <strong class="text-accent-light">4.00% APY</strong> — that's nearly <strong>9x more</strong> on every dollar you save.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value">{highYield.length}</span>
+          <span class="hero-stat-label">Top Picks</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">{highYield[0].savingsApy}</span>
+          <span class="hero-stat-label">Best APY</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">$0</span>
+          <span class="hero-stat-label">Min. to Open</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-container page-body">
+
+    <!-- At a Glance -->
+    <section class="glance-box reveal-item" style="--delay:0.05s">
+      <div class="glance-header">
+        <span class="glance-label">Top Pick</span>
+        <h2 class="glance-title">Our #1 High-Yield Savings Pick</h2>
+      </div>
+      <div class="glance-content">
+        <div class="glance-bank">
+          <div class="glance-bank-name">{topPick.name}</div>
+          <div class="glance-apy">{topPick.savingsApy} <span>APY</span></div>
+          <p class="glance-description">{topPick.bestFor}</p>
+          <div class="glance-tags">
+            {topPick.pros.slice(0, 3).map(p => (
+              <span class="glance-tag">{p}</span>
+            ))}
+          </div>
+        </div>
+        <div class="glance-ctas">
+          <a href={`/finance/review/${topPick.slug}`} class="btn-secondary">Read Full Review</a>
+          <a href={topPick.affiliateUrl} target="_blank" rel="noopener sponsored" class="btn-primary">Open Account</a>
+        </div>
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="top-high-yield" />
+
+    <!-- Ranked List -->
+    <section class="ranked-section">
+      <h2 class="section-title">Best High-Yield Savings Accounts — Ranked</h2>
+      <p class="section-subtitle">Filtered to online banks offering 3.50% APY or higher. Sorted by APY (highest first).</p>
+
+      <div class="ranked-list">
+        {highYield.map((bank, i) => (
+          <div class="bank-card reveal-item" style={`--delay:${i * 0.06}s`}>
+            <div class="bank-card-rank">
+              <span class="rank-badge">#{i + 1}</span>
+            </div>
+            <div class="bank-card-body">
+              <div class="bank-card-header">
+                <div>
+                  <a href={`/finance/review/${bank.slug}`} class="bank-card-name">{bank.name}</a>
+                  <span class="bank-card-type">{bank.type}</span>
+                </div>
+                <RatingBadge rating={bank.rating} size="sm" />
+              </div>
+              <p class="bank-card-best-for">{bank.bestFor}</p>
+              <div class="bank-card-stats">
+                <div class="bank-stat featured">
+                  <span class="bank-stat-value">{bank.savingsApy}</span>
+                  <span class="bank-stat-label">Savings APY</span>
+                </div>
+                <div class="bank-stat">
+                  <span class="bank-stat-value">{bank.checkingFee}</span>
+                  <span class="bank-stat-label">Monthly Fee</span>
+                </div>
+                <div class="bank-stat">
+                  <span class="bank-stat-value">{bank.minDeposit}</span>
+                  <span class="bank-stat-label">Min. Deposit</span>
+                </div>
+                <div class="bank-stat">
+                  <span class="bank-stat-value atm">{bank.atmNetwork}</span>
+                  <span class="bank-stat-label">ATM Network</span>
+                </div>
+              </div>
+              {bank.signupBonus !== 'None' && (
+                <div class="bank-bonus">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                  Sign-up bonus: {bank.signupBonus}
+                </div>
+              )}
+            </div>
+            <div class="bank-card-actions">
+              <a href={`/finance/review/${bank.slug}`} class="btn-outline-sm">Read Review</a>
+              <a href={bank.affiliateUrl} target="_blank" rel="noopener sponsored" class="btn-accent-sm">Open Account</a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <AdSlot format="horizontal" slot="mid-high-yield" />
+
+    <!-- Why It Matters -->
+    <section class="editorial-section reveal-item" style="--delay:0.1s">
+      <span class="section-eyebrow">Why It Matters</span>
+      <h2 class="section-title">Why High-Yield Savings Accounts Matter</h2>
+      <div class="editorial-grid">
+        <div class="editorial-text">
+          <p>Most Americans still keep their savings at traditional banks earning a fraction of a percent. The difference compounds into real money over time.</p>
+          <p>Here's the math on a <strong>$10,000 balance</strong> over one year:</p>
+          <div class="math-comparison">
+            <div class="math-row math-bad">
+              <span class="math-label">National Average (0.46% APY)</span>
+              <span class="math-value">$46/year</span>
+            </div>
+            <div class="math-row math-good">
+              <span class="math-label">High-Yield Account (4.00% APY)</span>
+              <span class="math-value math-highlight">$400/year</span>
+            </div>
+            <div class="math-row math-diff">
+              <span class="math-label">Extra earnings per year</span>
+              <span class="math-value">$354 more</span>
+            </div>
+          </div>
+          <p>Over <strong>5 years</strong> with monthly compounding, that same $10,000 grows to roughly <strong>$12,214</strong> at 4.00% APY — compared to just <strong>$10,231</strong> at 0.46%. The difference is over $1,983 in extra earnings for doing nothing differently except where you park your cash.</p>
+          <p>Online banks can offer higher rates because they have no branch overhead. They pass those savings directly to depositors as higher interest rates. All the accounts on this list are FDIC-insured up to $250,000.</p>
+        </div>
+        <div class="editorial-callout">
+          <div class="callout-card">
+            <div class="callout-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <h3>FDIC Insured</h3>
+            <p>Every bank on this list is FDIC-insured, protecting deposits up to $250,000 per depositor, per institution.</p>
+          </div>
+          <div class="callout-card">
+            <div class="callout-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3>Rates Change</h3>
+            <p>High-yield savings rates are variable and follow the federal funds rate. Rates listed are current as of March 2026.</p>
+          </div>
+          <div class="callout-card">
+            <div class="callout-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>No Minimum Balance</h3>
+            <p>All picks on this list require $0 to open and have no minimum balance requirements to earn the advertised APY.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq-section reveal-item" style="--delay:0.1s">
+      <span class="section-eyebrow">Common Questions</span>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary class="faq-question">Is my money safe in a high-yield savings account?</summary>
+          <div class="faq-answer">
+            <p>Yes. Every account on this list is FDIC-insured (Federal Deposit Insurance Corporation) up to $250,000 per depositor, per insured bank. This means even if the bank fails, the federal government guarantees your deposits up to that limit. You have the same level of protection at an online bank as at a traditional brick-and-mortar bank.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">What is APY, and how is it different from interest rate?</summary>
+          <div class="faq-answer">
+            <p>APY stands for Annual Percentage Yield. Unlike a simple interest rate, APY accounts for the effect of compounding — earning interest on your interest. A savings account with a 4.00% interest rate compounded daily will have an APY slightly above 4.00%. Always compare APY (not interest rate) when shopping for savings accounts, as it reflects your actual annual earnings.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">How often do high-yield savings rates change?</summary>
+          <div class="faq-answer">
+            <p>Rates on high-yield savings accounts are variable, meaning banks can change them at any time. In practice, rates closely track the federal funds rate set by the Federal Reserve. When the Fed raises rates, high-yield savings APYs typically go up. When the Fed cuts rates, APYs tend to follow. We update our rankings regularly to reflect the latest rates, but always verify the current rate directly with the bank before opening an account.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">Are there any downsides to high-yield savings accounts?</summary>
+          <div class="faq-answer">
+            <p>The main trade-offs compared to traditional banks: no physical branch locations, potential delays of 1–3 business days for transfers to external accounts, and no cash deposit options. Additionally, rates are variable and can decrease. Some people prefer to keep a small buffer at their local bank for immediate cash needs, then hold the bulk of their savings in a high-yield account.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-question">How do I open a high-yield savings account?</summary>
+          <div class="faq-answer">
+            <p>Opening a high-yield savings account takes about 5–10 minutes online. You'll need: a valid government-issued ID, your Social Security Number (SSN), an existing bank account number and routing number (to fund the account), and a US mailing address. After submitting your application, most banks verify your identity instantly. Your first transfer typically takes 1–3 business days to clear.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Bottom CTA -->
+    <section class="cta-section reveal-item" style="--delay:0.1s">
+      <div class="cta-grid">
+        <a href="/finance/banking" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+          </div>
+          <div>
+            <h3>Compare All Banks</h3>
+            <p>See our full rankings for checking and savings across all bank types.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+        <a href="/finance/banking/best-for-students" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <div>
+            <h3>Best Student Bank Accounts</h3>
+            <p>Zero-fee accounts designed for college students and young adults.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+        <a href="/finance/calculators/compound-interest" class="cta-card">
+          <div class="cta-card-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+          </div>
+          <div>
+            <h3>Compound Interest Calculator</h3>
+            <p>See exactly how much you'd earn over time at different APY rates.</p>
+          </div>
+          <span class="cta-arrow">→</span>
+        </a>
+      </div>
+    </section>
+
+    <p class="disclosure">
+      <strong>Advertiser Disclosure:</strong> Greesi is reader-supported. Some links on this page are affiliate links — we may earn a commission if you open an account, at no extra cost to you. Our editorial ratings and rankings are independent of these relationships. Rates displayed were accurate as of March 2026 and are subject to change.
+    </p>
+
+  </div>
+</BaseLayout>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => entries.forEach(e => { if (e.isIntersecting) { (e.target as HTMLElement).classList.add('revealed'); observer.unobserve(e.target); } }),
+    { threshold: 0.08 }
+  );
+  document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
+</script>
+
+<style>
+/* ── Hero ─────────────────────────────────────────────────────── */
+.hero-section {
+  position: relative;
+  padding: 80px 0 72px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #0d2744 100%);
+}
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 1;
+}
+.hero-orb-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%);
+  top: -120px; right: -100px;
+}
+.hero-orb-2 {
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(14,165,233,0.10) 0%, transparent 70%);
+  bottom: -80px; left: -80px;
+}
+.hero-inner {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+}
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 20px;
+}
+.breadcrumb a { color: rgba(255,255,255,0.65); text-decoration: none; transition: color 0.2s; }
+.breadcrumb a:hover { color: var(--color-accent); }
+.hero-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: rgba(14,165,233,0.12);
+  border: 1px solid rgba(14,165,233,0.25);
+  padding: 4px 14px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+.hero-title {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin-bottom: 16px;
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.72);
+  max-width: 580px;
+  margin: 0 auto 36px;
+  line-height: 1.6;
+}
+.hero-subtitle strong { color: #fff; }
+.text-accent-light { color: #38bdf8; }
+.hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.hero-stat { text-align: center; }
+.hero-stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.hero-stat-label {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.hero-stat-divider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.15);
+}
+
+/* ── Page Body ───────────────────────────────────────────────── */
+.page-body {
+  padding-top: 48px;
+  padding-bottom: 72px;
+}
+
+/* ── Glance Box ─────────────────────────────────────────────── */
+.glance-box {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #163558 100%);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 48px;
+  color: white;
+}
+.glance-header {
+  padding: 20px 28px 0;
+}
+.glance-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: rgba(14,165,233,0.15);
+  padding: 3px 10px;
+  border-radius: 100px;
+  margin-bottom: 8px;
+}
+.glance-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+}
+.glance-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 28px 24px;
+  flex-wrap: wrap;
+}
+.glance-bank-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.glance-apy {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--color-accent);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.glance-apy span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+}
+.glance-description {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 12px;
+  max-width: 400px;
+}
+.glance-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.glance-tag {
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  padding: 3px 10px;
+  border-radius: 100px;
+  color: rgba(255,255,255,0.8);
+}
+.glance-ctas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 180px;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 12px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--color-accent-dark); transform: translateY(-1px); }
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 12px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: background 0.2s;
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.18); }
+.btn-accent-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 9px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.btn-accent-sm:hover { background: var(--color-accent-dark); }
+.btn-outline-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 9px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 1.5px solid var(--color-accent);
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.btn-outline-sm:hover { background: var(--color-accent); color: #fff; }
+
+/* ── Section Titles ─────────────────────────────────────────── */
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+.section-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  margin-bottom: 28px;
+}
+
+/* ── Ranked List ─────────────────────────────────────────────── */
+.ranked-section { margin-bottom: 56px; }
+.ranked-list { display: flex; flex-direction: column; gap: 16px; }
+.bank-card {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: #fff;
+  border: 1.5px solid var(--color-border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: box-shadow 0.25s, transform 0.25s;
+}
+.bank-card:hover {
+  box-shadow: 0 8px 32px rgba(30,58,95,0.10);
+  transform: translateY(-2px);
+}
+.bank-card-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  min-width: 64px;
+  background: var(--color-surface);
+  border-right: 1.5px solid var(--color-border);
+}
+.rank-badge {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-text-muted);
+}
+.bank-card-body {
+  flex: 1;
+  padding: 20px 20px;
+}
+.bank-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.bank-card-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.bank-card-name:hover { color: var(--color-accent); }
+.bank-card-type {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 2px 8px;
+  border-radius: 6px;
+  color: var(--color-text-muted);
+  margin-left: 8px;
+}
+.bank-card-best-for {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: 14px;
+}
+.bank-card-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.bank-stat { display: flex; flex-direction: column; gap: 2px; }
+.bank-stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.bank-stat.featured .bank-stat-value {
+  font-size: 1.4rem;
+  color: var(--color-accent);
+}
+.bank-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+}
+.atm { font-size: 0.85rem !important; }
+.bank-bonus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-success);
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.2);
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+.bank-card-actions {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 20px;
+  border-left: 1.5px solid var(--color-border);
+  min-width: 150px;
+}
+
+/* ── Editorial ───────────────────────────────────────────────── */
+.editorial-section { margin-bottom: 56px; }
+.editorial-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 40px;
+  margin-top: 24px;
+}
+@media (max-width: 768px) {
+  .editorial-grid { grid-template-columns: 1fr; }
+}
+.editorial-text p {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--color-text);
+  margin-bottom: 16px;
+}
+.math-comparison {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.math-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  gap: 12px;
+}
+.math-row + .math-row { border-top: 1px solid var(--color-border); }
+.math-bad { background: rgba(239,68,68,0.04); }
+.math-good { background: rgba(16,185,129,0.06); }
+.math-diff { background: var(--color-surface-alt); }
+.math-label { font-size: 0.88rem; color: var(--color-text-muted); }
+.math-value { font-size: 1rem; font-weight: 700; color: var(--color-text); white-space: nowrap; }
+.math-highlight { color: var(--color-success); font-size: 1.15rem; }
+.editorial-callout { display: flex; flex-direction: column; gap: 16px; }
+.callout-card {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 18px;
+}
+.callout-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(14,165,233,0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+  margin-bottom: 10px;
+}
+.callout-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 6px; }
+.callout-card p { font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.6; }
+
+/* ── FAQ ─────────────────────────────────────────────────────── */
+.faq-section { margin-bottom: 56px; }
+.faq-list { display: flex; flex-direction: column; gap: 0; margin-top: 24px; border: 1.5px solid var(--color-border); border-radius: 14px; overflow: hidden; }
+.faq-item { border-bottom: 1px solid var(--color-border); }
+.faq-item:last-child { border-bottom: none; }
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  gap: 12px;
+  transition: background 0.15s;
+}
+.faq-question:hover { background: var(--color-surface); }
+.faq-question::after {
+  content: '+';
+  font-size: 1.2rem;
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+details[open] .faq-question::after { content: '−'; }
+.faq-answer {
+  padding: 0 22px 18px;
+}
+.faq-answer p {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  line-height: 1.75;
+}
+
+/* ── CTA ─────────────────────────────────────────────────────── */
+.cta-section { margin-bottom: 40px; }
+.cta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 0;
+}
+@media (max-width: 768px) { .cta-grid { grid-template-columns: 1fr; } }
+.cta-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: 12px;
+  padding: 18px 16px;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+.cta-card:hover { box-shadow: 0 4px 20px rgba(14,165,233,0.12); transform: translateY(-2px); border-color: var(--color-accent); }
+.cta-card-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: rgba(14,165,233,0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+.cta-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+.cta-card p { font-size: 0.78rem; color: var(--color-text-muted); line-height: 1.4; }
+.cta-arrow { margin-left: auto; color: var(--color-accent); font-size: 1.1rem; flex-shrink: 0; }
+
+/* ── Disclosure ──────────────────────────────────────────────── */
+.disclosure {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  margin-top: 8px;
+}
+
+/* ── Dark Mode ───────────────────────────────────────────────── */
+html[data-theme='dark'] .bank-card { background: var(--color-surface); }
+html[data-theme='dark'] .glance-box { background: linear-gradient(135deg, #0d1f35 0%, #0f2540 100%); }
+html[data-theme='dark'] .math-comparison { background: var(--color-surface-alt); }
+html[data-theme='dark'] .callout-card { background: var(--color-surface-alt); }
+
+@media (max-width: 640px) {
+  .bank-card { flex-direction: column; }
+  .bank-card-rank { width: 100%; min-width: unset; height: 40px; border-right: none; border-bottom: 1.5px solid var(--color-border); }
+  .bank-card-actions { border-left: none; border-top: 1.5px solid var(--color-border); flex-direction: row; }
+  .hero-stat-divider { display: none; }
+}
+</style>

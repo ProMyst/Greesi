@@ -14,7 +14,7 @@
     "cons": ["$95 annual fee", "No airport lounge access", "Limited premium travel perks"],
     "bestFor": "Frequent travelers who want flexible rewards without a huge annual fee",
     "rating": 4.7,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred"
   },
   {
     "slug": "amex-gold",
@@ -31,7 +31,7 @@
     "cons": ["$250 annual fee", "Amex not accepted everywhere", "Must pay balance monthly"],
     "bestFor": "People who spend heavily on dining and groceries",
     "rating": 4.6,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.americanexpress.com/us/credit-cards/card/gold-card/"
   },
   {
     "slug": "citi-double-cash",
@@ -48,7 +48,7 @@
     "cons": ["Foreign transaction fee", "No bonus categories", "Modest sign-up bonus"],
     "bestFor": "People who want simple, flat-rate cash back with no annual fee",
     "rating": 4.5,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.citi.com/credit-cards/citi-double-cash-credit-card"
   },
   {
     "slug": "chase-freedom-unlimited",
@@ -65,7 +65,7 @@
     "cons": ["Foreign transaction fee", "Requires Sapphire card to maximize", "Lower base rate than 2% cards"],
     "bestFor": "Chase ecosystem users who want a no-fee everyday card",
     "rating": 4.4,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited"
   },
   {
     "slug": "discover-it-cash-back",
@@ -82,7 +82,7 @@
     "cons": ["Must activate categories quarterly", "$1,500 quarterly cap on 5%", "Discover less widely accepted"],
     "bestFor": "First credit card users and people who can track rotating categories",
     "rating": 4.5,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.discover.com/credit-cards/cash-back/it-card.html"
   },
   {
     "slug": "amex-platinum",
@@ -99,7 +99,7 @@
     "cons": ["$695 annual fee", "1x on most spending", "Amex acceptance", "Must use all credits to offset fee"],
     "bestFor": "Frequent flyers who can use all the travel credits and lounge access",
     "rating": 4.3,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.americanexpress.com/us/credit-cards/card/platinum/"
   },
   {
     "slug": "capital-one-venture-x",
@@ -116,7 +116,7 @@
     "cons": ["Must book via Capital One Travel for max rewards", "Newer card", "Fewer transfer partners than Chase/Amex"],
     "bestFor": "Travelers who want premium perks at a lower effective annual fee",
     "rating": 4.7,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.capitalone.com/credit-cards/venture-x/"
   },
   {
     "slug": "wells-fargo-active-cash",
@@ -133,6 +133,6 @@
     "cons": ["Foreign transaction fee", "No bonus categories", "Wells Fargo reputation"],
     "bestFor": "Simple flat-rate cash back seekers who bank with Wells Fargo",
     "rating": 4.3,
-    "affiliateUrl": "#"
+    "affiliateUrl": "https://www.wellsfargo.com/credit-cards/active-cash/"
   }
 ]
