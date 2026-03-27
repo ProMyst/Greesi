@@ -572,6 +572,9 @@
   .g-tick-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-3); margin-right: 6px; }
   .g-tick-label.up { color: var(--up); }
   .g-tick-sep { color: var(--gray-2); font-size: 0.7rem; margin: 0 6px; }
+  .g-tick-change { font-size: 0.65rem; font-family: var(--font-mono); }
+  .g-tick-change.up   { color: var(--signal-green); }
+  .g-tick-change.down { color: var(--signal-red); }
 
   /* ── Sections ────────────────────────────────────────── */
   .g-section { padding: 100px 24px; }
@@ -808,12 +811,49 @@
   }, { threshold: 0.5 });
   document.querySelectorAll('.g-proof-bar-num[data-count]').forEach(c => countObserver.observe(c));
 
-  // ── Form submit ─────────────────────────────────────────
-  document.getElementById('gform').addEventListener('submit', (e) => {
+  // ── Live ticker from /api/ticker ────────────────────────
+  (async () => {
+    try {
+      const res = await fetch('/api/ticker');
+      if (!res.ok) return;
+      const { items } = await res.json();
+      const track = document.getElementById('gticker');
+      if (!track || !items?.length) return;
+      // Duplicate for seamless loop
+      const html = [...items, ...items].map((item: any) => {
+        const cls = item.direction === 'up' ? 'up' : item.direction === 'down' ? 'down' : '';
+        const change = item.change ? ` <span class="g-tick-change ${cls}">${item.change}</span>` : '';
+        return `<span class="g-tick"><span class="g-tick-label ${cls}">${item.label}</span> ${item.value}${change}</span><span class="g-tick-sep">·</span>`;
+      }).join('');
+      track.innerHTML = html;
+    } catch { /* keep static fallback */ }
+  })();
+
+  // ── Waitlist form → /api/waitlist ────────────────────────
+  document.getElementById('gform')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button');
-    btn.textContent = 'You\'re on the list.';
+    const form  = e.target as HTMLFormElement;
+    const btn   = form.querySelector('button') as HTMLButtonElement;
+    const input = form.querySelector('input') as HTMLInputElement;
+    const email = input.value.trim();
+    if (!email) return;
+
+    btn.textContent = 'Joining…';
     btn.disabled = true;
-    e.target.querySelector('input').disabled = true;
+    input.disabled = true;
+
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, interest: 'all' }),
+      });
+      btn.textContent = res.ok ? "You're on the list." : 'Something went wrong.';
+      if (!res.ok) { btn.disabled = false; input.disabled = false; }
+    } catch {
+      btn.textContent = 'Error. Try again.';
+      btn.disabled = false;
+      input.disabled = false;
+    }
   });
 </script>

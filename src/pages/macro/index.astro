@@ -1,0 +1,313 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supabase } from '../../lib/supabase';
+
+const title = "Macro Intelligence — Greesi";
+const description = "Fed policy, yield curves, CPI, and global capital flows — translated into personal financial decisions before the market catches up.";
+
+// Fetch macro rates from FRED via our API
+let macroData: { fedFunds?: { value: number; date: string }; treasury10y?: { value: number; date: string }; cpi?: { value: number; date: string } } = {};
+try {
+  const res = await fetch(new URL('/api/macro/rates', Astro.url).href);
+  if (res.ok) macroData = await res.json();
+} catch { /* degrade gracefully */ }
+
+// Fetch macro signals from Supabase
+const { data: signals } = await supabase
+  .from('signals')
+  .select('*')
+  .eq('domain', 'macro')
+  .order('created_at', { ascending: false })
+  .limit(6);
+
+const macroMetrics = [
+  {
+    label: 'Fed Funds Rate',
+    value: macroData.fedFunds ? `${macroData.fedFunds.value}%` : '—',
+    sub: macroData.fedFunds ? `As of ${macroData.fedFunds.date}` : 'Loading…',
+    desc: 'The benchmark interest rate set by the Federal Reserve.',
+    direction: 'neutral',
+  },
+  {
+    label: '10-Year Treasury',
+    value: macroData.treasury10y ? `${macroData.treasury10y.value}%` : '—',
+    sub: macroData.treasury10y ? `As of ${macroData.treasury10y.date}` : 'Loading…',
+    desc: 'The yield on the 10-year US Treasury note — the global risk-free rate.',
+    direction: 'neutral',
+  },
+  {
+    label: 'CPI Index',
+    value: macroData.cpi ? macroData.cpi.value.toFixed(1) : '—',
+    sub: macroData.cpi ? `As of ${macroData.cpi.date}` : 'Loading…',
+    desc: 'Consumer Price Index — the primary inflation benchmark.',
+    direction: 'neutral',
+  },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- Hero -->
+  <section class="mi-hero">
+    <div class="mi-glow mi-glow-1" aria-hidden="true"></div>
+    <div class="mi-glow mi-glow-2" aria-hidden="true"></div>
+    <div class="mi-hero-inner">
+      <div class="mi-eyebrow reveal-item">
+        <span class="mi-dot"></span>
+        Macro Intelligence
+      </div>
+      <h1 class="mi-headline reveal-item">The Fed moves.<br/>You move first.</h1>
+      <p class="mi-sub reveal-item">
+        Fed policy, yield curves, CPI, and global capital flows — translated into
+        actionable financial decisions before the market prices them in.
+      </p>
+      <div class="mi-hero-actions reveal-item">
+        <a href="/waitlist?interest=macro" class="mi-btn-primary">Get Early Access</a>
+        <a href="#metrics" class="mi-btn-ghost">View live data →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live FRED Metrics -->
+  <section class="mi-metrics" id="metrics">
+    <div class="mi-metrics-inner">
+      <div class="mi-section-label reveal-item">Live from FRED · Federal Reserve Economic Data</div>
+      <h2 class="mi-section-headline reveal-item">What the data says right now.</h2>
+      <div class="mi-metrics-grid">
+        {macroMetrics.map(m => (
+          <div class="mi-metric-card reveal-item">
+            <div class="mi-metric-label">{m.label}</div>
+            <div class="mi-metric-val">{m.value}</div>
+            <div class="mi-metric-sub">{m.sub}</div>
+            <p class="mi-metric-desc">{m.desc}</p>
+          </div>
+        ))}
+      </div>
+      <p class="mi-fred-note reveal-item">
+        Data sourced from <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a> — Federal Reserve Bank of St. Louis. Updated daily.
+      </p>
+    </div>
+  </section>
+
+  <!-- Signal Feed -->
+  <section class="mi-signals">
+    <div class="mi-signals-inner">
+      <div class="mi-section-label reveal-item">Signal Feed</div>
+      <h2 class="mi-section-headline reveal-item">Macro signals in plain language.</h2>
+
+      {signals && signals.length > 0 ? (
+        <div class="mi-signal-grid">
+          {signals.map((s: any) => (
+            <div class={`mi-signal-card reveal-item ${s.direction}`}>
+              <div class="mi-signal-top">
+                <span class="mi-signal-type">{s.type.replace('-', ' ')}</span>
+                <span class={`mi-signal-dir ${s.direction}`}>
+                  {s.direction === 'bullish' ? '▲ Bullish' : s.direction === 'bearish' ? '▼ Bearish' : '● Neutral'}
+                </span>
+              </div>
+              <p class="mi-signal-title">{s.title}</p>
+              {s.metric_value && (
+                <div class="mi-signal-metric">
+                  <span class="mi-signal-metric-val">{s.metric_value}</span>
+                  {s.metric_label && <span class="mi-signal-metric-label">{s.metric_label}</span>}
+                </div>
+              )}
+              {s.body && <p class="mi-signal-body">{s.body}</p>}
+              <div class="mi-signal-footer">
+                <span class="mi-signal-strength">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span class={`mi-bar ${i < s.strength ? 'active' : ''}`}></span>
+                  ))}
+                </span>
+                <span class="mi-signal-time">{new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="mi-empty">
+          <p>Macro signal pipeline initializing. <a href="/waitlist?interest=macro">Join waitlist</a> to be first notified.</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Domains CTA -->
+  <section class="mi-cta">
+    <div class="mi-cta-inner">
+      <div class="mi-section-label reveal-item">Intelligence Platform</div>
+      <h2 class="mi-cta-headline reveal-item">Macro is one signal layer.<br/>Greesi connects them all.</h2>
+      <p class="mi-cta-sub reveal-item">
+        When crypto momentum, social trend data, and macro signals align —
+        that's the cross-domain correlation nobody else is surfacing.
+      </p>
+      <a href="/waitlist" class="mi-btn-primary reveal-item" style="display:inline-flex;margin-top:32px">
+        Request Early Access →
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  :root {
+    --mi-bg:      #080B0F;
+    --mi-surface: #0D1117;
+    --mi-border:  #21262D;
+    --mi-text:    #F0F6FC;
+    --mi-muted:   #8B949E;
+    --mi-green:   #39D353;
+    --mi-red:     #F85149;
+    --mi-amber:   #D29922;
+    --mi-blue:    #58A6FF;
+    --mi-accent:  #1F6FEB;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────── */
+  .mi-hero {
+    background: var(--mi-bg); padding: 120px 24px 80px;
+    position: relative; overflow: hidden; min-height: 60vh;
+    display: flex; align-items: center;
+  }
+  .mi-glow {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    filter: blur(90px); opacity: 0.13;
+  }
+  .mi-glow-1 {
+    width: 500px; height: 500px; top: -150px; right: 5%;
+    background: radial-gradient(circle, #D29922 0%, transparent 70%);
+    animation: mgf1 12s ease-in-out infinite;
+  }
+  .mi-glow-2 {
+    width: 400px; height: 400px; bottom: -80px; left: -50px;
+    background: radial-gradient(circle, #1F6FEB 0%, transparent 70%);
+    animation: mgf2 9s ease-in-out infinite;
+  }
+  @keyframes mgf1 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-30px,30px);} }
+  @keyframes mgf2 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(25px,-25px);} }
+
+  .mi-hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+  .mi-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--mi-muted); margin-bottom: 24px;
+  }
+  .mi-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--mi-amber); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.8);} }
+  .mi-headline {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 400;
+    letter-spacing: -0.02em; line-height: 1.05;
+    color: var(--mi-text); margin-bottom: 24px;
+  }
+  .mi-sub { font-size: 1rem; color: var(--mi-muted); line-height: 1.75; max-width: 540px; margin-bottom: 36px; }
+  .mi-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .mi-btn-primary {
+    background: var(--mi-accent); color: #fff;
+    font-size: 0.875rem; font-weight: 600; padding: 12px 24px;
+    border-radius: 8px; border: none; cursor: pointer; font-family: inherit;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 0 0 1px rgba(31,111,235,0.4);
+  }
+  .mi-btn-primary:hover { background: #388bfd; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(31,111,235,0.3); }
+  .mi-btn-ghost {
+    font-size: 0.875rem; font-weight: 500; color: var(--mi-muted);
+    padding: 12px 18px; border-radius: 8px;
+    border: 1px solid var(--mi-border); transition: color 0.2s, border-color 0.2s;
+  }
+  .mi-btn-ghost:hover { color: var(--mi-text); border-color: #30363D; }
+
+  /* ── Metrics ─────────────────────────────────────────────── */
+  .mi-metrics {
+    background: var(--mi-surface); border-top: 1px solid var(--mi-border);
+    padding: 96px 24px;
+  }
+  .mi-metrics-inner { max-width: 1080px; margin: 0 auto; }
+  .mi-section-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--mi-muted); margin-bottom: 12px;
+  }
+  .mi-section-headline {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 400;
+    letter-spacing: -0.02em; color: var(--mi-text); margin-bottom: 48px;
+  }
+  .mi-metrics-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;
+    margin-bottom: 24px;
+  }
+  .mi-metric-card {
+    background: var(--mi-bg); border: 1px solid var(--mi-border);
+    border-radius: 12px; padding: 32px 28px;
+    transition: border-color 0.2s;
+  }
+  .mi-metric-card:hover { border-color: #30363D; }
+  .mi-metric-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--mi-muted); margin-bottom: 12px;
+  }
+  .mi-metric-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.8rem; font-weight: 600; color: var(--mi-text);
+    letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px;
+  }
+  .mi-metric-sub { font-size: 0.72rem; color: var(--mi-muted); margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; }
+  .mi-metric-desc { font-size: 0.82rem; color: var(--mi-muted); line-height: 1.6; }
+  .mi-fred-note { font-size: 0.75rem; color: var(--mi-muted); }
+  .mi-fred-note a { color: var(--mi-blue); }
+
+  /* ── Signals ─────────────────────────────────────────────── */
+  .mi-signals { background: var(--mi-bg); padding: 96px 24px; }
+  .mi-signals-inner { max-width: 1080px; margin: 0 auto; }
+  .mi-signal-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;
+  }
+  .mi-signal-card {
+    background: var(--mi-surface); border: 1px solid var(--mi-border);
+    border-left: 4px solid var(--mi-border);
+    border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .mi-signal-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.3); border-color: #30363D; }
+  .mi-signal-card.bullish { border-left-color: var(--mi-green); }
+  .mi-signal-card.bearish { border-left-color: var(--mi-red); }
+  .mi-signal-card.neutral { border-left-color: var(--mi-amber); }
+  .mi-signal-top { display: flex; align-items: center; justify-content: space-between; }
+  .mi-signal-type { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mi-muted); }
+  .mi-signal-dir { font-size: 0.7rem; font-weight: 600; }
+  .mi-signal-dir.bullish { color: var(--mi-green); }
+  .mi-signal-dir.bearish { color: var(--mi-red); }
+  .mi-signal-dir.neutral { color: var(--mi-amber); }
+  .mi-signal-title { font-size: 0.9rem; font-weight: 500; color: var(--mi-text); line-height: 1.5; }
+  .mi-signal-metric { display: flex; align-items: baseline; gap: 8px; }
+  .mi-signal-metric-val { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 600; color: var(--mi-text); }
+  .mi-signal-metric-label { font-size: 0.72rem; color: var(--mi-muted); text-transform: uppercase; }
+  .mi-signal-body { font-size: 0.82rem; color: var(--mi-muted); line-height: 1.65; }
+  .mi-signal-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+  .mi-signal-strength { display: flex; gap: 3px; }
+  .mi-bar { display: block; width: 16px; height: 4px; background: var(--mi-border); border-radius: 2px; }
+  .mi-bar.active { background: var(--mi-amber); }
+  .mi-signal-time { font-size: 0.68rem; color: var(--mi-muted); font-family: 'JetBrains Mono', monospace; }
+  .mi-empty { text-align: center; padding: 64px 24px; color: var(--mi-muted); }
+  .mi-empty a { color: var(--mi-blue); }
+
+  /* ── CTA ─────────────────────────────────────────────────── */
+  .mi-cta { background: var(--mi-surface); border-top: 1px solid var(--mi-border); padding: 96px 24px; text-align: center; }
+  .mi-cta-inner { max-width: 640px; margin: 0 auto; }
+  .mi-cta-headline {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 400;
+    letter-spacing: -0.02em; color: var(--mi-text); margin-bottom: 20px;
+  }
+  .mi-cta-sub { font-size: 0.9rem; color: var(--mi-muted); line-height: 1.75; }
+</style>
+
+<script>
+  import { animate, stagger } from 'animejs';
+
+  animate('.mi-eyebrow, .mi-headline, .mi-sub, .mi-hero-actions', {
+    opacity: [0, 1], translateY: [28, 0], scale: [0.97, 1],
+    duration: 700, ease: 'out(3)',
+    delay: stagger(90, { start: 150 }),
+  });
+</script>

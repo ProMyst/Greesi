@@ -1,0 +1,390 @@
+---
+export const prerender = false;
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { supabase } from '../../lib/supabase';
+
+const title = "Crypto Intelligence — Greesi";
+const description = "Live Bitcoin, Ethereum, and Solana signals. On-chain metrics, funding rates, and momentum indicators — before the market prices them in.";
+
+// Fetch crypto prices server-side
+let prices: Record<string, { usd: number; usd_24h_change: number }> = {};
+try {
+  const res = await fetch(
+    'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true',
+    { headers: { Accept: 'application/json' } }
+  );
+  if (res.ok) prices = await res.json();
+} catch { /* degrade gracefully */ }
+
+// Fetch crypto signals from Supabase
+const { data: signals } = await supabase
+  .from('signals')
+  .select('*')
+  .eq('domain', 'crypto')
+  .order('created_at', { ascending: false })
+  .limit(6);
+
+const fmt = (n: number) => n >= 1000
+  ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 })
+  : '$' + n.toFixed(2);
+const fmtChange = (n: number) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+
+const assets = [
+  { id: 'bitcoin',  sym: 'BTC', name: 'Bitcoin' },
+  { id: 'ethereum', sym: 'ETH', name: 'Ethereum' },
+  { id: 'solana',   sym: 'SOL', name: 'Solana' },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <!-- Hero -->
+  <section class="ci-hero">
+    <div class="ci-hero-glow ci-glow-1" aria-hidden="true"></div>
+    <div class="ci-hero-glow ci-glow-2" aria-hidden="true"></div>
+    <div class="ci-hero-inner">
+      <div class="ci-eyebrow reveal-item">
+        <span class="ci-dot"></span>
+        Crypto Intelligence
+      </div>
+      <h1 class="ci-headline reveal-item">Signal before<br/>the market moves.</h1>
+      <p class="ci-sub reveal-item">
+        On-chain metrics, funding rates, and momentum signals across BTC, ETH, SOL,
+        and 50+ assets — surfaced before price discovery.
+      </p>
+      <div class="ci-hero-actions reveal-item">
+        <a href="/waitlist?interest=crypto" class="ci-btn-primary">Get Early Access</a>
+        <a href="#signals" class="ci-btn-ghost">View signals →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Prices -->
+  <section class="ci-prices-bar">
+    <div class="ci-prices-inner">
+      {assets.map(a => {
+        const p = prices[a.id];
+        const change = p?.usd_24h_change ?? 0;
+        const dir = change >= 0.5 ? 'up' : change <= -0.5 ? 'down' : 'neutral';
+        return (
+          <div class={`ci-price-item reveal-item ${dir}`}>
+            <div class="ci-price-sym">{a.sym}</div>
+            <div class="ci-price-name">{a.name}</div>
+            <div class="ci-price-val">{p ? fmt(p.usd) : '—'}</div>
+            <div class={`ci-price-change ${dir}`}>
+              {p ? fmtChange(p.usd_24h_change) : '—'}
+              <span class="ci-price-period">24h</span>
+            </div>
+          </div>
+        );
+      })}
+      <div class="ci-prices-updated reveal-item" id="ci-updated">
+        Live · updated just now
+      </div>
+    </div>
+  </section>
+
+  <!-- Signal Feed -->
+  <section class="ci-signals" id="signals">
+    <div class="ci-signals-inner">
+      <div class="ci-section-label reveal-item">Signal Feed</div>
+      <h2 class="ci-section-headline reveal-item">What the chain is saying.</h2>
+
+      {signals && signals.length > 0 ? (
+        <div class="ci-signal-grid">
+          {signals.map((s: any) => (
+            <div class={`ci-signal-card reveal-item ${s.direction}`}>
+              <div class="ci-signal-top">
+                <span class="ci-signal-type">{s.type.replace('-', ' ')}</span>
+                <span class={`ci-signal-dir ${s.direction}`}>
+                  {s.direction === 'bullish' ? '▲ Bullish' : s.direction === 'bearish' ? '▼ Bearish' : '● Neutral'}
+                </span>
+              </div>
+              <p class="ci-signal-title">{s.title}</p>
+              {s.metric_value && (
+                <div class="ci-signal-metric">
+                  <span class="ci-signal-metric-val">{s.metric_value}</span>
+                  {s.metric_label && <span class="ci-signal-metric-label">{s.metric_label}</span>}
+                </div>
+              )}
+              {s.body && <p class="ci-signal-body">{s.body}</p>}
+              <div class="ci-signal-footer">
+                <span class="ci-signal-strength">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <span class={`ci-bar ${i < s.strength ? 'active' : ''}`}></span>
+                  ))}
+                </span>
+                <span class="ci-signal-time">{new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="ci-empty">
+          <p>Signal pipeline initializing. <a href="/waitlist?interest=crypto">Join waitlist</a> to be first notified.</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Coming Soon domains -->
+  <section class="ci-coming">
+    <div class="ci-coming-inner">
+      <div class="ci-section-label reveal-item">On the roadmap</div>
+      <h2 class="ci-section-headline reveal-item">Deeper intelligence, coming soon.</h2>
+      <div class="ci-coming-grid">
+        {[
+          { title: 'On-Chain Flow Analysis', desc: 'Exchange netflow, whale wallet movements, realized cap vs market cap.' },
+          { title: 'Funding Rate Monitor', desc: 'Perpetual futures funding rates across Binance, Bybit, OKX — real-time.' },
+          { title: 'Correlation Matrix', desc: 'BTC/ETH/SOL vs DXY, SPY, Gold, 10Y yield — daily updated heatmap.' },
+          { title: 'Social Momentum', desc: 'Reddit, X, and Telegram mention velocity as a leading price indicator.' },
+        ].map(item => (
+          <div class="ci-coming-card reveal-item">
+            <div class="ci-coming-dot"></div>
+            <h3 class="ci-coming-title">{item.title}</h3>
+            <p class="ci-coming-desc">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+      <a href="/waitlist?interest=crypto" class="ci-btn-primary reveal-item" style="margin-top:40px;display:inline-flex">
+        Get notified when it launches →
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ── Tokens ─────────────────────────────────────────────── */
+  :root {
+    --ci-bg:      #080B0F;
+    --ci-surface: #0D1117;
+    --ci-border:  #21262D;
+    --ci-text:    #F0F6FC;
+    --ci-muted:   #8B949E;
+    --ci-green:   #39D353;
+    --ci-red:     #F85149;
+    --ci-blue:    #58A6FF;
+    --ci-amber:   #D29922;
+    --ci-accent:  #1F6FEB;
+  }
+
+  /* ── Hero ───────────────────────────────────────────────── */
+  .ci-hero {
+    background: var(--ci-bg); padding: 120px 24px 80px;
+    position: relative; overflow: hidden; min-height: 60vh;
+    display: flex; align-items: center;
+  }
+  .ci-hero-glow {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    filter: blur(90px); opacity: 0.15;
+  }
+  .ci-glow-1 {
+    width: 600px; height: 600px; top: -200px; left: -100px;
+    background: radial-gradient(circle, #F7931A 0%, transparent 70%);
+    animation: cgf1 11s ease-in-out infinite;
+  }
+  .ci-glow-2 {
+    width: 400px; height: 400px; bottom: -100px; right: 5%;
+    background: radial-gradient(circle, #627EEA 0%, transparent 70%);
+    animation: cgf2 14s ease-in-out infinite;
+  }
+  @keyframes cgf1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(40px,30px); } }
+  @keyframes cgf2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-30px,-40px); } }
+
+  .ci-hero-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+  .ci-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ci-muted); margin-bottom: 24px;
+  }
+  .ci-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--ci-green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.8); } }
+  .ci-headline {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(2.8rem, 6vw, 5rem); font-weight: 400;
+    letter-spacing: -0.02em; line-height: 1.05;
+    color: var(--ci-text); margin-bottom: 24px;
+  }
+  .ci-sub {
+    font-size: 1rem; color: var(--ci-muted); line-height: 1.75;
+    max-width: 540px; margin-bottom: 36px;
+  }
+  .ci-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+  .ci-btn-primary {
+    background: var(--ci-accent); color: #fff;
+    font-size: 0.875rem; font-weight: 600; padding: 12px 24px;
+    border-radius: 8px; border: none; cursor: pointer; font-family: inherit;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 0 0 1px rgba(31,111,235,0.4);
+  }
+  .ci-btn-primary:hover { background: #388bfd; transform: translateY(-1px); box-shadow: 0 4px 20px rgba(31,111,235,0.3); }
+  .ci-btn-ghost {
+    font-size: 0.875rem; font-weight: 500; color: var(--ci-muted);
+    padding: 12px 18px; border-radius: 8px;
+    border: 1px solid var(--ci-border); transition: color 0.2s, border-color 0.2s;
+  }
+  .ci-btn-ghost:hover { color: var(--ci-text); border-color: #30363D; }
+
+  /* ── Prices bar ─────────────────────────────────────────── */
+  .ci-prices-bar {
+    background: var(--ci-surface); border-top: 1px solid var(--ci-border);
+    border-bottom: 1px solid var(--ci-border); padding: 32px 24px;
+  }
+  .ci-prices-inner {
+    max-width: 1080px; margin: 0 auto;
+    display: flex; align-items: center; gap: 0; flex-wrap: wrap;
+  }
+  .ci-price-item {
+    flex: 1; min-width: 160px; padding: 16px 24px;
+    border-right: 1px solid var(--ci-border);
+  }
+  .ci-price-item:last-of-type { border-right: none; }
+  .ci-price-sym {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+    font-weight: 600; letter-spacing: 0.1em; color: var(--ci-muted);
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .ci-price-name { font-size: 0.75rem; color: var(--ci-muted); margin-bottom: 8px; }
+  .ci-price-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem; font-weight: 600; color: var(--ci-text);
+    letter-spacing: -0.02em; margin-bottom: 4px;
+  }
+  .ci-price-change {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; font-weight: 500; display: flex; align-items: center; gap: 6px;
+  }
+  .ci-price-change.up   { color: var(--ci-green); }
+  .ci-price-change.down { color: var(--ci-red); }
+  .ci-price-change.neutral { color: var(--ci-muted); }
+  .ci-price-period { font-size: 0.65rem; color: var(--ci-muted); font-family: inherit; }
+  .ci-prices-updated {
+    margin-left: auto; font-size: 0.7rem; color: var(--ci-muted);
+    padding: 0 24px; white-space: nowrap;
+  }
+
+  /* ── Signal feed ─────────────────────────────────────────── */
+  .ci-signals { background: var(--ci-bg); padding: 96px 24px; }
+  .ci-signals-inner { max-width: 1080px; margin: 0 auto; }
+  .ci-section-label {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--ci-muted); margin-bottom: 12px;
+  }
+  .ci-section-headline {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 400;
+    letter-spacing: -0.02em; color: var(--ci-text);
+    margin-bottom: 48px;
+  }
+  .ci-signal-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px;
+  }
+  .ci-signal-card {
+    background: var(--ci-surface); border: 1px solid var(--ci-border);
+    border-left: 4px solid var(--ci-border);
+    border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .ci-signal-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.3); border-color: #30363D; }
+  .ci-signal-card.bullish { border-left-color: var(--ci-green); }
+  .ci-signal-card.bearish { border-left-color: var(--ci-red); }
+  .ci-signal-card.neutral { border-left-color: var(--ci-amber); }
+  .ci-signal-top { display: flex; align-items: center; justify-content: space-between; }
+  .ci-signal-type {
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ci-muted);
+  }
+  .ci-signal-dir { font-size: 0.7rem; font-weight: 600; }
+  .ci-signal-dir.bullish { color: var(--ci-green); }
+  .ci-signal-dir.bearish { color: var(--ci-red); }
+  .ci-signal-dir.neutral { color: var(--ci-amber); }
+  .ci-signal-title { font-size: 0.9rem; font-weight: 500; color: var(--ci-text); line-height: 1.5; }
+  .ci-signal-metric { display: flex; align-items: baseline; gap: 8px; }
+  .ci-signal-metric-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem; font-weight: 600; color: var(--ci-text); letter-spacing: -0.02em;
+  }
+  .ci-signal-metric-label { font-size: 0.72rem; color: var(--ci-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .ci-signal-body { font-size: 0.82rem; color: var(--ci-muted); line-height: 1.65; }
+  .ci-signal-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+  .ci-signal-strength { display: flex; gap: 3px; align-items: center; }
+  .ci-bar { display: block; width: 16px; height: 4px; background: var(--ci-border); border-radius: 2px; }
+  .ci-bar.active { background: var(--ci-blue); }
+  .ci-signal-time { font-size: 0.68rem; color: var(--ci-muted); font-family: 'JetBrains Mono', monospace; }
+
+  .ci-empty { text-align: center; padding: 64px 24px; color: var(--ci-muted); }
+  .ci-empty a { color: var(--ci-blue); }
+
+  /* ── Coming soon ─────────────────────────────────────────── */
+  .ci-coming {
+    background: var(--ci-surface); border-top: 1px solid var(--ci-border);
+    padding: 96px 24px;
+  }
+  .ci-coming-inner { max-width: 1080px; margin: 0 auto; }
+  .ci-coming-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px;
+    margin-top: 40px;
+  }
+  .ci-coming-card {
+    background: var(--ci-bg); border: 1px solid var(--ci-border);
+    border-radius: 12px; padding: 28px 24px;
+    transition: border-color 0.2s;
+  }
+  .ci-coming-card:hover { border-color: #30363D; }
+  .ci-coming-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ci-amber); margin-bottom: 16px;
+    box-shadow: 0 0 8px var(--ci-amber);
+  }
+  .ci-coming-title { font-size: 0.9rem; font-weight: 600; color: var(--ci-text); margin-bottom: 10px; }
+  .ci-coming-desc { font-size: 0.82rem; color: var(--ci-muted); line-height: 1.6; }
+
+  @media (max-width: 640px) {
+    .ci-prices-inner { flex-direction: column; }
+    .ci-price-item { border-right: none; border-bottom: 1px solid var(--ci-border); }
+    .ci-prices-updated { margin-left: 0; padding: 16px 0; }
+  }
+</style>
+
+<script>
+  import { animate, stagger } from 'animejs';
+
+  animate('.ci-eyebrow, .ci-headline, .ci-sub, .ci-hero-actions', {
+    opacity: [0, 1], translateY: [28, 0], scale: [0.97, 1],
+    duration: 700, ease: 'out(3)',
+    delay: stagger(90, { start: 150 }),
+  });
+
+  // Refresh prices every 60s
+  async function refreshPrices() {
+    try {
+      const res = await fetch('/api/crypto/prices');
+      if (!res.ok) return;
+      const { prices } = await res.json();
+      const map: Record<string, { price: number; change24h: number }> = {
+        BTC: prices.BTC, ETH: prices.ETH, SOL: prices.SOL,
+      };
+      document.querySelectorAll<HTMLElement>('.ci-price-item').forEach(el => {
+        const sym = el.querySelector('.ci-price-sym')?.textContent?.trim() ?? '';
+        const d = map[sym];
+        if (!d) return;
+        const valEl = el.querySelector('.ci-price-val');
+        const chgEl = el.querySelector('.ci-price-change');
+        if (valEl) valEl.textContent = d.price >= 1000
+          ? '$' + d.price.toLocaleString('en-US', { maximumFractionDigits: 0 })
+          : '$' + d.price.toFixed(2);
+        if (chgEl) {
+          const sign = d.change24h >= 0 ? '+' : '';
+          chgEl.childNodes[0].textContent = sign + d.change24h.toFixed(2) + '% ';
+          chgEl.className = `ci-price-change ${d.change24h >= 0.5 ? 'up' : d.change24h <= -0.5 ? 'down' : 'neutral'}`;
+        }
+      });
+      const upd = document.getElementById('ci-updated');
+      if (upd) upd.textContent = `Live · updated ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    } catch {}
+  }
+  setInterval(refreshPrices, 60000);
+</script>
