@@ -24,7 +24,7 @@
 <nav class="g-nav" id="gnav">
   <div class="g-nav-inner">
     <a href="/" class="g-logo" aria-label="Greesi home">
-      <img src="/logo-mark-white.png" alt="" aria-hidden="true" width="12" height="24" style="display:block;flex-shrink:0;width:20px;height:40px;object-fit:contain" />
+      <img src="/logo-mark.png" alt="" aria-hidden="true" width="28" height="56" style="display:block;flex-shrink:0;width:28px;height:56px;object-fit:contain;filter:invert(1)" />
       <span style="font-size:0.95rem;font-weight:700;letter-spacing:-0.04em;color:white">greesi</span>
     </a>
     <div class="g-nav-links">
@@ -52,6 +52,8 @@
 <!-- ── HERO ────────────────────────────────────────────── -->
 <section class="g-hero">
   <div class="g-hero-bg-grid" aria-hidden="true"></div>
+  <div class="g-hero-glow g-hero-glow-1" aria-hidden="true"></div>
+  <div class="g-hero-glow g-hero-glow-2" aria-hidden="true"></div>
   <div class="g-hero-inner">
     <div class="g-hero-eyebrow reveal">
       <span class="g-dot"></span>
@@ -326,7 +328,7 @@
   <div class="g-footer-inner">
     <div class="g-footer-brand">
       <a href="/" class="g-logo" aria-label="Greesi home" style="display:flex;align-items:center;gap:9px;opacity:0.9">
-        <img src="/logo-mark-white.png" alt="" aria-hidden="true" width="12" height="24" style="display:block;flex-shrink:0;width:20px;height:40px;object-fit:contain" />
+        <img src="/logo-mark.png" alt="" aria-hidden="true" width="28" height="56" style="display:block;flex-shrink:0;width:28px;height:56px;object-fit:contain;filter:invert(1)" />
         <span style="font-size:0.95rem;font-weight:700;letter-spacing:-0.04em;color:white">greesi</span>
       </a>
       <p class="g-footer-tagline">Signal intelligence for the financially serious.</p>
@@ -405,6 +407,7 @@
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     border-bottom: 1px solid transparent;
     transition: border-color 0.3s, background 0.3s, backdrop-filter 0.3s;
+    opacity: 0;
   }
   .g-nav.scrolled {
     background: rgba(10,10,10,0.88);
@@ -460,6 +463,30 @@
       linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
     background-size: 60px 60px;
     mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+  .g-hero-glow {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    filter: blur(80px); opacity: 0.18;
+  }
+  .g-hero-glow-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+    top: -100px; left: 10%;
+    animation: glow-float1 9s ease-in-out infinite;
+  }
+  .g-hero-glow-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+    bottom: 0; right: 8%;
+    animation: glow-float2 12s ease-in-out infinite;
+  }
+  @keyframes glow-float1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, 40px) scale(1.08); }
+  }
+  @keyframes glow-float2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-25px, -30px) scale(1.06); }
   }
   .g-hero-inner {
     position: relative; z-index: 1;
@@ -702,13 +729,22 @@
     document.getElementById('gmobile').classList.toggle('open');
   });
 
+  // ── Nav entrance ────────────────────────────────────────
+  animate('#gnav', {
+    opacity: [0, 1],
+    translateY: [-16, 0],
+    duration: 600,
+    ease: 'out(3)',
+  });
+
   // ── Hero entrance (Anime.js stagger) ────────────────────
   animate('.g-hero-eyebrow, .g-hero-headline, .g-hero-sub, .g-hero-actions, .g-hero-proof', {
     opacity: [0, 1],
-    translateY: [28, 0],
-    duration: 700,
+    translateY: [32, 0],
+    scale: [0.97, 1],
+    duration: 750,
     ease: 'out(3)',
-    delay: stagger(90, { start: 120 }),
+    delay: stagger(100, { start: 200 }),
   });
 
   // ── Scroll reveal (Anime.js) ─────────────────────────────
@@ -717,13 +753,14 @@
     if (!batch.length) return;
     animate(batch, {
       opacity: [0, 1],
-      translateY: [18, 0],
-      duration: 520,
+      translateY: [22, 0],
+      scale: [0.96, 1],
+      duration: 580,
       ease: 'out(3)',
-      delay: stagger(65),
+      delay: stagger(70),
     });
     batch.forEach(el => { el.classList.add('in'); observer.unobserve(el); });
-  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
   document.querySelectorAll('.reveal:not(.in)').forEach(el => observer.observe(el));
 
   // ── Proof bar count-up (Anime.js) ────────────────────────
