@@ -155,12 +155,6 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
 
       <!-- Right: search + theme + hamburger -->
       <div class="nav-right">
-        <button id="search-btn" class="nav-icon-btn" aria-label="Search (⌘K)">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <kbd>⌘K</kbd>
-        </button>
         <button id="theme-toggle" class="nav-icon-btn" aria-label="Toggle theme">
           <svg id="icon-sun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none">
             <circle cx="12" cy="12" r="5"/>
@@ -371,17 +365,18 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
   z-index: 100;
   transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
 }
-.nav-transparent { background: transparent; border-bottom: 1px solid transparent; }
+.nav-transparent { background: rgba(8,11,15,0.92); border-bottom: 1px solid rgba(33,38,45,0.8); backdrop-filter: blur(20px); }
 .nav-scrolled {
-  background: rgba(255, 255, 255, 0.88);
+  background: rgba(8,11,15,0.96);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid rgba(30, 58, 95, 0.09);
-  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.4);
+  border-bottom-color: #21262D;
 }
 html[data-theme='dark'] .nav-scrolled {
-  background: rgba(10, 18, 32, 0.92);
-  border-bottom-color: rgba(255,255,255,0.06);
+  background: rgba(8,11,15,0.96);
+  border-bottom-color: #21262D;
 }
 
 .nav-inner {
@@ -407,9 +402,9 @@ html[data-theme='dark'] .nav-scrolled .nav-logo-mark { filter: invert(1); }
   font-size: 0.95rem; font-weight: 700; letter-spacing: -0.04em;
   transition: color 0.3s;
 }
-.nav-transparent .nav-logo-name { color: white; }
-.nav-scrolled .nav-logo-name { color: var(--color-primary); }
-html[data-theme='dark'] .nav-scrolled .nav-logo-name { color: #f1f5f9; }
+.nav-transparent .nav-logo-name { color: #F0F6FC; }
+.nav-scrolled .nav-logo-name { color: #F0F6FC; }
+html[data-theme='dark'] .nav-scrolled .nav-logo-name { color: #F0F6FC; }
 
 .nav-links { display: none; align-items: center; gap: 28px; }
 @media (min-width: 768px) { .nav-links { display: flex; } }
@@ -488,23 +483,23 @@ html[data-theme='dark'] .nav-dropdown-menu { background: #0d1f35; border-color: 
   font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
   color: rgba(255,255,255,0.3); padding: 14px 0 4px; margin-top: 4px;
 }
-.nav-scrolled .nav-mobile-section { color: var(--color-text-muted); }
+.nav-scrolled .nav-mobile-section { color: #8B949E; }
 
 .nav-link {
   font-size: 0.875rem; font-weight: 500; letter-spacing: -0.01em;
   text-decoration: none; position: relative; transition: color 0.25s;
 }
-.nav-transparent .nav-link { color: rgba(255, 255, 255, 0.82); }
-.nav-scrolled .nav-link { color: var(--color-text); }
+.nav-transparent .nav-link { color: rgba(240,246,252,0.82); }
+.nav-scrolled .nav-link { color: rgba(240,246,252,0.82); }
 .nav-link::after {
   content: ''; position: absolute; bottom: -3px; left: 0;
   width: 0; height: 2px; background: var(--color-accent); border-radius: 2px;
   transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .nav-link:hover::after { width: 100%; }
-.nav-transparent .nav-link:hover { color: white; }
-.nav-scrolled .nav-link:hover { color: var(--color-primary); }
-html[data-theme='dark'] .nav-scrolled .nav-link:hover { color: var(--color-accent); }
+.nav-transparent .nav-link:hover { color: #F0F6FC; }
+.nav-scrolled .nav-link:hover { color: #F0F6FC; }
+html[data-theme='dark'] .nav-scrolled .nav-link:hover { color: #F0F6FC; }
 
 .nav-hamburger {
   display: flex; flex-direction: column; gap: 5px;
@@ -512,29 +507,24 @@ html[data-theme='dark'] .nav-scrolled .nav-link:hover { color: var(--color-accen
 }
 @media (min-width: 768px) { .nav-hamburger { display: none; } }
 .ham-line { display: block; width: 22px; height: 2px; border-radius: 2px; transition: background 0.3s; }
-.nav-transparent .ham-line { background: white; }
-.nav-scrolled .ham-line { background: var(--color-primary); }
-html[data-theme='dark'] .nav-scrolled .ham-line { background: #f1f5f9; }
+.nav-transparent .ham-line { background: #F0F6FC; }
+.nav-scrolled .ham-line { background: #F0F6FC; }
+html[data-theme='dark'] .nav-scrolled .ham-line { background: #F0F6FC; }
 
 .nav-mobile {
   display: none; flex-direction: column; padding: 12px 24px 20px;
   border-top: 1px solid rgba(255,255,255,0.1);
 }
 .nav-mobile.open { display: flex; animation: fade-in 0.2s ease; }
-.nav-transparent .nav-mobile { background: rgba(30, 58, 95, 0.95); }
-.nav-scrolled .nav-mobile {
-  background: rgba(255,255,255,0.95); backdrop-filter: blur(20px);
-  border-top-color: rgba(30,58,95,0.08);
-}
-html[data-theme='dark'] .nav-scrolled .nav-mobile {
-  background: rgba(10,18,32,0.97); border-top-color: rgba(255,255,255,0.06);
-}
+.nav-transparent .nav-mobile { background: rgba(8,11,15,0.97); }
+.nav-scrolled .nav-mobile { background: rgba(8,11,15,0.97); backdrop-filter: blur(20px); border-top-color: #21262D; }
+html[data-theme='dark'] .nav-scrolled .nav-mobile { background: rgba(8,11,15,0.97); border-top-color: #21262D; }
 .nav-mobile-link {
   font-size: 1rem; font-weight: 500; padding: 12px 0;
   text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.07); transition: color 0.2s;
 }
-.nav-transparent .nav-mobile-link { color: rgba(255,255,255,0.85); }
-.nav-scrolled .nav-mobile-link { color: var(--color-text); border-bottom-color: var(--color-border); }
+.nav-transparent .nav-mobile-link { color: rgba(240,246,252,0.85); }
+.nav-scrolled .nav-mobile-link { color: rgba(240,246,252,0.85); border-bottom-color: #21262D; }
 .nav-mobile-link:hover { color: var(--color-accent); }
 
 /* ── Footer ──────────────────────────────────────────────────── */
