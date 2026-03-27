@@ -95,6 +95,35 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
 
       <!-- Desktop Links -->
       <div class="nav-links">
+        <!-- Intelligence Platform -->
+        <div class="nav-dropdown">
+          <a href="/crypto" class="nav-link nav-dropdown-trigger">Platform ▾</a>
+          <div class="nav-dropdown-menu" data-cols="2">
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Intelligence Domains</p>
+              <a href="/crypto" class="nav-dropdown-link">
+                <span class="nav-link-dot nav-link-dot--live"></span>Crypto Signals
+              </a>
+              <a href="/macro" class="nav-dropdown-link">
+                <span class="nav-link-dot nav-link-dot--live"></span>Macro Intelligence
+              </a>
+              <a href="/waitlist?interest=trends" class="nav-dropdown-link">
+                <span class="nav-link-dot nav-link-dot--soon"></span>Trend Detection
+              </a>
+              <a href="/waitlist?interest=alt-data" class="nav-dropdown-link">
+                <span class="nav-link-dot nav-link-dot--soon"></span>Alt Data
+              </a>
+            </div>
+            <div class="nav-dropdown-col">
+              <p class="nav-dropdown-heading">Access</p>
+              <a href="/dashboard" class="nav-dropdown-link">Live Dashboard</a>
+              <a href="/waitlist" class="nav-dropdown-link">Join Waitlist</a>
+              <a href="/methodology" class="nav-dropdown-link">Our Methodology</a>
+              <a href="/about" class="nav-dropdown-link">About Greesi</a>
+            </div>
+          </div>
+        </div>
+        <!-- Editorial Finance -->
         <div class="nav-dropdown">
           <a href="/finance" class="nav-link nav-dropdown-trigger">Finance ▾</a>
           <div class="nav-dropdown-menu" data-cols="3">
@@ -111,57 +140,17 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
               <a href="/finance/credit-cards/best-for-travel" class="nav-dropdown-link">Best Travel Cards</a>
               <a href="/finance/credit-cards/best-cash-back" class="nav-dropdown-link">Best Cash Back</a>
               <a href="/finance/credit-cards/best-no-fee" class="nav-dropdown-link">Best No-Fee Cards</a>
-              <a href="/finance/credit-cards/best-for-dining" class="nav-dropdown-link">Best for Dining</a>
             </div>
             <div class="nav-dropdown-col">
-              <p class="nav-dropdown-heading">Guides</p>
-              <a href="/finance/points-value" class="nav-dropdown-link">Points Value Guide</a>
-              <a href="/finance/glossary" class="nav-dropdown-link">Finance Glossary</a>
-              <a href="/finance/compare" class="nav-dropdown-link">Compare Products</a>
-              <a href="/methodology" class="nav-dropdown-link">Our Methodology</a>
-            </div>
-          </div>
-        </div>
-        <div class="nav-dropdown">
-          <a href="/travel" class="nav-link nav-dropdown-trigger">Travel ▾</a>
-          <div class="nav-dropdown-menu" data-cols="2">
-            <div class="nav-dropdown-col">
-              <p class="nav-dropdown-heading">Destinations</p>
-              <a href="/travel/destinations/maldives" class="nav-dropdown-link">Maldives</a>
-              <a href="/travel/destinations/greek-islands" class="nav-dropdown-link">Greek Islands</a>
-              <a href="/travel/destinations/amalfi-coast" class="nav-dropdown-link">Amalfi Coast</a>
-              <a href="/travel/destinations/british-virgin-islands" class="nav-dropdown-link">BVI</a>
-              <a href="/travel" class="nav-dropdown-link">All Destinations →</a>
-            </div>
-            <div class="nav-dropdown-col">
-              <p class="nav-dropdown-heading">Travel Money</p>
-              <a href="/travel/travel-cards" class="nav-dropdown-link">Best Travel Cards</a>
-              <a href="/travel/miles-guide" class="nav-dropdown-link">Miles & Points Guide</a>
-              <a href="/finance/calculators/points-transfer" class="nav-dropdown-link">Points Calculator</a>
-            </div>
-          </div>
-        </div>
-        <div class="nav-dropdown">
-          <a href="/tools" class="nav-link nav-dropdown-trigger">Tools ▾</a>
-          <div class="nav-dropdown-menu" data-cols="2">
-            <div class="nav-dropdown-col">
-              <p class="nav-dropdown-heading">Calculators</p>
+              <p class="nav-dropdown-heading">Tools</p>
               <a href="/finance/calculators/compound-interest" class="nav-dropdown-link">Compound Interest</a>
-              <a href="/finance/calculators/loan" class="nav-dropdown-link">Loan Payment</a>
               <a href="/finance/calculators/debt-payoff" class="nav-dropdown-link">Debt Payoff</a>
-              <a href="/finance/calculators/budget" class="nav-dropdown-link">50/30/20 Budget</a>
-              <a href="/finance/calculators/points-transfer" class="nav-dropdown-link">Points Transfer</a>
-            </div>
-            <div class="nav-dropdown-col">
-              <p class="nav-dropdown-heading">Optimizers</p>
               <a href="/tools/rewards-optimizer" class="nav-dropdown-link">Rewards Optimizer</a>
-              <a href="/finance/quiz/credit-card" class="nav-dropdown-link">Credit Card Quiz</a>
-              <a href="/finance/quiz/bank-account" class="nav-dropdown-link">Bank Account Quiz</a>
               <a href="/finance/compare" class="nav-dropdown-link">Compare Products</a>
             </div>
           </div>
         </div>
-        <a href="/about" class="nav-link">About</a>
+        <a href="/dashboard" class="nav-link nav-link--cta">Dashboard</a>
       </div>
 
       <!-- Right: search + theme + hamburger -->
@@ -191,25 +180,22 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
 
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="nav-mobile" aria-hidden="true">
-      <p class="nav-mobile-section">Finance</p>
+      <p class="nav-mobile-section">Intelligence Platform</p>
+      <a href="/crypto" class="nav-mobile-link">Crypto Signals <span class="nav-mobile-live">LIVE</span></a>
+      <a href="/macro" class="nav-mobile-link">Macro Intelligence <span class="nav-mobile-live">LIVE</span></a>
+      <a href="/waitlist?interest=trends" class="nav-mobile-link">Trend Detection <span class="nav-mobile-soon">SOON</span></a>
+      <a href="/waitlist?interest=alt-data" class="nav-mobile-link">Alt Data <span class="nav-mobile-soon">SOON</span></a>
+      <a href="/dashboard" class="nav-mobile-link">Live Dashboard</a>
+      <a href="/waitlist" class="nav-mobile-link">Join Waitlist</a>
+      <p class="nav-mobile-section">Finance Hub</p>
       <a href="/finance/banking" class="nav-mobile-link">Best Banks</a>
       <a href="/finance/credit-cards" class="nav-mobile-link">Credit Cards</a>
       <a href="/finance/investing" class="nav-mobile-link">Investing</a>
-      <a href="/finance/banking/best-high-yield" class="nav-mobile-link">Best High-Yield Savings</a>
       <a href="/finance/credit-cards/best-for-travel" class="nav-mobile-link">Best Travel Cards</a>
-      <a href="/finance/points-value" class="nav-mobile-link">Points Value Guide</a>
-      <p class="nav-mobile-section">Travel</p>
-      <a href="/travel" class="nav-mobile-link">Destinations</a>
-      <a href="/travel/miles-guide" class="nav-mobile-link">Miles & Points Guide</a>
-      <a href="/travel/travel-cards" class="nav-mobile-link">Travel Cards</a>
-      <p class="nav-mobile-section">Tools</p>
       <a href="/tools/rewards-optimizer" class="nav-mobile-link">Rewards Optimizer</a>
-      <a href="/finance/calculators/debt-payoff" class="nav-mobile-link">Debt Payoff Calculator</a>
-      <a href="/finance/calculators/budget" class="nav-mobile-link">Budget Calculator</a>
-      <a href="/tools" class="nav-mobile-link">All Tools</a>
       <p class="nav-mobile-section">Company</p>
       <a href="/about" class="nav-mobile-link">About Us</a>
-      <a href="/submit-story" class="nav-mobile-link">Submit a Story</a>
+      <a href="/methodology" class="nav-mobile-link">Methodology</a>
     </div>
   </header>
 
@@ -427,6 +413,31 @@ html[data-theme='dark'] .nav-scrolled .nav-logo-name { color: #f1f5f9; }
 
 .nav-links { display: none; align-items: center; gap: 28px; }
 @media (min-width: 768px) { .nav-links { display: flex; } }
+/* Dashboard CTA link */
+.nav-link--cta {
+  font-size: 0.78rem; font-weight: 600; padding: 6px 14px;
+  background: #1F6FEB; color: white !important; border-radius: 6px;
+  transition: background 0.2s !important;
+}
+.nav-link--cta:hover { background: #388bfd !important; opacity: 1 !important; }
+/* Dropdown status dots */
+.nav-link-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+  margin-right: 7px; flex-shrink: 0; vertical-align: middle;
+}
+.nav-link-dot--live  { background: #39D353; box-shadow: 0 0 6px #39D353; }
+.nav-link-dot--soon  { background: #D29922; }
+/* Mobile status badges */
+.nav-mobile-live {
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+  background: rgba(57,211,83,0.15); color: #39D353;
+  padding: 2px 6px; border-radius: 4px; margin-left: 6px;
+}
+.nav-mobile-soon {
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em;
+  background: rgba(210,153,34,0.15); color: #D29922;
+  padding: 2px 6px; border-radius: 4px; margin-left: 6px;
+}
 
 /* ── Dropdown menus ───────────────────────────────────────────── */
 .nav-dropdown { position: relative; }

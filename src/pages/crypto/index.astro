@@ -65,7 +65,7 @@ const assets = [
       {assets.map(a => {
         const p = prices[a.id];
         const change = p?.usd_24h_change ?? 0;
-        const dir = change >= 0.5 ? 'up' : change <= -0.5 ? 'down' : 'neutral';
+        const dir = change >= 0.5 ? 'up' : change < -0.5 ? 'down' : 'neutral';
         return (
           <div class={`ci-price-item reveal-item ${dir}`}>
             <div class="ci-price-sym">{a.sym}</div>

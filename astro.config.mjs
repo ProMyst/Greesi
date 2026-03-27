@@ -7,7 +7,7 @@ import vercel from '@astrojs/vercel';
 
 export default defineConfig({
   site: 'https://greesi.com',
-  output: 'hybrid',
+  output: 'server',
   adapter: vercel(),
   build: {
     format: 'directory',

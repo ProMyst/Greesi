@@ -1,0 +1,365 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { createSupabaseServerClient } from '../lib/supabase-server';
+
+export const prerender = false;
+
+// If already logged in, redirect to dashboard (or ?next= param)
+const supabase = createSupabaseServerClient(Astro.cookies);
+const { data: { session } } = await supabase.auth.getSession();
+const next = Astro.url.searchParams.get('next') || '/dashboard';
+
+if (session) {
+  return Astro.redirect(next);
+}
+
+const title = "Sign In — Greesi";
+const description = "Sign in to your Greesi account to access the Intelligence Dashboard.";
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="auth-root">
+    <div class="auth-glow" aria-hidden="true"></div>
+    <div class="auth-card">
+
+      <div class="auth-header">
+        <a href="/" class="auth-wordmark">greesi</a>
+        <p class="auth-tagline">Signal intelligence platform</p>
+      </div>
+
+      <!-- Magic Link form (default) -->
+      <div id="magic-view">
+        <h1 class="auth-title">Sign in</h1>
+        <p class="auth-sub">We'll send a magic link to your inbox — no password needed.</p>
+
+        <form id="magic-form" class="auth-form">
+          <label class="auth-label" for="magic-email">Email address</label>
+          <input
+            id="magic-email"
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            class="auth-input"
+            required
+            autocomplete="email"
+          />
+          <button type="submit" class="auth-btn" id="magic-btn">Send magic link</button>
+          <p id="magic-error" class="auth-error" aria-live="polite"></p>
+        </form>
+
+        <div id="magic-success" class="auth-success" style="display:none">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#39D353" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <p>Check your inbox — magic link sent!</p>
+          <span class="auth-success-hint">Didn't get it? Check spam or try again.</span>
+        </div>
+
+        <div class="auth-divider"><span>or sign in with password</span></div>
+        <button class="auth-toggle" id="to-password">Use email &amp; password instead</button>
+      </div>
+
+      <!-- Password form -->
+      <div id="password-view" style="display:none">
+        <h1 class="auth-title">Sign in</h1>
+        <p class="auth-sub">Enter your email and password to continue.</p>
+
+        <form id="password-form" class="auth-form">
+          <label class="auth-label" for="pw-email">Email address</label>
+          <input
+            id="pw-email"
+            type="email"
+            name="email"
+            placeholder="you@example.com"
+            class="auth-input"
+            required
+            autocomplete="email"
+          />
+          <label class="auth-label" for="pw-password" style="margin-top:16px">Password</label>
+          <input
+            id="pw-password"
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            class="auth-input"
+            required
+            autocomplete="current-password"
+          />
+          <button type="submit" class="auth-btn" id="pw-btn">Sign in</button>
+          <p id="pw-error" class="auth-error" aria-live="polite"></p>
+        </form>
+
+        <div class="auth-divider"><span>or</span></div>
+        <button class="auth-toggle" id="to-magic">Send me a magic link instead</button>
+      </div>
+
+      <p class="auth-footer">
+        Don't have an account? <a href="/waitlist" class="auth-footer-link">Join the waitlist</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  :root {
+    --auth-bg: #080B0F;
+    --auth-surface: #0D1117;
+    --auth-border: #21262D;
+    --auth-text: #F0F6FC;
+    --auth-muted: #8B949E;
+    --auth-accent: #1F6FEB;
+    --auth-green: #39D353;
+  }
+
+  .auth-root {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--auth-bg);
+    padding: 40px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(31,111,235,0.12) 0%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    filter: blur(60px);
+  }
+
+  .auth-card {
+    position: relative;
+    z-index: 1;
+    background: var(--auth-surface);
+    border: 1px solid var(--auth-border);
+    border-radius: 16px;
+    padding: 40px 36px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  }
+
+  .auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .auth-wordmark {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--auth-text);
+    letter-spacing: -0.02em;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .auth-tagline {
+    font-size: 0.72rem;
+    color: var(--auth-muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .auth-title {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: var(--auth-text);
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+  }
+
+  .auth-sub {
+    font-size: 0.85rem;
+    color: var(--auth-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .auth-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--auth-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .auth-input {
+    background: var(--auth-bg);
+    border: 1px solid var(--auth-border);
+    border-radius: 8px;
+    color: var(--auth-text);
+    font-size: 0.9rem;
+    padding: 11px 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+  .auth-input::placeholder { color: #484f58; }
+  .auth-input:focus {
+    border-color: var(--auth-accent);
+    box-shadow: 0 0 0 3px rgba(31,111,235,0.15);
+  }
+
+  .auth-btn {
+    margin-top: 20px;
+    background: var(--auth-accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .auth-btn:hover { background: #388bfd; transform: translateY(-1px); }
+  .auth-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .auth-error {
+    font-size: 0.8rem;
+    color: #F85149;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+
+  .auth-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 0;
+    text-align: center;
+    color: var(--auth-text);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  .auth-success-hint {
+    font-size: 0.78rem;
+    color: var(--auth-muted);
+  }
+
+  .auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0 16px;
+    color: var(--auth-muted);
+    font-size: 0.75rem;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--auth-border);
+  }
+
+  .auth-toggle {
+    background: none;
+    border: 1px solid var(--auth-border);
+    border-radius: 8px;
+    color: var(--auth-muted);
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .auth-toggle:hover { color: var(--auth-text); border-color: #30363D; }
+
+  .auth-footer {
+    font-size: 0.8rem;
+    color: var(--auth-muted);
+    text-align: center;
+    margin-top: 28px;
+  }
+  .auth-footer-link { color: var(--auth-accent); font-weight: 500; }
+  .auth-footer-link:hover { text-decoration: underline; }
+</style>
+
+<script define:vars={{ next }}>
+  import { createClient } from '@supabase/supabase-js';
+
+  const supabase = createClient(
+    import.meta.env.PUBLIC_SUPABASE_URL,
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY
+  );
+
+  // Toggle views
+  document.getElementById('to-password').addEventListener('click', () => {
+    document.getElementById('magic-view').style.display = 'none';
+    document.getElementById('password-view').style.display = 'block';
+  });
+  document.getElementById('to-magic').addEventListener('click', () => {
+    document.getElementById('password-view').style.display = 'none';
+    document.getElementById('magic-view').style.display = 'block';
+  });
+
+  // Magic link
+  document.getElementById('magic-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('magic-email').value.trim();
+    const btn = document.getElementById('magic-btn');
+    const errEl = document.getElementById('magic-error');
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    errEl.textContent = '';
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: window.location.origin + '/api/auth/callback?next=' + encodeURIComponent(next) }
+    });
+
+    if (error) {
+      errEl.textContent = error.message;
+      btn.disabled = false;
+      btn.textContent = 'Send magic link';
+    } else {
+      document.getElementById('magic-form').style.display = 'none';
+      document.getElementById('magic-success').style.display = 'flex';
+    }
+  });
+
+  // Password sign in
+  document.getElementById('password-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('pw-email').value.trim();
+    const password = document.getElementById('pw-password').value;
+    const btn = document.getElementById('pw-btn');
+    const errEl = document.getElementById('pw-error');
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    errEl.textContent = '';
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      errEl.textContent = error.message;
+      btn.disabled = false;
+      btn.textContent = 'Sign in';
+    } else {
+      window.location.href = next;
+    }
+  });
+</script>

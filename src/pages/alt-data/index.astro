@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Alternative Data — Greesi";
+const description = "Satellite imagery, job postings, web traffic, and proprietary indicators not found in traditional financial reports.";
+
+const altDataSources = [
+  { name: 'Job Posting Velocity',    desc: 'Sector-level hiring trends as a proxy for company health and earnings momentum.', icon: '👥', status: 'Planned' },
+  { name: 'Web Traffic Indices',     desc: 'Platform traffic trends for major financial services — early signal for market share shifts.', icon: '📡', status: 'Planned' },
+  { name: 'Shipping & Port Activity',desc: 'Satellite-derived cargo volume index — leading indicator for global trade momentum.', icon: '🛳', status: 'Planned' },
+  { name: 'Credit Card Spend Index', desc: 'Aggregated consumer spend by sector, updated weekly. Precedes official retail data by 3-4 weeks.', icon: '💳', status: 'Planned' },
+  { name: 'App Download Trends',     desc: 'Mobile app install velocity for fintech, banks, and brokerages — reveals platform momentum.', icon: '📱', status: 'Planned' },
+  { name: 'Earnings Call NLP',       desc: 'Sentiment analysis on 10-K filings and earnings call transcripts across the S&P 500.', icon: '📝', status: 'Planned' },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="ad-hero">
+    <div class="ad-glow ad-glow-1" aria-hidden="true"></div>
+    <div class="ad-hero-inner">
+      <div class="ad-eyebrow reveal-item">
+        <span class="ad-dot"></span>
+        Alternative Data
+      </div>
+      <h1 class="ad-headline reveal-item">The data Wall Street<br/>pays millions for.</h1>
+      <p class="ad-sub reveal-item">
+        Satellite imagery, job postings, web traffic, and proprietary behavioral signals —
+        the alternative data layer that institutional desks use to get ahead of earnings, and now you can too.
+      </p>
+      <div class="ad-hero-actions reveal-item">
+        <a href="/waitlist?interest=alt-data" class="ad-btn-primary">Join the Waitlist</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="ad-sources">
+    <div class="ad-sources-inner">
+      <div class="ad-section-label reveal-item">Data Sources</div>
+      <h2 class="ad-section-headline reveal-item">Six alternative data pipelines. One platform.</h2>
+      <div class="ad-sources-grid">
+        {altDataSources.map(s => (
+          <div class="ad-source-card reveal-item">
+            <div class="ad-source-icon">{s.icon}</div>
+            <div class="ad-source-status">{s.status}</div>
+            <h3 class="ad-source-title">{s.name}</h3>
+            <p class="ad-source-desc">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="ad-cta">
+    <div class="ad-cta-inner">
+      <h2 class="ad-cta-headline reveal-item">Alt data was a hedge fund advantage.<br/>Not anymore.</h2>
+      <p class="ad-cta-sub reveal-item">
+        Greesi is building the first alt data layer accessible to individual investors.
+        Join the waitlist to get access when it launches.
+      </p>
+      <a href="/waitlist?interest=alt-data" class="ad-btn-primary reveal-item" style="display:inline-flex;margin-top:32px">
+        Get early access →
+      </a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  :root {
+    --ad-bg:#080B0F; --ad-surface:#0D1117; --ad-border:#21262D;
+    --ad-text:#F0F6FC; --ad-muted:#8B949E; --ad-accent:#1F6FEB;
+    --ad-green:#39D353; --ad-amber:#D29922;
+  }
+  .ad-hero { background:var(--ad-bg); padding:120px 24px 80px; position:relative; overflow:hidden; min-height:60vh; display:flex; align-items:center; }
+  .ad-glow { position:absolute; border-radius:50%; pointer-events:none; filter:blur(90px); opacity:0.12; }
+  .ad-glow-1 { width:500px; height:500px; top:-100px; right:5%; background:radial-gradient(circle,#39D353 0%,transparent 70%); animation:agf 12s ease-in-out infinite; }
+  @keyframes agf { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-25px,30px);} }
+  .ad-hero-inner { position:relative; z-index:1; max-width:700px; margin:0 auto; }
+  .ad-eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:0.7rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--ad-muted); margin-bottom:24px; }
+  .ad-dot { width:6px; height:6px; border-radius:50%; background:var(--ad-green); animation:pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:0.4;transform:scale(0.8);} }
+  .ad-headline { font-family:'DM Serif Display',Georgia,serif; font-size:clamp(2.8rem,6vw,5rem); font-weight:400; letter-spacing:-0.02em; line-height:1.05; color:var(--ad-text); margin-bottom:24px; }
+  .ad-sub { font-size:1rem; color:var(--ad-muted); line-height:1.75; max-width:540px; margin-bottom:36px; }
+  .ad-hero-actions { display:flex; gap:14px; }
+  .ad-btn-primary { background:var(--ad-accent); color:#fff; font-size:0.875rem; font-weight:600; padding:12px 24px; border-radius:8px; border:none; cursor:pointer; font-family:inherit; transition:background 0.2s,transform 0.15s,box-shadow 0.2s; box-shadow:0 0 0 1px rgba(31,111,235,0.4); }
+  .ad-btn-primary:hover { background:#388bfd; transform:translateY(-1px); box-shadow:0 4px 20px rgba(31,111,235,0.3); }
+
+  .ad-sources { background:var(--ad-surface); border-top:1px solid var(--ad-border); padding:96px 24px; }
+  .ad-sources-inner { max-width:1080px; margin:0 auto; }
+  .ad-section-label { font-size:0.68rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:var(--ad-muted); margin-bottom:12px; }
+  .ad-section-headline { font-family:'DM Serif Display',Georgia,serif; font-size:clamp(1.8rem,4vw,2.6rem); font-weight:400; letter-spacing:-0.02em; color:var(--ad-text); margin-bottom:48px; }
+  .ad-sources-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
+  .ad-source-card { background:var(--ad-bg); border:1px solid var(--ad-border); border-radius:12px; padding:28px 24px; transition:border-color 0.2s; }
+  .ad-source-card:hover { border-color:#30363D; }
+  .ad-source-icon { font-size:1.4rem; margin-bottom:12px; }
+  .ad-source-status { font-size:0.62rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:var(--ad-amber); margin-bottom:10px; }
+  .ad-source-title { font-size:0.9rem; font-weight:600; color:var(--ad-text); margin-bottom:10px; }
+  .ad-source-desc { font-size:0.82rem; color:var(--ad-muted); line-height:1.6; }
+
+  .ad-cta { background:var(--ad-bg); border-top:1px solid var(--ad-border); padding:96px 24px; text-align:center; }
+  .ad-cta-inner { max-width:620px; margin:0 auto; }
+  .ad-cta-headline { font-family:'DM Serif Display',Georgia,serif; font-size:clamp(1.8rem,4vw,2.8rem); font-weight:400; letter-spacing:-0.02em; color:var(--ad-text); margin-bottom:20px; }
+  .ad-cta-sub { font-size:0.9rem; color:var(--ad-muted); line-height:1.75; }
+</style>
+
+<script>
+  import { animate, stagger } from 'animejs';
+  animate('.ad-eyebrow, .ad-headline, .ad-sub, .ad-hero-actions', {
+    opacity:[0,1], translateY:[28,0], scale:[0.97,1],
+    duration:700, ease:'out(3)', delay:stagger(90,{start:150}),
+  });
+</script>
