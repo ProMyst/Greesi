@@ -399,12 +399,9 @@ html[data-theme='dark'] .nav-scrolled {
   height: 64px; display: flex; align-items: center; justify-content: space-between;
 }
 
-.nav-logo {
-  font-size: 1.25rem; font-weight: 800; letter-spacing: -0.04em;
-  text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.3s;
-}
 /* ── Logo mark pill/slash colors ─────────────────────────────── */
 .nav-logo { display: flex; align-items: center; gap: 6px; text-decoration: none; }
+.nav-logo .nav-logo-mark { display: block; flex-shrink: 0; }
 .nav-logo-mark { flex-shrink: 0; transition: transform 0.2s; }
 .nav-logo:hover .nav-logo-mark { transform: scale(1.06); }
 /* Transparent nav (dark hero bg) → white pill, dark slash */
