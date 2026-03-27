@@ -1,0 +1,279 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const interest = Astro.url.searchParams.get('interest') ?? '';
+
+const interestOptions = [
+  { value: 'all',      label: 'All of the above' },
+  { value: 'crypto',   label: 'Crypto signals' },
+  { value: 'trends',   label: 'Social & search trends' },
+  { value: 'macro',    label: 'Macro intelligence' },
+  { value: 'alt-data', label: 'Alternative data' },
+  { value: 'finance',  label: 'Finance & banking' },
+];
+
+const title = "Join the Greesi Waitlist — Early Access";
+const description = "Greesi is in private beta. Join the waitlist and be first to access the full signal intelligence platform when it opens.";
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="waitlist-hero">
+    <div class="waitlist-inner">
+
+      <div class="waitlist-eyebrow">Early Access</div>
+      <h1 class="waitlist-headline">The signal layer<br/>for serious decisions.</h1>
+      <p class="waitlist-sub">
+        Greesi is in private beta. Join the waitlist and be first to access
+        crypto signals, macro intelligence, trend data, and alt data — all in one platform.
+      </p>
+
+      <form class="waitlist-form" id="waitlist-form" novalidate>
+        <!-- Email -->
+        <div class="wf-group">
+          <label class="wf-label" for="wf-email">Email address</label>
+          <input
+            id="wf-email"
+            name="email"
+            type="email"
+            class="wf-input"
+            placeholder="your@email.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <!-- Interest -->
+        <div class="wf-group">
+          <label class="wf-label" for="wf-interest">Primary interest</label>
+          <select id="wf-interest" name="interest" class="wf-input wf-select">
+            {interestOptions.map(opt => (
+              <option value={opt.value} selected={opt.value === interest}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <!-- User type -->
+        <div class="wf-group">
+          <p class="wf-label">I am a</p>
+          <div class="wf-radio-group">
+            <label class="wf-radio">
+              <input type="radio" name="userType" value="individual" checked />
+              <span class="wf-radio-box">Individual investor</span>
+            </label>
+            <label class="wf-radio">
+              <input type="radio" name="userType" value="institutional" />
+              <span class="wf-radio-box">Institutional / professional</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="wf-submit" id="wf-submit">
+          <span id="wf-btn-text">Request Early Access</span>
+        </button>
+
+        <p class="wf-fine">No spam. No pitch. Just the signal.</p>
+      </form>
+
+      <!-- Success state -->
+      <div class="waitlist-success" id="waitlist-success" hidden>
+        <div class="ws-icon">✓</div>
+        <h2 class="ws-headline">You're on the list.</h2>
+        <p class="ws-sub">We'll reach out when early access opens. In the meantime, explore our <a href="/finance">Finance Hub</a>.</p>
+      </div>
+
+    </div>
+
+    <!-- Background decoration -->
+    <div class="waitlist-glow waitlist-glow-1" aria-hidden="true"></div>
+    <div class="waitlist-glow waitlist-glow-2" aria-hidden="true"></div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ── Layout ─────────────────────────────────────────── */
+  .waitlist-hero {
+    min-height: calc(100vh - 64px);
+    background: #080B0F;
+    display: flex; align-items: center; justify-content: center;
+    padding: 80px 24px;
+    position: relative; overflow: hidden;
+  }
+  .waitlist-inner {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 520px;
+  }
+
+  /* ── Header ─────────────────────────────────────────── */
+  .waitlist-eyebrow {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #e8ff5a;
+    margin-bottom: 20px;
+  }
+  .waitlist-headline {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: clamp(2.4rem, 6vw, 3.6rem);
+    font-weight: 400; letter-spacing: -0.02em; line-height: 1.05;
+    color: #F0F6FC; margin-bottom: 20px;
+  }
+  .waitlist-sub {
+    font-size: 0.95rem; color: #8B949E; line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  /* ── Form ───────────────────────────────────────────── */
+  .waitlist-form { display: flex; flex-direction: column; gap: 24px; }
+  .wf-group { display: flex; flex-direction: column; gap: 8px; }
+  .wf-label {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: #6E7681;
+  }
+  .wf-input {
+    background: #0D1117; border: 1px solid #21262D; border-radius: 10px;
+    padding: 13px 16px; font-size: 0.9rem; color: #F0F6FC;
+    font-family: inherit; outline: none; width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+  }
+  .wf-input:focus {
+    border-color: #1F6FEB;
+    box-shadow: 0 0 0 3px rgba(31,111,235,0.18);
+  }
+  .wf-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238B949E' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    padding-right: 40px; cursor: pointer;
+  }
+  .wf-select option { background: #0D1117; color: #F0F6FC; }
+
+  /* ── Radio group ────────────────────────────────────── */
+  .wf-radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+  .wf-radio { cursor: pointer; }
+  .wf-radio input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+  .wf-radio-box {
+    display: block; padding: 10px 18px;
+    background: #0D1117; border: 1px solid #21262D; border-radius: 8px;
+    font-size: 0.85rem; color: #8B949E;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    cursor: pointer; user-select: none;
+  }
+  .wf-radio input[type="radio"]:checked + .wf-radio-box {
+    border-color: #1F6FEB; color: #F0F6FC;
+    background: rgba(31,111,235,0.08);
+  }
+  .wf-radio-box:hover { border-color: #30363D; color: #C9D1D9; }
+
+  /* ── Submit ─────────────────────────────────────────── */
+  .wf-submit {
+    background: #1F6FEB; color: #F0F6FC;
+    font-size: 0.9rem; font-weight: 600; letter-spacing: -0.01em;
+    padding: 14px 28px; border-radius: 10px; border: none;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 0 0 1px rgba(31,111,235,0.4);
+  }
+  .wf-submit:hover {
+    background: #388bfd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 24px rgba(31,111,235,0.3);
+  }
+  .wf-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .wf-fine { font-size: 0.75rem; color: #484F58; text-align: center; }
+
+  /* ── Success ─────────────────────────────────────────── */
+  .waitlist-success { text-align: center; padding: 48px 0; }
+  .ws-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(57,211,83,0.12); border: 1px solid rgba(57,211,83,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; color: #39D353;
+    margin: 0 auto 24px;
+  }
+  .ws-headline {
+    font-family: 'DM Serif Display', Georgia, serif;
+    font-size: 2rem; font-weight: 400; color: #F0F6FC; margin-bottom: 12px;
+  }
+  .ws-sub { font-size: 0.9rem; color: #8B949E; line-height: 1.7; }
+  .ws-sub a { color: #58A6FF; }
+
+  /* ── Background glows ───────────────────────────────── */
+  .waitlist-glow {
+    position: absolute; border-radius: 50%; pointer-events: none;
+    filter: blur(100px); opacity: 0.12;
+  }
+  .waitlist-glow-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, #1F6FEB 0%, transparent 70%);
+    top: -150px; right: -100px;
+    animation: gf1 10s ease-in-out infinite;
+  }
+  .waitlist-glow-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+    bottom: -100px; left: -80px;
+    animation: gf2 13s ease-in-out infinite;
+  }
+  @keyframes gf1 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-30px, 40px); }
+  }
+  @keyframes gf2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(25px, -35px); }
+  }
+</style>
+
+<script>
+  import { animate, stagger } from 'animejs';
+
+  // ── Entrance animations ───────────────────────────────
+  animate('.waitlist-eyebrow, .waitlist-headline, .waitlist-sub, .waitlist-form', {
+    opacity: [0, 1],
+    translateY: [24, 0],
+    scale: [0.98, 1],
+    duration: 650,
+    ease: 'out(3)',
+    delay: stagger(90, { start: 100 }),
+  });
+
+  // ── Form submission ───────────────────────────────────
+  const form    = document.getElementById('waitlist-form') as HTMLFormElement;
+  const success = document.getElementById('waitlist-success') as HTMLElement;
+  const submit  = document.getElementById('wf-submit') as HTMLButtonElement;
+  const btnText = document.getElementById('wf-btn-text') as HTMLElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const email    = (data.get('email')    as string)?.trim();
+    const interest = (data.get('interest') as string) ?? 'all';
+    const userType = (data.get('userType') as string) ?? 'individual';
+
+    if (!email) return;
+
+    submit.disabled = true;
+    btnText.textContent = 'Joining…';
+
+    try {
+      const res = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, interest, userType }),
+      });
+
+      if (res.ok) {
+        form.hidden = true;
+        success.hidden = false;
+        animate('.ws-icon, .ws-headline, .ws-sub', {
+          opacity: [0, 1], translateY: [16, 0], duration: 500,
+          ease: 'out(3)', delay: stagger(80),
+        });
+      } else {
+        btnText.textContent = 'Something went wrong. Try again.';
+        submit.disabled = false;
+      }
+    } catch {
+      btnText.textContent = 'Connection error. Try again.';
+      submit.disabled = false;
+    }
+  });
+</script>
