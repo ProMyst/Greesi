@@ -73,7 +73,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     <nav class="nav-inner">
       <!-- Logo -->
       <a href="/" class="nav-logo" aria-label="Greesi home">
-        <svg class="nav-logo-mark" width="9" height="18" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg class="nav-logo-mark" width="7" height="14" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs><clipPath id="g-pill-nav"><rect x="0" y="0" width="40" height="80" rx="20"/></clipPath></defs>
           <g clip-path="url(#g-pill-nav)">
             <rect x="0" y="0" width="40" height="80" class="logo-pill"/>
@@ -401,7 +401,7 @@ html[data-theme='dark'] .nav-scrolled {
 
 /* ── Logo mark pill/slash colors ─────────────────────────────── */
 .nav-logo { display: flex; align-items: center; gap: 6px; text-decoration: none; }
-.nav-logo .nav-logo-mark { display: block; flex-shrink: 0; }
+.nav-logo .nav-logo-mark { display: block; flex-shrink: 0; margin-left: 2px; }
 .nav-logo-mark { flex-shrink: 0; transition: transform 0.2s; }
 .nav-logo:hover .nav-logo-mark { transform: scale(1.06); }
 /* Transparent nav (dark hero bg) → white pill, dark slash */
