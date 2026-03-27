@@ -21,33 +21,30 @@ async function buildTicker(): Promise<TickerResponse> {
   const now = new Date().toISOString();
   const items: TickerItem[] = [];
 
-  // ── Crypto prices (CoinGecko) ──────────────────────────────────
+  // ── Crypto prices (Binance — no key, generous rate limits) ────
   try {
+    const symbols = encodeURIComponent(JSON.stringify(['BTCUSDT', 'ETHUSDT', 'SOLUSDT']));
     const cryptoRes = await fetch(
-      'https://api.coingecko.com/api/v3/simple/price' +
-      '?ids=bitcoin,ethereum,solana,binancecoin' +
-      '&vs_currencies=usd&include_24hr_change=true',
+      `https://api.binance.com/api/v3/ticker/24hr?symbols=${symbols}`,
       { headers: { Accept: 'application/json' } }
     );
     if (cryptoRes.ok) {
-      const crypto = await cryptoRes.json();
+      const rows: Array<{ symbol: string; lastPrice: string; priceChangePercent: string }> = await cryptoRes.json();
       const fmt = (n: number) => n >= 1000
         ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 })
         : '$' + n.toFixed(2);
       const fmtChange = (n: number) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
 
-      for (const [id, symbol] of [
-        ['bitcoin', 'BTC/USD'],
-        ['ethereum', 'ETH/USD'],
-        ['solana', 'SOL/USD'],
-      ] as [string, string][]) {
-        if (!crypto[id]) continue;
-        const change = crypto[id].usd_24h_change as number;
+      for (const [sym, label] of [['BTCUSDT','BTC/USD'],['ETHUSDT','ETH/USD'],['SOLUSDT','SOL/USD']]) {
+        const row = rows.find(r => r.symbol === sym);
+        if (!row) continue;
+        const price  = parseFloat(row.lastPrice);
+        const change = parseFloat(row.priceChangePercent);
         items.push({
-          label:     symbol,
-          value:     fmt(crypto[id].usd as number),
+          label,
+          value:     fmt(price),
           change:    fmtChange(change),
-          direction: change >= 0.5 ? 'up' : change <= -0.5 ? 'down' : 'neutral',
+          direction: change >= 0.5 ? 'up' : change < -0.5 ? 'down' : 'neutral',
           category:  'crypto',
           updatedAt: now,
         });

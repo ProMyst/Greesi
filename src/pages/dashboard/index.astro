@@ -19,13 +19,18 @@ const { data: signals } = await supabase
   .order('created_at', { ascending: false })
   .limit(12);
 
-// Fetch live crypto prices
-let prices: Record<string, { usd: number; usd_24h_change: number }> = {};
+// Fetch live crypto prices (Binance — no key, high rate limits)
+type PriceMap = Record<string, { price: number; change: number }>;
+let prices: PriceMap = {};
 try {
-  const res = await fetch(
-    'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true'
-  );
-  if (res.ok) prices = await res.json();
+  const syms = encodeURIComponent(JSON.stringify(['BTCUSDT','ETHUSDT','SOLUSDT']));
+  const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${syms}`);
+  if (res.ok) {
+    const rows: { symbol: string; lastPrice: string; priceChangePercent: string }[] = await res.json();
+    for (const r of rows) {
+      prices[r.symbol] = { price: parseFloat(r.lastPrice), change: parseFloat(r.priceChangePercent) };
+    }
+  }
 } catch {}
 
 const fmt = (n: number) => n >= 1000
@@ -113,18 +118,18 @@ const fmtChange = (n: number) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
       <!-- Price strip -->
       <div class="db-price-strip">
         {[
-          { id: 'bitcoin',  sym: 'BTC', name: 'Bitcoin' },
-          { id: 'ethereum', sym: 'ETH', name: 'Ethereum' },
-          { id: 'solana',   sym: 'SOL', name: 'Solana' },
+          { sym: 'BTCUSDT', label: 'BTC' },
+          { sym: 'ETHUSDT', label: 'ETH' },
+          { sym: 'SOLUSDT', label: 'SOL' },
         ].map(a => {
-          const p = prices[a.id];
-          const change = p?.usd_24h_change ?? 0;
+          const p = prices[a.sym];
+          const change = p?.change ?? 0;
           const dir = change >= 0.5 ? 'up' : change < -0.5 ? 'down' : 'neutral';
           return (
             <div class={`db-price-card ${dir}`}>
-              <div class="db-price-sym">{a.sym}</div>
-              <div class="db-price-val">{p ? fmt(p.usd) : '—'}</div>
-              <div class={`db-price-change ${dir}`}>{p ? fmtChange(p.usd_24h_change) : '—'}</div>
+              <div class="db-price-sym">{a.label}</div>
+              <div class="db-price-val">{p ? fmt(p.price) : '—'}</div>
+              <div class={`db-price-change ${dir}`}>{p ? fmtChange(p.change) : '—'}</div>
             </div>
           );
         })}
