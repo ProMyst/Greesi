@@ -15,6 +15,7 @@ const siteUrl = 'https://greesi.com';
 const fullTitle = title.includes('Greesi') ? title : `${title} | Greesi`;
 const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
 const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
+const isFinancePage = Astro.url.pathname.startsWith('/finance');
 ---
 
 <!doctype html>
@@ -39,6 +40,11 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
   <meta name="twitter:title" content={fullTitle} />
   <meta name="twitter:description" content={description} />
   <meta name="twitter:image" content={ogImageUrl} />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -67,6 +73,17 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
 
   <!-- Reading progress bar -->
   <div id="progress-bar"></div>
+
+  <!-- Finance Hub Banner -->
+  {isFinancePage && (
+    <div class="finance-hub-banner">
+      <div class="finance-hub-inner">
+        <span class="finance-hub-icon">📊</span>
+        <span class="finance-hub-text">You're in the <strong>Greesi Finance Hub</strong> — editorial guides &amp; reviews.</span>
+        <a href="/" class="finance-hub-link">← Back to Intelligence Platform</a>
+      </div>
+    </div>
+  )}
 
   <!-- ── Navigation ─────────────────────────────────────────── -->
   <header id="site-nav" class="nav-root nav-transparent" transition:persist>
@@ -530,6 +547,27 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
 @media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; } }
 .footer-disclosure { font-size: 0.75rem; color: rgba(255,255,255,0.3); max-width: 520px; line-height: 1.6; }
 .footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
+
+/* ── Finance Hub Banner ───────────────────────────────────── */
+.finance-hub-banner {
+  background: #0D1117;
+  border-bottom: 1px solid #21262D;
+  padding: 8px 24px;
+  position: relative;
+  z-index: 99;
+}
+.finance-hub-inner {
+  max-width: 1152px; margin: 0 auto;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  font-size: 0.78rem; color: #8B949E;
+}
+.finance-hub-icon { font-size: 0.85rem; }
+.finance-hub-text strong { color: #C9D1D9; font-weight: 600; }
+.finance-hub-link {
+  margin-left: auto; color: #58A6FF; text-decoration: none;
+  font-weight: 500; white-space: nowrap; transition: color 0.2s;
+}
+.finance-hub-link:hover { color: #F0F6FC; }
 
 /* ── Reveal items start hidden ────────────────────────────── */
 .reveal-item { opacity: 0; transform: translateY(22px) scale(0.97); }

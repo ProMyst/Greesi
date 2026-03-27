@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
+/* DM Serif Display + JetBrains Mono loaded via Google Fonts in layouts */
 
 /* ─── Design Tokens ─────────────────────────────────────────── */
 @theme {
@@ -28,6 +29,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+.font-display { font-family: 'DM Serif Display', Georgia, serif; }
+.font-mono-data { font-family: 'JetBrains Mono', 'Fira Code', monospace; font-feature-settings: 'tnum' 1; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
