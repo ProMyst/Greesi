@@ -73,13 +73,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
     <nav class="nav-inner">
       <!-- Logo -->
       <a href="/" class="nav-logo" aria-label="Greesi home">
-        <svg class="nav-logo-mark" width="7" height="14" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs><clipPath id="g-pill-nav"><rect x="0" y="0" width="40" height="80" rx="20"/></clipPath></defs>
-          <g clip-path="url(#g-pill-nav)">
-            <rect x="0" y="0" width="40" height="80" class="logo-pill"/>
-            <polygon points="25,0 33,0 15,80 7,80" class="logo-slash"/>
-          </g>
-        </svg>
+        <img class="nav-logo-mark" src="/logo-mark.png" alt="" aria-hidden="true" width="12" height="24" />
         <span class="nav-logo-name">greesi</span>
       </a>
 
@@ -243,13 +237,7 @@ const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
 
       <div class="footer-brand">
         <a href="/" class="footer-logo" aria-label="Greesi home">
-          <svg class="footer-logo-mark" width="16" height="32" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs><clipPath id="g-pill-footer"><rect x="0" y="0" width="40" height="80" rx="20"/></clipPath></defs>
-            <g clip-path="url(#g-pill-footer)">
-              <rect x="0" y="0" width="40" height="80" fill="white" opacity="0.9"/>
-              <polygon points="25,0 33,0 15,80 7,80" fill="#0d1f35"/>
-            </g>
-          </svg>
+          <img class="footer-logo-mark" src="/logo-mark-white.png" alt="" aria-hidden="true" width="16" height="32" />
           <span class="footer-logo-name">greesi</span>
         </a>
         <p class="footer-tagline">Signal intelligence.<br />Decisions that compound.</p>
@@ -399,19 +387,19 @@ html[data-theme='dark'] .nav-scrolled {
   height: 64px; display: flex; align-items: center; justify-content: space-between;
 }
 
-/* ── Logo mark pill/slash colors ─────────────────────────────── */
+/* ── Logo ─────────────────────────────────────────────────────── */
 .nav-logo { display: flex; align-items: center; gap: 6px; text-decoration: none; }
-.nav-logo .nav-logo-mark { display: block; flex-shrink: 0; margin-left: 2px; }
-.nav-logo-mark { flex-shrink: 0; transition: transform 0.2s; }
+.nav-logo-mark {
+  display: block; flex-shrink: 0;
+  width: 12px; height: 24px; object-fit: contain;
+  transition: filter 0.3s, transform 0.2s;
+}
 .nav-logo:hover .nav-logo-mark { transform: scale(1.06); }
-/* Transparent nav (dark hero bg) → white pill, dark slash */
-.nav-transparent .logo-pill { fill: white; }
-.nav-transparent .logo-slash { fill: #0a1220; }
-/* Scrolled nav (light bg) → dark pill, white slash */
-.nav-scrolled .logo-pill { fill: #0a1220; }
-.nav-scrolled .logo-slash { fill: white; }
-html[data-theme='dark'] .nav-scrolled .logo-pill { fill: white; }
-html[data-theme='dark'] .nav-scrolled .logo-slash { fill: #0a1220; }
+/* Transparent nav (dark bg) → invert black pill to white */
+.nav-transparent .nav-logo-mark { filter: invert(1); }
+/* Scrolled nav (light bg) → black pill as-is */
+.nav-scrolled .nav-logo-mark { filter: none; }
+html[data-theme='dark'] .nav-scrolled .nav-logo-mark { filter: invert(1); }
 /* Logo name */
 .nav-logo-name {
   font-size: 0.95rem; font-weight: 700; letter-spacing: -0.04em;
@@ -530,6 +518,7 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile {
 .footer-brand {}
 .footer-logo { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 12px; text-decoration: none; opacity: 0.9; transition: opacity 0.2s; }
 .footer-logo:hover { opacity: 1; }
+.footer-logo-mark { display: block; flex-shrink: 0; width: 16px; height: 32px; object-fit: contain; }
 .footer-logo-name { font-size: 1rem; font-weight: 700; letter-spacing: -0.04em; color: white; }
 .footer-tagline { font-size: 0.9rem; line-height: 1.6; color: rgba(255,255,255,0.45); margin-bottom: 20px; }
 .footer-socials { display: flex; gap: 12px; }
