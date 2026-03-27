@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 import pagefind from 'astro-pagefind';
 
 export default defineConfig({
-  site: 'https://folvr.com',
+  site: 'https://greesi.com',
   build: {
     format: 'directory',
   },

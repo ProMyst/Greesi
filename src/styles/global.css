@@ -132,13 +132,33 @@ body {
   }
 }
 
-/* ─── Lenis Smooth Scroll ────────────────────────────────────── */
-html.lenis,
-html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
-.lenis.lenis-stopped { overflow: hidden; }
-.lenis.lenis-scrolling iframe { pointer-events: none; }
+/* ─── Shared Button Primitives ──────────────────────────────────── */
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--color-accent); color: #fff; font-weight: 700;
+  font-size: 0.9rem; padding: 12px 24px; border-radius: 10px;
+  text-decoration: none; border: none; cursor: pointer; font-family: inherit;
+  transition: background 0.2s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--color-accent-dark); transform: translateY(-1px); }
+
+.btn-outline {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; color: var(--color-text); font-weight: 600;
+  font-size: 0.875rem; padding: 10px 20px; border-radius: 10px;
+  text-decoration: none; border: 1px solid var(--color-border);
+  transition: background 0.15s;
+}
+.btn-outline:hover { background: var(--color-surface); }
+
+.btn-outline-sm {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; color: var(--color-accent); font-weight: 600;
+  font-size: 0.82rem; padding: 9px 16px; border-radius: 8px;
+  text-decoration: none; border: 1.5px solid var(--color-accent);
+  white-space: nowrap; transition: background 0.2s, color 0.2s;
+}
+.btn-outline-sm:hover { background: var(--color-accent); color: #fff; }
 
 /* ─── Dark Mode ──────────────────────────────────────────────── */
 html[data-theme='dark'] {
@@ -953,7 +973,6 @@ html[data-theme='dark'] .quiz-option.selected {
 .quiz-opt-sub { font-size: 0.75rem; color: var(--color-text-muted); }
 
 /* Quiz result cards */
-.quiz-result-top {}
 .quiz-match-card {
   background: linear-gradient(135deg, var(--color-primary) 0%, color-mix(in srgb, var(--color-primary) 70%, var(--color-accent)) 100%);
   border-radius: 16px;
@@ -1010,7 +1029,6 @@ html[data-theme='dark'] .quiz-option.selected {
   padding: 3px 10px;
   border-radius: 6px;
 }
-.quiz-match-actions {}
 
 .quiz-also-card {
   display: flex;
