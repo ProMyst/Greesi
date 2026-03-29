@@ -1,8 +1,8 @@
 {
   "crons": [
-    { "path": "/api/cron/crypto-prices",  "schedule": "*/5 * * * *"   },
-    { "path": "/api/cron/rss-feeds",      "schedule": "*/15 * * * *"  },
-    { "path": "/api/cron/macro-fred",     "schedule": "0 8 * * *"     },
-    { "path": "/api/cron/daily-snapshot", "schedule": "0 0 * * *"     }
+    { "path": "/api/cron/crypto-prices",  "schedule": "0 6 * * *"  },
+    { "path": "/api/cron/rss-feeds",      "schedule": "0 7 * * *"  },
+    { "path": "/api/cron/macro-fred",     "schedule": "0 8 * * *"  },
+    { "path": "/api/cron/daily-snapshot", "schedule": "0 0 * * *"  }
   ]
 }
