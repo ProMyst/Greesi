@@ -2,7 +2,8 @@ import { defineMiddleware } from 'astro:middleware';
 import { createSupabaseMiddlewareClient } from './lib/supabase-server';
 
 // Routes that require authentication
-const PROTECTED = ['/dashboard'];
+// /dashboard is now public — auth required for /dashboard/admin only
+const PROTECTED = ['/dashboard/admin'];
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { request, redirect, url } = context;

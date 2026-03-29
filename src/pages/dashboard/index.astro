@@ -5,430 +5,846 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { createSupabaseServerClient } from '../../lib/supabase-server';
 
 const title = "Intelligence Dashboard — Greesi";
-const description = "Live crypto signals, macro data, trend detection, and alt data — all in one platform.";
+const description = "Live market signals, macro indicators, and trend intelligence. Public access — no account required.";
 
-// Auth: middleware already protects this route, but get user for display
 const supabase = createSupabaseServerClient(Astro.cookies);
-const { data: { session } } = await supabase.auth.getSession();
-const userEmail = session?.user?.email ?? '';
 
-// Fetch latest signals across all domains
-const { data: signals } = await supabase
-  .from('signals')
-  .select('*')
-  .order('created_at', { ascending: false })
-  .limit(12);
+// Fetch all data in parallel
+const [
+  { data: signals },
+  { data: latestSnapshot },
+  { data: recentRuns },
+  { data: macroLatest },
+  { data: recentArticles },
+] = await Promise.all([
+  supabase.from('signals').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(20),
+  supabase.from('dataset_snapshots').select('*').order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
+  supabase.from('pipeline_runs').select('job_name,status,latency_ms,started_at').order('started_at', { ascending: false }).limit(20),
+  supabase.from('macro_data_points').select('series_id,series_name,value,observation_date').in('series_id', ['DFF','T10Y2Y','VIXCLS','CPIAUCSL']).order('observation_date', { ascending: false }).limit(8),
+  supabase.from('rss_articles').select('title,feed_name,published_at,sentiment_label,related_assets,article_url').order('published_at', { ascending: false }).limit(12),
+]);
 
-// Fetch live crypto prices (Binance — no key, high rate limits)
-type PriceMap = Record<string, { price: number; change: number }>;
-let prices: PriceMap = {};
+// Live crypto prices from Binance
+type PriceData = { price: number; change: number; high: number; low: number; volume: number };
+let prices: Record<string, PriceData> = {};
 try {
-  const syms = encodeURIComponent(JSON.stringify(['BTCUSDT','ETHUSDT','SOLUSDT']));
+  const syms = encodeURIComponent(JSON.stringify(['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','AVAXUSDT']));
   const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${syms}`);
   if (res.ok) {
-    const rows: { symbol: string; lastPrice: string; priceChangePercent: string }[] = await res.json();
+    const rows: { symbol: string; lastPrice: string; priceChangePercent: string; highPrice: string; lowPrice: string; quoteVolume: string }[] = await res.json();
     for (const r of rows) {
-      prices[r.symbol] = { price: parseFloat(r.lastPrice), change: parseFloat(r.priceChangePercent) };
+      prices[r.symbol] = {
+        price:  parseFloat(r.lastPrice),
+        change: parseFloat(r.priceChangePercent),
+        high:   parseFloat(r.highPrice),
+        low:    parseFloat(r.lowPrice),
+        volume: parseFloat(r.quoteVolume),
+      };
     }
   }
 } catch {}
+
+// Pipeline health (last 24h)
+const successCount = recentRuns?.filter(r => r.status === 'success').length ?? 0;
+const totalRuns = recentRuns?.length ?? 0;
+const healthPct = totalRuns > 0 ? Math.round((successCount / totalRuns) * 100) : 100;
+
+// Total data points
+const totalDataPoints = (latestSnapshot?.total_price_ticks ?? 0)
+  + (latestSnapshot?.total_macro_points ?? 0)
+  + (latestSnapshot?.total_rss_articles ?? 0)
+  + (latestSnapshot?.total_social_mentions ?? 0);
 
 const fmt = (n: number) => n >= 1000
   ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 })
   : '$' + n.toFixed(2);
 const fmtChange = (n: number) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+const fmtNum = (n: number) => n >= 1_000_000
+  ? (n / 1_000_000).toFixed(1) + 'M'
+  : n >= 1_000 ? (n / 1000).toFixed(1) + 'K' : n.toString();
+
+const dirColor = (d: string) =>
+  d === 'bullish' || d === 'up' ? '#39D353' : d === 'bearish' || d === 'down' ? '#F85149' : '#8B949E';
+
+const macroMap: Record<string, { value: number; name: string; date: string }> = {};
+for (const row of macroLatest ?? []) {
+  if (!macroMap[row.series_id]) {
+    macroMap[row.series_id] = { value: row.value, name: row.series_name, date: row.observation_date };
+  }
+}
+
+const ASSETS = [
+  { sym: 'BTCUSDT', label: 'BTC', name: 'Bitcoin',   color: '#F7931A' },
+  { sym: 'ETHUSDT', label: 'ETH', name: 'Ethereum',  color: '#627EEA' },
+  { sym: 'SOLUSDT', label: 'SOL', name: 'Solana',    color: '#9945FF' },
+  { sym: 'BNBUSDT', label: 'BNB', name: 'BNB',       color: '#F3BA2F' },
+  { sym: 'AVAXUSDT',label: 'AVAX',name: 'Avalanche', color: '#E84142' },
+];
 ---
 
 <BaseLayout title={title} description={description}>
-  <div class="db-root">
+<div class="pub-root">
 
-    <!-- Sidebar -->
-    <aside class="db-sidebar" id="db-sidebar">
-      <div class="db-sidebar-top">
-        <a href="/" class="db-wordmark">greesi</a>
-        <button class="db-collapse-btn" id="db-collapse" aria-label="Collapse sidebar">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M15 18l-6-6 6-6"/>
-          </svg>
-        </button>
+  <!-- ── Stat strip ────────────────────────────────────────── -->
+  <div class="pub-stat-strip">
+    <div class="pub-stat-inner">
+      <div class="pub-stat">
+        <span class="pub-stat-val" id="stat-points" data-target={totalDataPoints}>{fmtNum(totalDataPoints)}</span>
+        <span class="pub-stat-label">Data Points Collected</span>
       </div>
-      <nav class="db-nav">
-        <p class="db-nav-section">Intelligence</p>
-        <a href="/dashboard" class="db-nav-link db-nav-link--active">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Overview
-        </a>
-        <a href="/crypto" class="db-nav-link">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11.767 19.089c4.924.868 6.14-6.025 1.216-6.894m-1.216 6.894L5.86 18.047m5.908 1.042-.347 1.97m1.563-8.864c4.924.869 6.14-6.025 1.215-6.893m-1.215 6.893-3.94-.694m5.155-6.2L8.29 5.26m5.908 1.042.348-1.97M7.48 20.364l3.126-17.727"/></svg>
-          Crypto
-          <span class="db-nav-badge db-nav-badge--live">LIVE</span>
-        </a>
-        <a href="/macro" class="db-nav-link">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-          Macro
-          <span class="db-nav-badge db-nav-badge--live">LIVE</span>
-        </a>
-        <a href="/trends" class="db-nav-link">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-          Trends
-          <span class="db-nav-badge db-nav-badge--soon">SOON</span>
-        </a>
-        <a href="/alt-data" class="db-nav-link">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-          Alt Data
-          <span class="db-nav-badge db-nav-badge--soon">SOON</span>
-        </a>
-        <p class="db-nav-section">Editorial</p>
-        <a href="/finance" class="db-nav-link">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-          Finance Hub
-        </a>
-        <p class="db-nav-section">Account</p>
-        <div class="db-user-row">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span class="db-user-email" title={userEmail}>{userEmail}</span>
-        </div>
-        <form action="/api/auth/signout" method="POST" style="margin-top:4px">
-          <button type="submit" class="db-nav-link db-signout-btn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-            Sign out
-          </button>
-        </form>
-      </nav>
-      <div class="db-sidebar-footer">
-        <div class="db-beta-badge">PRIVATE BETA</div>
-        <p class="db-beta-text">Full access launching soon.<br/><a href="/waitlist">Join the waitlist →</a></p>
+      <div class="pub-stat-div"></div>
+      <div class="pub-stat">
+        <span class="pub-stat-val">{latestSnapshot?.active_assets_tracked ?? 11}</span>
+        <span class="pub-stat-label">Assets Tracked</span>
       </div>
-    </aside>
-
-    <!-- Main content -->
-    <main class="db-main">
-
-      <!-- Top bar -->
-      <div class="db-topbar">
-        <div class="db-topbar-left">
-          <h1 class="db-page-title">Overview</h1>
-          <span class="db-page-sub">All intelligence domains</span>
-        </div>
-        <div class="db-topbar-right">
-          <span class="db-updated" id="db-updated">Updated just now</span>
-        </div>
+      <div class="pub-stat-div"></div>
+      <div class="pub-stat">
+        <span class="pub-stat-val">{signals?.length ?? 0}+</span>
+        <span class="pub-stat-label">Active Signals</span>
       </div>
+      <div class="pub-stat-div"></div>
+      <div class="pub-stat">
+        <span class="pub-stat-val" style={`color:${healthPct >= 95 ? '#39D353' : healthPct >= 85 ? '#D29922' : '#F85149'}`}>
+          {healthPct}%
+        </span>
+        <span class="pub-stat-label">Pipeline Uptime</span>
+      </div>
+      <div class="pub-stat-div"></div>
+      <div class="pub-stat">
+        <span class="pub-stat-val">{latestSnapshot?.active_rss_feeds ?? 10}</span>
+        <span class="pub-stat-label">Live Feed Sources</span>
+      </div>
+    </div>
+  </div>
 
-      <!-- Price strip -->
-      <div class="db-price-strip">
-        {[
-          { sym: 'BTCUSDT', label: 'BTC' },
-          { sym: 'ETHUSDT', label: 'ETH' },
-          { sym: 'SOLUSDT', label: 'SOL' },
-        ].map(a => {
+  <!-- ── Main layout ───────────────────────────────────────── -->
+  <div class="pub-layout">
+
+    <!-- LEFT: Price grid + charts + signals -->
+    <div class="pub-left">
+
+      <!-- Price Cards -->
+      <div class="pub-section-header">
+        <span class="pub-section-label">Live Markets</span>
+        <span class="pub-live-dot"></span>
+        <span class="pub-section-note" id="prices-updated">Updated just now</span>
+      </div>
+      <div class="pub-price-grid">
+        {ASSETS.map(a => {
           const p = prices[a.sym];
           const change = p?.change ?? 0;
-          const dir = change >= 0.5 ? 'up' : change < -0.5 ? 'down' : 'neutral';
+          const dir = change >= 0.5 ? 'up' : change < -0.5 ? 'down' : 'flat';
           return (
-            <div class={`db-price-card ${dir}`}>
-              <div class="db-price-sym">{a.label}</div>
-              <div class="db-price-val">{p ? fmt(p.price) : '—'}</div>
-              <div class={`db-price-change ${dir}`}>{p ? fmtChange(p.change) : '—'}</div>
+            <div class={`pub-price-card ${dir}`} data-sym={a.sym} style={`--asset-color:${a.color}`}>
+              <div class="pub-price-top">
+                <div class="pub-price-sym">{a.label}</div>
+                <div class={`pub-price-badge ${dir}`}>{p ? fmtChange(change) : '—'}</div>
+              </div>
+              <div class="pub-price-val">{p ? fmt(p.price) : '—'}</div>
+              <div class="pub-price-meta">
+                <span>H: {p ? fmt(p.high) : '—'}</span>
+                <span>L: {p ? fmt(p.low) : '—'}</span>
+              </div>
+              <div class="pub-price-vol">Vol {p ? '$' + (p.volume / 1e9).toFixed(1) + 'B' : '—'}</div>
             </div>
           );
         })}
-        <a href="/waitlist" class="db-price-card db-price-card--more">
-          <div class="db-price-sym">+47</div>
-          <div class="db-price-val">more assets</div>
-          <div class="db-price-change neutral">Full access →</div>
-        </a>
       </div>
 
-      <!-- Signal feed -->
-      <div class="db-section-header">
-        <h2 class="db-section-title">Recent Signals</h2>
-        <div class="db-filter-row">
-          <button class="db-filter-btn db-filter-btn--active" data-filter="all">All</button>
-          <button class="db-filter-btn" data-filter="crypto">Crypto</button>
-          <button class="db-filter-btn" data-filter="macro">Macro</button>
-          <button class="db-filter-btn" data-filter="finance">Finance</button>
+      <!-- Chart section -->
+      <div class="pub-chart-section">
+        <div class="pub-chart-header">
+          <div class="pub-chart-title-row">
+            <span class="pub-section-label">Price Performance</span>
+            <div class="pub-chart-controls">
+              <div class="pub-asset-toggles" id="asset-toggles">
+                {ASSETS.slice(0,3).map((a, i) => (
+                  <button class={`pub-toggle-btn ${i < 3 ? 'active' : ''}`} data-asset={a.label} style={`--tc:${a.color}`}>
+                    <span class="pub-toggle-dot" style={`background:${a.color}`}></span>{a.label}
+                  </button>
+                ))}
+              </div>
+              <div class="pub-range-btns" id="range-btns">
+                {['1H','24H','7D'].map((r, i) => (
+                  <button class={`pub-range-btn ${i === 1 ? 'active' : ''}`} data-range={r}>{r}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="pub-chart-wrap">
+          <canvas id="price-chart" height="260"></canvas>
+          <div class="pub-chart-empty" id="chart-empty" style="display:none">
+            <svg width="24" height="24" fill="none" stroke="#8B949E" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+            <span>Price history builds as data is collected</span>
+          </div>
         </div>
       </div>
 
-      <div class="db-signal-list" id="db-signal-list">
-        {signals && signals.length > 0 ? signals.map((s: any) => (
-          <div class={`db-signal-row ${s.direction}`} data-domain={s.domain}>
-            <div class={`db-signal-bar ${s.direction}`}></div>
-            <div class="db-signal-meta">
-              <span class="db-signal-domain">{s.domain}</span>
-              <span class="db-signal-type">{s.type.replace('-', ' ')}</span>
-            </div>
-            <div class="db-signal-body">
-              <p class="db-signal-title">{s.title}</p>
-            </div>
-            <div class="db-signal-right">
-              {s.metric_value && <span class="db-signal-metric">{s.metric_value}</span>}
-              <div class="db-signal-strength">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <span class={`db-sbar ${i < s.strength ? 'on' : ''}`}></span>
-                ))}
-              </div>
-              <span class="db-signal-time">{new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-            </div>
-          </div>
-        )) : (
-          <div class="db-empty">
-            <p>No signals yet. <a href="/waitlist">Join waitlist</a> to access the full feed.</p>
-          </div>
-        )}
+      <!-- Signal feed -->
+      <div class="pub-section-header" style="margin-top:32px">
+        <span class="pub-section-label">Signal Intelligence</span>
+        <div class="pub-domain-filters" id="domain-filters">
+          {['All','Crypto','Macro','Trends','Cross-Domain'].map((d, i) => (
+            <button class={`pub-domain-btn ${i === 0 ? 'active' : ''}`} data-domain={d.toLowerCase().replace('-','_')}>{d}</button>
+          ))}
+        </div>
       </div>
 
-      <!-- Coming soon panels -->
-      <div class="db-coming-panels">
-        {[
-          { title: 'Trend Velocity Chart', desc: 'Reddit + Google Trends momentum over 24h/7d/30d', domain: 'Trends' },
-          { title: 'Macro Dashboard', desc: 'Yield curve, DXY, CPI — with FRED live data', domain: 'Macro' },
-          { title: 'Correlation Matrix', desc: 'BTC/ETH vs SPY/DXY/Gold — D3 heatmap', domain: 'Crypto' },
-          { title: 'Alt Data Feed', desc: 'Job postings, web traffic, satellite indices', domain: 'Alt Data' },
-        ].map(p => (
-          <div class="db-coming-panel">
-            <div class="db-coming-domain">{p.domain}</div>
-            <h3 class="db-coming-title">{p.title}</h3>
-            <p class="db-coming-desc">{p.desc}</p>
-            <div class="db-coming-lock">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              Coming soon
+      <div class="pub-signals-list" id="signals-list">
+        {(signals ?? []).length === 0 ? (
+          <div class="pub-empty-state">
+            <svg width="32" height="32" fill="none" stroke="#8B949E" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            <p>Signals are generated automatically as the pipeline collects data.</p>
+          </div>
+        ) : (signals ?? []).map(s => (
+          <div class="pub-signal-card" data-domain={s.domain} data-strength={s.strength}>
+            <div class="pub-signal-bar" style={`background:${dirColor(s.direction)}`}></div>
+            <div class="pub-signal-body">
+              <div class="pub-signal-meta">
+                <span class="pub-signal-domain">{s.domain.replace('_',' ')}</span>
+                {s.cross_domain && <span class="pub-signal-cross">CROSS-DOMAIN</span>}
+                <span class="pub-signal-type">{s.signal_type.replace('_',' ')}</span>
+                <span class="pub-signal-time">{new Date(s.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</span>
+              </div>
+              <h3 class="pub-signal-title">{s.title}</h3>
+              <p class="pub-signal-summary">{s.summary}</p>
+              {s.metric_label && (
+                <div class="pub-signal-metric">
+                  <span class="pub-signal-metric-label">{s.metric_label}</span>
+                  <span class="pub-signal-metric-val" style={`color:${dirColor(s.direction)}`}>{s.metric_value}</span>
+                </div>
+              )}
+            </div>
+            <div class="pub-signal-right">
+              <div class="pub-signal-strength">
+                {[1,2,3,4,5].map(i => (
+                  <div class={`pub-str-dot ${i <= s.strength ? 'on' : ''}`} style={i <= s.strength ? `background:${dirColor(s.direction)}` : ''}></div>
+                ))}
+              </div>
+              <span class="pub-signal-dir" style={`color:${dirColor(s.direction)}`}>{s.direction}</span>
             </div>
           </div>
         ))}
       </div>
+    </div>
 
-    </main>
+    <!-- RIGHT: Macro + news feed + pipeline -->
+    <div class="pub-right">
+
+      <!-- Macro Gauges -->
+      <div class="pub-widget">
+        <div class="pub-widget-header">
+          <span class="pub-section-label">Macro Indicators</span>
+          <a href="/macro" class="pub-widget-link">Full view →</a>
+        </div>
+        <div class="pub-macro-list">
+          {[
+            { id: 'DFF',     label: 'Fed Funds Rate', unit: '%', icon: '🏦' },
+            { id: 'T10Y2Y',  label: '10Y-2Y Spread',  unit: '%', icon: '📈' },
+            { id: 'VIXCLS',  label: 'VIX',            unit: '',  icon: '⚡' },
+            { id: 'CPIAUCSL',label: 'CPI Index',       unit: '',  icon: '💵' },
+          ].map(m => {
+            const d = macroMap[m.id];
+            const val = d ? (m.unit === '%' ? d.value.toFixed(2) + '%' : d.value.toFixed(2)) : '—';
+            const isRisk = m.id === 'T10Y2Y' && d && d.value < 0;
+            return (
+              <div class="pub-macro-row">
+                <div class="pub-macro-icon">{m.icon}</div>
+                <div class="pub-macro-info">
+                  <span class="pub-macro-label">{m.label}</span>
+                  {d && <span class="pub-macro-date">{new Date(d.date).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</span>}
+                </div>
+                <div class={`pub-macro-val ${isRisk ? 'risk' : ''}`}>{val}</div>
+              </div>
+            );
+          })}
+        </div>
+        {Object.keys(macroMap).length === 0 && (
+          <div class="pub-widget-empty">FRED data ingests daily at 8 AM UTC</div>
+        )}
+      </div>
+
+      <!-- News Feed -->
+      <div class="pub-widget">
+        <div class="pub-widget-header">
+          <span class="pub-section-label">Intelligence Feed</span>
+          <span class="pub-widget-count">{recentArticles?.length ?? 0} new</span>
+        </div>
+        <div class="pub-news-list">
+          {(recentArticles ?? []).length === 0 ? (
+            <div class="pub-widget-empty">RSS ingestion runs every 15 minutes</div>
+          ) : (recentArticles ?? []).slice(0, 8).map(a => (
+            <a href={a.article_url} target="_blank" rel="noopener noreferrer" class="pub-news-item">
+              <div class="pub-news-top">
+                <span class="pub-news-source">{a.feed_name}</span>
+                {a.sentiment_label && (
+                  <span class={`pub-news-sentiment ${a.sentiment_label}`}>{a.sentiment_label}</span>
+                )}
+              </div>
+              <p class="pub-news-title">{a.title}</p>
+              {a.published_at && (
+                <span class="pub-news-time">
+                  {new Date(a.published_at).toLocaleDateString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
+                </span>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      <!-- Pipeline Health -->
+      <div class="pub-widget">
+        <div class="pub-widget-header">
+          <span class="pub-section-label">Pipeline Health</span>
+          <span class={`pub-health-badge ${healthPct >= 95 ? 'good' : healthPct >= 85 ? 'warn' : 'bad'}`}>
+            {healthPct >= 95 ? 'Healthy' : healthPct >= 85 ? 'Degraded' : 'Alert'}
+          </span>
+        </div>
+        <div class="pub-pipeline-list">
+          {[
+            { key: 'crypto_prices',  label: 'Crypto Prices',  cadence: 'Every 5m'  },
+            { key: 'rss_aggregator', label: 'RSS Feeds',      cadence: 'Every 15m' },
+            { key: 'macro_fred',     label: 'FRED Macro',     cadence: 'Daily 8AM' },
+            { key: 'daily_snapshot', label: 'Daily Snapshot', cadence: 'Midnight'  },
+          ].map(job => {
+            const runs = (recentRuns ?? []).filter(r => r.job_name === job.key);
+            const lastRun = runs[0];
+            const status = lastRun?.status ?? 'pending';
+            return (
+              <div class="pub-pipeline-row">
+                <div class={`pub-pipeline-dot ${status}`}></div>
+                <div class="pub-pipeline-info">
+                  <span class="pub-pipeline-name">{job.label}</span>
+                  <span class="pub-pipeline-cadence">{job.cadence}</span>
+                </div>
+                <div class="pub-pipeline-right">
+                  {lastRun && <span class="pub-pipeline-latency">{lastRun.latency_ms ? lastRun.latency_ms + 'ms' : '—'}</span>}
+                  <span class={`pub-pipeline-status ${status}`}>{status}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div class="pub-pipeline-footer">
+          <div class="pub-pipeline-bar-wrap">
+            <div class="pub-pipeline-bar" style={`width:${healthPct}%`}></div>
+          </div>
+          <span class="pub-pipeline-bar-label">{healthPct}% success rate (last 20 runs)</span>
+        </div>
+      </div>
+
+      <!-- Dataset Growth -->
+      <div class="pub-widget pub-widget--glow">
+        <div class="pub-widget-header">
+          <span class="pub-section-label">Dataset Growth</span>
+        </div>
+        <div class="pub-dataset-hero">
+          <div class="pub-dataset-num" id="dataset-counter" data-target={totalDataPoints}>
+            {totalDataPoints > 0 ? fmtNum(totalDataPoints) : '—'}
+          </div>
+          <div class="pub-dataset-sub">total data points collected</div>
+        </div>
+        <div class="pub-dataset-breakdown">
+          {[
+            { label: 'Price Ticks',    val: latestSnapshot?.total_price_ticks    ?? 0, color: '#F7931A' },
+            { label: 'Macro Points',   val: latestSnapshot?.total_macro_points   ?? 0, color: '#D29922' },
+            { label: 'Articles',       val: latestSnapshot?.total_rss_articles   ?? 0, color: '#58A6FF' },
+            { label: 'Signals',        val: latestSnapshot?.total_signals_generated ?? (signals?.length ?? 0), color: '#39D353' },
+          ].map(row => {
+            const total = Math.max(1,
+              (latestSnapshot?.total_price_ticks ?? 0) +
+              (latestSnapshot?.total_macro_points ?? 0) +
+              (latestSnapshot?.total_rss_articles ?? 0) +
+              (latestSnapshot?.total_signals_generated ?? 0)
+            );
+            const pct = Math.round((row.val / total) * 100);
+            return (
+              <div class="pub-dataset-row">
+                <span class="pub-dataset-label">
+                  <span class="pub-dataset-dot" style={`background:${row.color}`}></span>
+                  {row.label}
+                </span>
+                <div class="pub-dataset-bar-wrap">
+                  <div class="pub-dataset-bar-fill" style={`width:${pct}%;background:${row.color}`}></div>
+                </div>
+                <span class="pub-dataset-count">{fmtNum(row.val)}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+    </div>
   </div>
+</div>
 </BaseLayout>
 
 <style>
-  :root {
-    --db-bg: #080B0F; --db-surface: #0D1117; --db-elevated: #161B22;
-    --db-border: #21262D; --db-border2: #30363D;
-    --db-text: #F0F6FC; --db-muted: #8B949E; --db-dim: #484F58;
-    --db-green: #39D353; --db-red: #F85149; --db-amber: #D29922;
-    --db-blue: #58A6FF; --db-accent: #1F6FEB;
-  }
+:root {
+  --pub-bg:      #080B0F;
+  --pub-surface: #0D1117;
+  --pub-raised:  #161B22;
+  --pub-border:  #21262D;
+  --pub-text:    #F0F6FC;
+  --pub-muted:   #8B949E;
+  --pub-green:   #39D353;
+  --pub-red:     #F85149;
+  --pub-amber:   #D29922;
+  --pub-blue:    #58A6FF;
+  --pub-accent:  #1F6FEB;
+}
 
-  /* ── Layout ─────────────────────────────────────────────── */
-  .db-root {
-    display: flex; min-height: calc(100vh - 64px);
-    background: var(--db-bg); color: var(--db-text);
-    font-family: 'Inter', sans-serif;
-  }
+/* Root */
+.pub-root { background: var(--pub-bg); min-height: 100vh; padding-top: 64px; }
 
-  /* ── Sidebar ─────────────────────────────────────────────── */
-  .db-sidebar {
-    width: 220px; flex-shrink: 0;
-    background: var(--db-surface); border-right: 1px solid var(--db-border);
-    display: flex; flex-direction: column;
-    position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
-  }
-  .db-sidebar-top {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 16px 16px; border-bottom: 1px solid var(--db-border);
-  }
-  .db-wordmark { font-size: 0.95rem; font-weight: 700; letter-spacing: -0.04em; color: var(--db-text); }
-  .db-collapse-btn {
-    color: var(--db-muted); background: none; border: none; cursor: pointer; padding: 4px;
-    border-radius: 4px; transition: color 0.2s; display: flex; align-items: center;
-  }
-  .db-collapse-btn:hover { color: var(--db-text); }
-  .db-nav { padding: 12px 8px; flex: 1; }
-  .db-nav-section {
-    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--db-dim); padding: 12px 8px 6px; margin-top: 4px;
-  }
-  .db-nav-link {
-    display: flex; align-items: center; gap: 9px;
-    padding: 8px; border-radius: 6px; font-size: 0.82rem; color: var(--db-muted);
-    transition: background 0.15s, color 0.15s; text-decoration: none; margin-bottom: 2px;
-  }
-  .db-nav-link:hover { background: var(--db-elevated); color: var(--db-text); }
-  .db-nav-link--active { background: var(--db-elevated); color: var(--db-text); }
-  .db-nav-badge {
-    margin-left: auto; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.06em;
-    padding: 2px 5px; border-radius: 3px;
-  }
-  .db-nav-badge--live { background: rgba(57,211,83,0.15); color: var(--db-green); }
-  .db-nav-badge--soon { background: rgba(210,153,34,0.15); color: var(--db-amber); }
-  .db-user-row {
-    display: flex; align-items: center; gap: 8px;
-    padding: 8px 12px; margin: 0 4px;
-    background: rgba(255,255,255,0.03); border-radius: 6px;
-    border: 1px solid var(--db-border);
-  }
-  .db-user-email {
-    font-size: 0.75rem; color: var(--db-muted);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;
-  }
-  .db-signout-btn {
-    background: none; border: none; cursor: pointer; font-family: inherit;
-    color: var(--db-muted); transition: color 0.2s;
-    text-align: left; width: 100%; padding: 8px 12px;
-  }
-  .db-signout-btn:hover { color: #F85149; }
-  .db-sidebar-footer { padding: 16px; border-top: 1px solid var(--db-border); }
-  .db-beta-badge {
-    font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
-    background: rgba(31,111,235,0.15); color: var(--db-blue);
-    padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px;
-  }
-  .db-beta-text { font-size: 0.75rem; color: var(--db-muted); line-height: 1.5; }
-  .db-beta-text a { color: var(--db-blue); }
+/* Stat strip */
+.pub-stat-strip {
+  background: var(--pub-surface);
+  border-bottom: 1px solid var(--pub-border);
+  padding: 0 24px;
+}
+.pub-stat-inner {
+  max-width: 1440px; margin: 0 auto;
+  display: flex; align-items: center;
+  gap: 0; overflow-x: auto;
+}
+.pub-stat {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 14px 32px; flex-shrink: 0; gap: 3px;
+}
+.pub-stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem; font-weight: 600; color: var(--pub-text);
+}
+.pub-stat-label { font-size: 0.62rem; color: var(--pub-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+.pub-stat-div { width: 1px; height: 32px; background: var(--pub-border); flex-shrink: 0; }
 
-  /* ── Main ────────────────────────────────────────────────── */
-  .db-main { flex: 1; min-width: 0; padding: 0; overflow: hidden; }
-  .db-topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 28px; border-bottom: 1px solid var(--db-border);
-    background: var(--db-surface);
-  }
-  .db-page-title { font-size: 1rem; font-weight: 600; color: var(--db-text); }
-  .db-page-sub { font-size: 0.75rem; color: var(--db-muted); display: block; margin-top: 2px; }
-  .db-updated { font-size: 0.72rem; color: var(--db-muted); font-family: 'JetBrains Mono', monospace; }
+/* Layout */
+.pub-layout {
+  max-width: 1440px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 380px;
+  gap: 24px; padding: 24px;
+}
+@media (max-width: 1100px) { .pub-layout { grid-template-columns: 1fr; } }
 
-  /* ── Price strip ─────────────────────────────────────────── */
-  .db-price-strip {
-    display: grid; grid-template-columns: repeat(4, 1fr);
-    border-bottom: 1px solid var(--db-border);
-  }
-  .db-price-card {
-    padding: 18px 24px; border-right: 1px solid var(--db-border);
-    transition: background 0.15s;
-  }
-  .db-price-card:last-child { border-right: none; }
-  .db-price-card:hover { background: var(--db-elevated); }
-  .db-price-card--more { text-decoration: none; cursor: pointer; }
-  .db-price-sym { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--db-muted); margin-bottom: 6px; font-family: 'JetBrains Mono', monospace; }
-  .db-price-val { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--db-text); margin-bottom: 4px; }
-  .db-price-change { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 500; }
-  .db-price-change.up   { color: var(--db-green); }
-  .db-price-change.down { color: var(--db-red); }
-  .db-price-change.neutral { color: var(--db-muted); }
+/* Section headers */
+.pub-section-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.pub-section-label {
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--pub-muted);
+}
+.pub-live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--pub-green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+.pub-section-note { font-size: 0.68rem; color: var(--pub-muted); margin-left: auto; font-family: 'JetBrains Mono', monospace; }
 
-  /* ── Signal feed ─────────────────────────────────────────── */
-  .db-section-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 20px 28px 12px; flex-wrap: wrap; gap: 12px;
-  }
-  .db-section-title { font-size: 0.875rem; font-weight: 600; color: var(--db-text); }
-  .db-filter-row { display: flex; gap: 6px; }
-  .db-filter-btn {
-    font-size: 0.72rem; font-weight: 600; padding: 5px 12px; border-radius: 6px;
-    border: 1px solid var(--db-border); background: none; color: var(--db-muted);
-    cursor: pointer; font-family: inherit; transition: all 0.15s;
-  }
-  .db-filter-btn:hover { border-color: var(--db-border2); color: var(--db-text); }
-  .db-filter-btn--active { background: var(--db-elevated); border-color: var(--db-border2); color: var(--db-text); }
+/* Price grid */
+.pub-price-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px; margin-bottom: 24px;
+}
+@media (max-width: 1200px) { .pub-price-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px)  { .pub-price-grid { grid-template-columns: repeat(2, 1fr); } }
 
-  .db-signal-list { padding: 0 28px 24px; display: flex; flex-direction: column; gap: 0; }
-  .db-signal-row {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 0; border-bottom: 1px solid var(--db-border);
-    transition: background 0.1s;
-  }
-  .db-signal-row:hover { background: rgba(255,255,255,0.02); margin: 0 -28px; padding: 14px 28px; }
-  .db-signal-row:last-child { border-bottom: none; }
-  .db-signal-bar { width: 3px; height: 32px; border-radius: 2px; flex-shrink: 0; }
-  .db-signal-bar.bullish { background: var(--db-green); }
-  .db-signal-bar.bearish { background: var(--db-red); }
-  .db-signal-bar.neutral { background: var(--db-amber); }
-  .db-signal-meta { display: flex; flex-direction: column; gap: 3px; width: 80px; flex-shrink: 0; }
-  .db-signal-domain { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--db-muted); }
-  .db-signal-type { font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--db-dim); }
-  .db-signal-body { flex: 1; min-width: 0; }
-  .db-signal-title { font-size: 0.85rem; color: var(--db-text); line-height: 1.4; }
-  .db-signal-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
-  .db-signal-metric { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--db-text); }
-  .db-signal-strength { display: flex; gap: 2px; }
-  .db-sbar { display: block; width: 12px; height: 3px; background: var(--db-border); border-radius: 1px; }
-  .db-sbar.on { background: var(--db-blue); }
-  .db-signal-time { font-size: 0.68rem; color: var(--db-dim); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
-  .db-empty { padding: 40px; text-align: center; color: var(--db-muted); }
-  .db-empty a { color: var(--db-blue); }
+.pub-price-card {
+  background: var(--pub-surface);
+  border: 1px solid var(--pub-border);
+  border-radius: 10px; padding: 16px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative; overflow: hidden;
+}
+.pub-price-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: var(--asset-color, var(--pub-border));
+  opacity: 0.7;
+}
+.pub-price-card:hover { border-color: #30363D; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.pub-price-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.pub-price-sym { font-size: 0.72rem; font-weight: 700; color: var(--pub-muted); letter-spacing: 0.08em; }
+.pub-price-badge {
+  font-size: 0.62rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+}
+.pub-price-badge.up   { color: var(--pub-green); background: rgba(57,211,83,0.1); }
+.pub-price-badge.down { color: var(--pub-red);   background: rgba(248,81,73,0.1); }
+.pub-price-badge.flat { color: var(--pub-muted); background: rgba(139,148,158,0.1); }
+.pub-price-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; font-weight: 600; color: var(--pub-text); margin-bottom: 6px;
+}
+.pub-price-meta { display: flex; gap: 8px; font-size: 0.62rem; color: var(--pub-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 3px; }
+.pub-price-vol { font-size: 0.6rem; color: #484f58; font-family: 'JetBrains Mono', monospace; }
 
-  /* ── Coming soon panels ──────────────────────────────────── */
-  .db-coming-panels {
-    display: grid; grid-template-columns: repeat(2, 1fr);
-    gap: 16px; padding: 0 28px 28px;
-  }
-  .db-coming-panel {
-    background: var(--db-surface); border: 1px solid var(--db-border);
-    border-radius: 10px; padding: 24px; position: relative; overflow: hidden;
-  }
-  .db-coming-panel::before {
-    content: ''; position: absolute; inset: 0;
-    background: repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(255,255,255,0.01) 8px, rgba(255,255,255,0.01) 16px);
-  }
-  .db-coming-domain { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--db-blue); margin-bottom: 8px; }
-  .db-coming-title { font-size: 0.875rem; font-weight: 600; color: var(--db-text); margin-bottom: 8px; }
-  .db-coming-desc { font-size: 0.78rem; color: var(--db-muted); line-height: 1.5; margin-bottom: 16px; }
-  .db-coming-lock {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 0.68rem; color: var(--db-dim); font-weight: 500;
-  }
+/* Chart */
+.pub-chart-section {
+  background: var(--pub-surface); border: 1px solid var(--pub-border);
+  border-radius: 12px; padding: 20px;
+}
+.pub-chart-header { margin-bottom: 16px; }
+.pub-chart-title-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.pub-chart-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pub-asset-toggles { display: flex; gap: 6px; flex-wrap: wrap; }
+.pub-toggle-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.68rem; font-weight: 600; padding: 4px 10px;
+  border-radius: 6px; border: 1px solid var(--pub-border);
+  background: transparent; color: var(--pub-muted); cursor: pointer;
+  transition: all 0.15s;
+}
+.pub-toggle-btn.active { border-color: var(--tc); color: var(--pub-text); background: rgba(255,255,255,0.04); }
+.pub-toggle-dot { width: 6px; height: 6px; border-radius: 50%; }
+.pub-range-btns { display: flex; gap: 2px; background: var(--pub-bg); border-radius: 6px; padding: 2px; }
+.pub-range-btn {
+  font-size: 0.68rem; font-weight: 600; padding: 4px 10px; border-radius: 4px;
+  border: none; background: transparent; color: var(--pub-muted); cursor: pointer; transition: all 0.15s;
+}
+.pub-range-btn.active { background: var(--pub-raised); color: var(--pub-text); }
+.pub-chart-wrap { position: relative; min-height: 260px; }
+.pub-chart-empty {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+  color: var(--pub-muted); font-size: 0.8rem;
+}
 
-  @media (max-width: 900px) {
-    .db-sidebar { display: none; }
-    .db-price-strip { grid-template-columns: repeat(2, 1fr); }
-    .db-coming-panels { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 600px) {
-    .db-price-strip { grid-template-columns: 1fr 1fr; }
-    .db-signal-right { display: none; }
-  }
+/* Signals */
+.pub-domain-filters { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
+.pub-domain-btn {
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 4px 10px;
+  border-radius: 5px; border: 1px solid var(--pub-border);
+  background: transparent; color: var(--pub-muted); cursor: pointer; transition: all 0.15s;
+}
+.pub-domain-btn.active { background: var(--pub-accent); color: #fff; border-color: var(--pub-accent); }
+
+.pub-signals-list { display: flex; flex-direction: column; gap: 10px; }
+.pub-signal-card {
+  display: flex; gap: 0;
+  background: var(--pub-surface); border: 1px solid var(--pub-border);
+  border-radius: 10px; overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.15s;
+}
+.pub-signal-card:hover { border-color: #30363D; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+.pub-signal-bar { width: 3px; flex-shrink: 0; }
+.pub-signal-body { flex: 1; padding: 16px 18px; min-width: 0; }
+.pub-signal-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+.pub-signal-domain {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--pub-blue); background: rgba(88,166,255,0.08); padding: 2px 6px; border-radius: 3px;
+}
+.pub-signal-cross {
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--pub-amber); background: rgba(210,153,34,0.1); padding: 2px 6px; border-radius: 3px;
+}
+.pub-signal-type { font-size: 0.6rem; color: var(--pub-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.pub-signal-time { font-size: 0.6rem; color: #484f58; margin-left: auto; font-family: 'JetBrains Mono', monospace; }
+.pub-signal-title { font-size: 0.9rem; font-weight: 600; color: var(--pub-text); margin-bottom: 6px; line-height: 1.4; }
+.pub-signal-summary { font-size: 0.78rem; color: var(--pub-muted); line-height: 1.6; margin-bottom: 10px; }
+.pub-signal-metric { display: flex; align-items: center; gap: 10px; }
+.pub-signal-metric-label { font-size: 0.65rem; color: var(--pub-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.pub-signal-metric-val { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; }
+.pub-signal-right { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 16px; gap: 8px; flex-shrink: 0; }
+.pub-signal-strength { display: flex; flex-direction: column; gap: 3px; }
+.pub-str-dot { width: 8px; height: 8px; border-radius: 2px; background: var(--pub-border); }
+.pub-str-dot.on {}
+.pub-signal-dir { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.pub-empty-state {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 48px 24px; color: var(--pub-muted); font-size: 0.82rem; text-align: center;
+  border: 1px dashed var(--pub-border); border-radius: 10px;
+}
+
+/* Right column widgets */
+.pub-right { display: flex; flex-direction: column; gap: 16px; }
+.pub-widget {
+  background: var(--pub-surface); border: 1px solid var(--pub-border);
+  border-radius: 12px; padding: 18px; position: relative; overflow: hidden;
+}
+.pub-widget--glow::before {
+  content: ''; position: absolute; width: 200px; height: 200px;
+  top: -60px; right: -60px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(31,111,235,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.pub-widget-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.pub-widget-link { font-size: 0.7rem; color: var(--pub-blue); }
+.pub-widget-link:hover { text-decoration: underline; }
+.pub-widget-count { font-size: 0.65rem; color: var(--pub-green); background: rgba(57,211,83,0.1); padding: 2px 7px; border-radius: 4px; font-weight: 700; }
+.pub-widget-empty { font-size: 0.75rem; color: var(--pub-muted); padding: 16px 0; text-align: center; }
+
+/* Macro */
+.pub-macro-list { display: flex; flex-direction: column; gap: 2px; }
+.pub-macro-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 7px; transition: background 0.15s;
+}
+.pub-macro-row:hover { background: rgba(255,255,255,0.03); }
+.pub-macro-icon { font-size: 0.9rem; flex-shrink: 0; }
+.pub-macro-info { flex: 1; min-width: 0; }
+.pub-macro-label { font-size: 0.75rem; color: var(--pub-text); display: block; }
+.pub-macro-date  { font-size: 0.62rem; color: var(--pub-muted); font-family: 'JetBrains Mono', monospace; }
+.pub-macro-val { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--pub-text); }
+.pub-macro-val.risk { color: var(--pub-red); }
+
+/* News */
+.pub-news-list { display: flex; flex-direction: column; gap: 1px; }
+.pub-news-item {
+  display: block; padding: 10px; border-radius: 7px;
+  transition: background 0.15s; text-decoration: none;
+}
+.pub-news-item:hover { background: rgba(255,255,255,0.03); }
+.pub-news-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.pub-news-source { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pub-muted); }
+.pub-news-sentiment { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 5px; border-radius: 3px; }
+.pub-news-sentiment.positive { color: var(--pub-green); background: rgba(57,211,83,0.1); }
+.pub-news-sentiment.negative { color: var(--pub-red);   background: rgba(248,81,73,0.1); }
+.pub-news-sentiment.neutral  { color: var(--pub-muted); background: rgba(139,148,158,0.1); }
+.pub-news-title { font-size: 0.78rem; color: var(--pub-text); line-height: 1.45; margin-bottom: 4px; font-weight: 500; }
+.pub-news-time  { font-size: 0.6rem; color: #484f58; font-family: 'JetBrains Mono', monospace; }
+
+/* Pipeline */
+.pub-pipeline-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.pub-pipeline-row { display: flex; align-items: center; gap: 10px; }
+.pub-pipeline-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pub-pipeline-dot.success { background: var(--pub-green); box-shadow: 0 0 6px rgba(57,211,83,0.5); }
+.pub-pipeline-dot.failed  { background: var(--pub-red); }
+.pub-pipeline-dot.partial { background: var(--pub-amber); }
+.pub-pipeline-dot.skipped,
+.pub-pipeline-dot.pending { background: var(--pub-border); }
+.pub-pipeline-info { flex: 1; }
+.pub-pipeline-name   { font-size: 0.78rem; color: var(--pub-text); display: block; font-weight: 500; }
+.pub-pipeline-cadence{ font-size: 0.62rem; color: var(--pub-muted); }
+.pub-pipeline-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.pub-pipeline-latency{ font-size: 0.6rem; color: var(--pub-muted); font-family: 'JetBrains Mono', monospace; }
+.pub-pipeline-status { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+.pub-pipeline-status.success { color: var(--pub-green); }
+.pub-pipeline-status.failed  { color: var(--pub-red); }
+.pub-pipeline-status.partial { color: var(--pub-amber); }
+.pub-pipeline-status.pending,
+.pub-pipeline-status.skipped { color: var(--pub-muted); }
+.pub-pipeline-footer { padding-top: 12px; border-top: 1px solid var(--pub-border); }
+.pub-pipeline-bar-wrap { height: 4px; background: var(--pub-border); border-radius: 2px; margin-bottom: 6px; }
+.pub-pipeline-bar { height: 100%; border-radius: 2px; background: var(--pub-green); transition: width 1s ease; }
+.pub-pipeline-bar-label { font-size: 0.62rem; color: var(--pub-muted); }
+
+/* Health badge */
+.pub-health-badge { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 4px; }
+.pub-health-badge.good { color: var(--pub-green); background: rgba(57,211,83,0.1); }
+.pub-health-badge.warn { color: var(--pub-amber); background: rgba(210,153,34,0.1); }
+.pub-health-badge.bad  { color: var(--pub-red);   background: rgba(248,81,73,0.1); }
+
+/* Dataset */
+.pub-dataset-hero { text-align: center; padding: 16px 0 12px; }
+.pub-dataset-num {
+  font-family: 'JetBrains Mono', monospace; font-size: 2.4rem; font-weight: 600;
+  color: var(--pub-text); line-height: 1;
+}
+.pub-dataset-sub { font-size: 0.68rem; color: var(--pub-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
+.pub-dataset-breakdown { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--pub-border); }
+.pub-dataset-row { display: flex; align-items: center; gap: 10px; }
+.pub-dataset-label { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--pub-muted); flex-shrink: 0; width: 90px; }
+.pub-dataset-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.pub-dataset-bar-wrap { flex: 1; height: 4px; background: var(--pub-border); border-radius: 2px; overflow: hidden; }
+.pub-dataset-bar-fill { height: 100%; border-radius: 2px; transition: width 1.2s ease; min-width: 2px; }
+.pub-dataset-count { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--pub-muted); flex-shrink: 0; width: 40px; text-align: right; }
 </style>
 
 <script>
-  import { animate, stagger } from 'animejs';
+import { animate } from 'animejs';
+import Chart from 'chart.js/auto';
 
-  // Entrance
-  animate('.db-price-card', {
-    opacity: [0, 1], translateY: [12, 0], scale: [0.97, 1],
-    duration: 500, ease: 'out(3)', delay: stagger(60, { start: 100 }),
-  });
-  animate('.db-signal-row', {
-    opacity: [0, 1], translateX: [-8, 0],
-    duration: 400, ease: 'out(3)', delay: stagger(40, { start: 300 }),
-  });
+// ── Entrance animations ────────────────────────────────────
+animate('.pub-stat-strip, .pub-price-card, .pub-chart-section, .pub-widget', {
+  opacity: [0, 1], translateY: [16, 0],
+  duration: 500, ease: 'out(3)',
+  delay: (_, i) => i * 40 + 100,
+});
 
-  // Filter buttons
-  document.querySelectorAll<HTMLButtonElement>('.db-filter-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.db-filter-btn').forEach(b => b.classList.remove('db-filter-btn--active'));
-      btn.classList.add('db-filter-btn--active');
-      const filter = btn.dataset.filter ?? 'all';
-      document.querySelectorAll<HTMLElement>('.db-signal-row').forEach(row => {
-        row.style.display = filter === 'all' || row.dataset.domain === filter ? 'flex' : 'none';
-      });
-    });
+// ── Signal filter ──────────────────────────────────────────
+document.getElementById('domain-filters')?.addEventListener('click', e => {
+  const btn = (e.target as HTMLElement).closest('.pub-domain-btn') as HTMLElement | null;
+  if (!btn) return;
+  document.querySelectorAll('.pub-domain-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const domain = btn.dataset.domain;
+  document.querySelectorAll<HTMLElement>('.pub-signal-card').forEach(card => {
+    const match = domain === 'all' || card.dataset.domain === domain ||
+      (domain === 'cross_domain' && card.dataset.domain === 'cross_domain');
+    card.style.display = match ? '' : 'none';
   });
+});
 
-  // Live price refresh every 60s
-  async function refreshPrices() {
+// ── Chart.js price chart ───────────────────────────────────
+const COLORS: Record<string, string> = { BTC: '#F7931A', ETH: '#627EEA', SOL: '#9945FF' };
+let chart: Chart | null = null;
+let activeAssets = new Set(['BTC','ETH','SOL']);
+let activeRange = '24H';
+
+async function buildChart() {
+  const ctx = document.getElementById('price-chart') as HTMLCanvasElement | null;
+  if (!ctx) return;
+
+  // Fetch price history from Binance
+  const rangeToInterval: Record<string, [string,string]> = {
+    '1H':  ['1m',  '60'],
+    '24H': ['15m', '96'],
+    '7D':  ['4h',  '42'],
+  };
+  const [interval, limit] = rangeToInterval[activeRange] ?? ['15m','96'];
+  const symMap: Record<string, string> = { BTC:'BTCUSDT', ETH:'ETHUSDT', SOL:'SOLUSDT' };
+
+  const datasets = [];
+  const labels: string[] = [];
+  let hasData = false;
+
+  for (const asset of activeAssets) {
+    const sym = symMap[asset];
+    if (!sym) continue;
     try {
-      const res = await fetch('/api/crypto/prices');
-      if (!res.ok) return;
-      const { prices, updatedAt } = await res.json();
-      const map: Record<string, { price: number; change24h: number }> = { BTC: prices.BTC, ETH: prices.ETH, SOL: prices.SOL };
-      document.querySelectorAll<HTMLElement>('.db-price-card[class*="up"], .db-price-card[class*="down"], .db-price-card[class*="neutral"]').forEach(card => {
-        const sym = card.querySelector('.db-price-sym')?.textContent?.trim() ?? '';
-        const d = map[sym];
-        if (!d) return;
-        const valEl = card.querySelector('.db-price-val');
-        const chgEl = card.querySelector('.db-price-change');
-        if (valEl) valEl.textContent = d.price >= 1000 ? '$' + d.price.toLocaleString('en-US', { maximumFractionDigits: 0 }) : '$' + d.price.toFixed(2);
-        if (chgEl) {
-          chgEl.textContent = (d.change24h >= 0 ? '+' : '') + d.change24h.toFixed(2) + '%';
-          chgEl.className = `db-price-change ${d.change24h >= 0.5 ? 'up' : d.change24h <= -0.5 ? 'down' : 'neutral'}`;
+      const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${sym}&interval=${interval}&limit=${limit}`);
+      if (!res.ok) continue;
+      const klines: number[][] = await res.json();
+      if (!klines.length) continue;
+      hasData = true;
+
+      // Only build labels once
+      if (labels.length === 0) {
+        for (const k of klines) {
+          labels.push(new Date(k[0]).toLocaleTimeString('en-US', {
+            hour: '2-digit', minute: '2-digit',
+            ...(activeRange === '7D' ? { month: 'short', day: 'numeric' } : {}),
+          }));
         }
+      }
+
+      // Normalize to % change from first candle
+      const base = parseFloat(klines[0][1] as unknown as string);
+      const data = klines.map(k => parseFloat(((parseFloat(k[4] as unknown as string) / base - 1) * 100).toFixed(3)));
+
+      datasets.push({
+        label: asset,
+        data,
+        borderColor: COLORS[asset],
+        backgroundColor: 'transparent',
+        borderWidth: 1.8,
+        pointRadius: 0,
+        tension: 0.3,
       });
-      const upd = document.getElementById('db-updated');
-      if (upd) upd.textContent = `Updated ${new Date(updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    } catch {}
+    } catch { continue; }
   }
-  setInterval(refreshPrices, 60000);
+
+  const empty = document.getElementById('chart-empty');
+  if (!hasData) {
+    ctx.style.display = 'none';
+    if (empty) empty.style.display = 'flex';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  ctx.style.display = '';
+
+  if (chart) chart.destroy();
+
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 400 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#161B22',
+          borderColor: '#21262D',
+          borderWidth: 1,
+          titleColor: '#8B949E',
+          bodyColor: '#F0F6FC',
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y > 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}%`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(33,38,45,0.5)', lineWidth: 1 },
+          ticks: { color: '#484f58', font: { family: 'JetBrains Mono', size: 10 }, maxTicksLimit: 8 },
+          border: { color: '#21262D' },
+        },
+        y: {
+          grid: { color: 'rgba(33,38,45,0.5)', lineWidth: 1 },
+          ticks: {
+            color: '#484f58', font: { family: 'JetBrains Mono', size: 10 },
+            callback: v => `${Number(v) > 0 ? '+' : ''}${Number(v).toFixed(1)}%`,
+          },
+          border: { color: '#21262D' },
+        },
+      },
+    },
+  });
+}
+
+// ── Asset toggles ──────────────────────────────────────────
+document.getElementById('asset-toggles')?.addEventListener('click', e => {
+  const btn = (e.target as HTMLElement).closest('.pub-toggle-btn') as HTMLElement | null;
+  if (!btn) return;
+  const asset = btn.dataset.asset!;
+  if (activeAssets.has(asset)) {
+    if (activeAssets.size === 1) return; // keep at least 1
+    activeAssets.delete(asset);
+    btn.classList.remove('active');
+  } else {
+    activeAssets.add(asset);
+    btn.classList.add('active');
+  }
+  buildChart();
+});
+
+// ── Range buttons ──────────────────────────────────────────
+document.getElementById('range-btns')?.addEventListener('click', e => {
+  const btn = (e.target as HTMLElement).closest('.pub-range-btn') as HTMLElement | null;
+  if (!btn) return;
+  document.querySelectorAll('.pub-range-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeRange = btn.dataset.range!;
+  buildChart();
+});
+
+buildChart();
+
+// ── Price refresh every 60s ────────────────────────────────
+async function refreshPrices() {
+  try {
+    const syms = encodeURIComponent(JSON.stringify(['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','AVAXUSDT']));
+    const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${syms}`);
+    if (!res.ok) return;
+    const rows: { symbol: string; lastPrice: string; priceChangePercent: string; highPrice: string; lowPrice: string; quoteVolume: string }[] = await res.json();
+    for (const r of rows) {
+      const card = document.querySelector<HTMLElement>(`.pub-price-card[data-sym="${r.symbol}"]`);
+      if (!card) continue;
+      const price   = parseFloat(r.lastPrice);
+      const change  = parseFloat(r.priceChangePercent);
+      const dir     = change >= 0.5 ? 'up' : change < -0.5 ? 'down' : 'flat';
+      card.className = `pub-price-card ${dir}`;
+      const valEl   = card.querySelector('.pub-price-val');
+      const badgeEl = card.querySelector('.pub-price-badge');
+      if (valEl) valEl.textContent = price >= 1000
+        ? '$' + price.toLocaleString('en-US', { maximumFractionDigits: 0 })
+        : '$' + price.toFixed(2);
+      if (badgeEl) {
+        badgeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
+        badgeEl.className   = `pub-price-badge ${dir}`;
+      }
+    }
+    const upd = document.getElementById('prices-updated');
+    if (upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+  } catch {}
+}
+setInterval(refreshPrices, 60_000);
 </script>
