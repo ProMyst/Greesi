@@ -153,8 +153,9 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
         <a href="/dashboard" class="nav-link nav-link--cta">Dashboard</a>
       </div>
 
-      <!-- Right: search + theme + hamburger -->
+      <!-- Right: dashboard CTA + theme + hamburger -->
       <div class="nav-right">
+        <a href="/dashboard" class="nav-dashboard-btn">Dashboard</a>
         <button id="theme-toggle" class="nav-icon-btn" aria-label="Toggle theme">
           <svg id="icon-sun" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none">
             <circle cx="12" cy="12" r="5"/>
@@ -179,7 +180,7 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
       <a href="/macro" class="nav-mobile-link">Macro Intelligence <span class="nav-mobile-live">LIVE</span></a>
       <a href="/waitlist?interest=trends" class="nav-mobile-link">Trend Detection <span class="nav-mobile-soon">SOON</span></a>
       <a href="/waitlist?interest=alt-data" class="nav-mobile-link">Alt Data <span class="nav-mobile-soon">SOON</span></a>
-      <a href="/dashboard" class="nav-mobile-link">Live Dashboard</a>
+      <a href="/dashboard" class="nav-mobile-link nav-mobile-link--cta">Live Dashboard →</a>
       <a href="/waitlist" class="nav-mobile-link">Join Waitlist</a>
       <p class="nav-mobile-section">Finance Hub</p>
       <a href="/finance/banking" class="nav-mobile-link">Best Banks</a>
@@ -408,13 +409,16 @@ html[data-theme='dark'] .nav-scrolled .nav-logo-name { color: #F0F6FC; }
 
 .nav-links { display: none; align-items: center; gap: 28px; }
 @media (min-width: 768px) { .nav-links { display: flex; } }
-/* Dashboard CTA link */
-.nav-link--cta {
-  font-size: 0.78rem; font-weight: 600; padding: 6px 14px;
-  background: #1F6FEB; color: white !important; border-radius: 6px;
-  transition: background 0.2s !important;
+/* Dashboard CTA — always visible in nav-right */
+.nav-dashboard-btn {
+  font-size: 0.8rem; font-weight: 600; padding: 7px 16px;
+  background: #1F6FEB; color: #fff; border-radius: 7px;
+  white-space: nowrap; transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 0 0 1px rgba(31,111,235,0.4);
 }
-.nav-link--cta:hover { background: #388bfd !important; opacity: 1 !important; }
+.nav-dashboard-btn:hover { background: #388bfd; transform: translateY(-1px); }
+/* Hide the duplicate in desktop nav-links */
+.nav-link--cta { display: none; }
 /* Dropdown status dots */
 .nav-link-dot {
   display: inline-block; width: 6px; height: 6px; border-radius: 50%;
@@ -526,6 +530,12 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile { background: rgba(8,11,15,0.9
 .nav-transparent .nav-mobile-link { color: rgba(240,246,252,0.85); }
 .nav-scrolled .nav-mobile-link { color: rgba(240,246,252,0.85); border-bottom-color: #21262D; }
 .nav-mobile-link:hover { color: var(--color-accent); }
+.nav-mobile-link--cta {
+  color: #fff !important; background: #1F6FEB;
+  border-radius: 7px; margin: 4px 0; border-bottom: none !important;
+  font-weight: 600;
+}
+.nav-mobile-link--cta:hover { background: #388bfd; color: #fff !important; }
 
 /* ── Footer ──────────────────────────────────────────────────── */
 .footer-root { background: #0d1f35; color: rgba(255, 255, 255, 0.55); padding-top: 64px; }
