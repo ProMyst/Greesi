@@ -1,0 +1,604 @@
+---
+export const prerender = false;
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const title = "Trading Operations — Greesi";
+const description = "Live paper trading dashboard. A/B testing sniper vs selective strategies.";
+const API_URL = "http://157.230.62.53:8080";
+---
+
+<BaseLayout title={title} description={description}>
+<div class="td">
+
+  <!-- Header -->
+  <header class="td-header">
+    <div class="td-header-inner">
+      <div class="td-brand">
+        <h1 class="td-title">Trading Operations</h1>
+        <span class="td-subtitle">Greesi Capital</span>
+      </div>
+      <div class="td-header-right">
+        <div class="td-live-badge" id="live-badge">
+          <span class="td-live-dot"></span>
+          <span>LIVE</span>
+        </div>
+        <span class="td-updated" id="last-updated">Connecting...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="td-main" id="dashboard">
+
+    <!-- Loading state -->
+    <div class="td-loading" id="loading">
+      <div class="td-spinner"></div>
+      <p>Connecting to trading systems...</p>
+    </div>
+
+    <!-- Bot comparison cards -->
+    <div class="td-bots" id="bots-grid" style="display:none">
+    </div>
+
+    <!-- Recent trades table -->
+    <div class="td-section" id="trades-section" style="display:none">
+      <div class="td-section-header">
+        <h2 class="td-section-title">Recent Trades</h2>
+        <div class="td-section-tabs" id="trade-tabs">
+          <button class="td-tab active" data-bot="all">All</button>
+          <button class="td-tab" data-bot="sniper">Sniper</button>
+          <button class="td-tab" data-bot="selective">Selective</button>
+        </div>
+      </div>
+      <div class="td-table-wrap">
+        <table class="td-table" id="trades-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Bot</th>
+              <th>Symbol</th>
+              <th>Price</th>
+              <th>P&L</th>
+              <th>Hold</th>
+              <th>Score</th>
+              <th>Exit</th>
+            </tr>
+          </thead>
+          <tbody id="trades-body"></tbody>
+        </table>
+        <div class="td-empty" id="no-trades">Awaiting first trades...</div>
+      </div>
+    </div>
+
+    <!-- Daily performance -->
+    <div class="td-section" id="daily-section" style="display:none">
+      <h2 class="td-section-title">Daily Performance</h2>
+      <div class="td-daily-grid" id="daily-grid"></div>
+    </div>
+
+  </main>
+
+</div>
+</BaseLayout>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --td-bg:      #FAFAF8;
+  --td-surface: #FFFFFF;
+  --td-border:  #E8E5E0;
+  --td-text:    #1A1A1A;
+  --td-muted:   #8A8A86;
+  --td-green:   #2D8B4E;
+  --td-red:     #C23B3B;
+  --td-accent:  #1B4332;
+  --td-gold:    #B8860B;
+  --td-cream:   #F5F3EF;
+  --serif:      'Playfair Display', Georgia, 'Times New Roman', serif;
+  --sans:       'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:       'JetBrains Mono', 'SF Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.td {
+  background: var(--td-bg);
+  min-height: 100vh;
+  padding-top: 64px;
+}
+
+/* Header */
+.td-header {
+  background: var(--td-surface);
+  border-bottom: 1px solid var(--td-border);
+  padding: 0 32px;
+}
+.td-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+}
+.td-title {
+  font-family: var(--serif);
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--td-text);
+  letter-spacing: -0.02em;
+}
+.td-subtitle {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--td-muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-top: 2px;
+  display: block;
+}
+.td-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.td-live-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--td-green);
+  background: rgba(45,139,78,0.08);
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.1em;
+}
+.td-live-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--td-green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.td-updated {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--td-muted);
+}
+
+/* Main */
+.td-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+/* Loading */
+.td-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  gap: 16px;
+  color: var(--td-muted);
+  font-family: var(--sans);
+  font-size: 0.85rem;
+}
+.td-spinner {
+  width: 32px; height: 32px;
+  border: 2px solid var(--td-border);
+  border-top-color: var(--td-accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Bot cards */
+.td-bots {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+}
+@media (max-width: 800px) { .td-bots { grid-template-columns: 1fr; } }
+
+.td-bot-card {
+  background: var(--td-surface);
+  border: 1px solid var(--td-border);
+  border-radius: 16px;
+  padding: 28px;
+  transition: box-shadow 0.2s;
+}
+.td-bot-card:hover {
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+.td-bot-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.td-bot-name {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--td-text);
+}
+.td-bot-badge {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--td-border);
+  color: var(--td-muted);
+}
+.td-bot-equity {
+  font-family: var(--serif);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--td-text);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.td-bot-pnl {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+.td-bot-pnl.up { color: var(--td-green); }
+.td-bot-pnl.down { color: var(--td-red); }
+.td-bot-pnl.flat { color: var(--td-muted); }
+
+.td-bot-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--td-border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.td-stat {
+  background: var(--td-cream);
+  padding: 14px 12px;
+  text-align: center;
+}
+.td-stat-val {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--td-text);
+  display: block;
+}
+.td-stat-label {
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--td-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+  display: block;
+}
+
+.td-bot-config {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--td-muted);
+  display: flex;
+  gap: 16px;
+}
+
+/* Open positions */
+.td-positions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--td-border);
+}
+.td-pos-title {
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--td-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.td-pos-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--td-text);
+}
+.td-pos-none {
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  color: var(--td-muted);
+  font-style: italic;
+}
+
+/* Section */
+.td-section {
+  background: var(--td-surface);
+  border: 1px solid var(--td-border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+.td-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.td-section-title {
+  font-family: var(--serif);
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--td-text);
+}
+.td-section-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--td-cream);
+  padding: 3px;
+  border-radius: 8px;
+}
+.td-tab {
+  font-family: var(--sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 5px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--td-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.td-tab.active {
+  background: var(--td-surface);
+  color: var(--td-text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Table */
+.td-table-wrap { overflow-x: auto; }
+.td-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+.td-table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-family: var(--sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--td-muted);
+  border-bottom: 1px solid var(--td-border);
+}
+.td-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--td-cream);
+  color: var(--td-text);
+}
+.td-table tr:last-child td { border-bottom: none; }
+.td-pnl-up { color: var(--td-green); font-weight: 600; }
+.td-pnl-down { color: var(--td-red); font-weight: 600; }
+.td-exit-badge {
+  font-size: 0.6rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.td-exit-target { background: rgba(45,139,78,0.08); color: var(--td-green); }
+.td-exit-stop { background: rgba(194,59,59,0.08); color: var(--td-red); }
+.td-empty {
+  text-align: center;
+  padding: 32px;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  color: var(--td-muted);
+  font-style: italic;
+}
+
+/* Daily grid */
+.td-daily-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+.td-daily-card {
+  background: var(--td-cream);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+.td-daily-date {
+  font-family: var(--sans);
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--td-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.td-daily-pnl {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.td-daily-trades {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--td-muted);
+  margin-top: 4px;
+}
+</style>
+
+<script define:vars={{ API_URL }}>
+const API = API_URL;
+let currentFilter = 'all';
+
+async function fetchData() {
+  try {
+    const res = await fetch(`${API}/api/status`);
+    if (!res.ok) throw new Error('API error');
+    const data = await res.json();
+    render(data);
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('bots-grid').style.display = '';
+    document.getElementById('trades-section').style.display = '';
+    document.getElementById('daily-section').style.display = '';
+
+    document.getElementById('last-updated').textContent =
+      new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('live-badge').style.opacity = '1';
+  } catch (e) {
+    document.getElementById('last-updated').textContent = 'Connection failed';
+    document.getElementById('live-badge').style.opacity = '0.3';
+  }
+}
+
+function fmt(n) {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function render(data) {
+  const grid = document.getElementById('bots-grid');
+  grid.innerHTML = '';
+
+  for (const [id, bot] of Object.entries(data.bots)) {
+    const pnlDir = bot.pnl_pct > 0.01 ? 'up' : bot.pnl_pct < -0.01 ? 'down' : 'flat';
+    const pnlSign = bot.pnl_pct >= 0 ? '+' : '';
+    const stats = bot.stats;
+    const openCount = Object.keys(bot.open_positions).length;
+
+    let positionsHtml = '';
+    if (openCount > 0) {
+      const items = Object.entries(bot.open_positions).map(([sym, pos]) =>
+        `<div class="td-pos-item"><span>${sym}</span><span>@ $${pos.entry.toLocaleString()}</span></div>`
+      ).join('');
+      positionsHtml = `
+        <div class="td-positions">
+          <div class="td-pos-title">Open Positions (${openCount})</div>
+          ${items}
+        </div>`;
+    } else {
+      positionsHtml = `
+        <div class="td-positions">
+          <div class="td-pos-title">Open Positions</div>
+          <div class="td-pos-none">No open positions</div>
+        </div>`;
+    }
+
+    grid.innerHTML += `
+      <div class="td-bot-card">
+        <div class="td-bot-top">
+          <span class="td-bot-name">${bot.label}</span>
+          <span class="td-bot-badge">${bot.config.target_trades_day}/day target</span>
+        </div>
+        <div class="td-bot-equity">${fmt(bot.equity)}</div>
+        <div class="td-bot-pnl ${pnlDir}">${pnlSign}${bot.pnl_pct.toFixed(2)}%</div>
+        <div class="td-bot-stats">
+          <div class="td-stat"><span class="td-stat-val">${stats.total}</span><span class="td-stat-label">Trades</span></div>
+          <div class="td-stat"><span class="td-stat-val">${stats.total > 0 ? (stats.wr * 100).toFixed(0) + '%' : '—'}</span><span class="td-stat-label">Win Rate</span></div>
+          <div class="td-stat"><span class="td-stat-val">${stats.total > 0 ? stats.pf.toFixed(1) : '—'}</span><span class="td-stat-label">Profit Factor</span></div>
+          <div class="td-stat"><span class="td-stat-val">${fmt(stats.total_pnl)}</span><span class="td-stat-label">Total P&L</span></div>
+        </div>
+        <div class="td-bot-config">
+          <span>CLS ≥ ${bot.config.cls_thr}</span>
+          <span>REG ≥ ${bot.config.reg_thr}%</span>
+        </div>
+        ${positionsHtml}
+      </div>`;
+  }
+
+  // Trades table
+  const allTrades = [];
+  for (const [id, bot] of Object.entries(data.bots)) {
+    for (const t of bot.recent_trades) {
+      allTrades.push({ ...t, bot_id: id, bot_label: bot.label });
+    }
+  }
+  allTrades.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  const tbody = document.getElementById('trades-body');
+  const noTrades = document.getElementById('no-trades');
+  const filtered = currentFilter === 'all' ? allTrades : allTrades.filter(t => t.bot_id === currentFilter);
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    noTrades.style.display = '';
+  } else {
+    noTrades.style.display = 'none';
+    tbody.innerHTML = filtered.map(t => {
+      const pnl = parseFloat(t.pnl_dollar || 0);
+      const pnlClass = pnl >= 0 ? 'td-pnl-up' : 'td-pnl-down';
+      const exitClass = t.exit_reason === 'target' ? 'td-exit-target' : 'td-exit-stop';
+      const time = new Date(t.timestamp).toLocaleString('en-US', {
+        month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      return `<tr>
+        <td>${time}</td>
+        <td>${t.bot_label}</td>
+        <td>${t.symbol || '—'}</td>
+        <td>${t.price ? '$' + parseFloat(t.price).toLocaleString() : '—'}</td>
+        <td class="${pnlClass}">${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}</td>
+        <td>${t.hold_min ? parseFloat(t.hold_min).toFixed(0) + 'm' : '—'}</td>
+        <td>${t.score ? parseFloat(t.score).toFixed(3) : '—'}</td>
+        <td><span class="td-exit-badge ${exitClass}">${t.exit_reason || '—'}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Daily breakdown (from selective bot which has more trades)
+  const daily = data.bots.selective?.daily || data.bots.sniper?.daily || [];
+  const dailyGrid = document.getElementById('daily-grid');
+  if (daily.length > 0) {
+    dailyGrid.innerHTML = daily.map(d => {
+      const pnlColor = d.pnl >= 0 ? 'var(--td-green)' : 'var(--td-red)';
+      const sign = d.pnl >= 0 ? '+' : '';
+      return `<div class="td-daily-card">
+        <div class="td-daily-date">${new Date(d.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+        <div class="td-daily-pnl" style="color:${pnlColor}">${sign}$${d.pnl.toFixed(2)}</div>
+        <div class="td-daily-trades">${d.trades} trades · ${(d.wr * 100).toFixed(0)}% WR</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+// Tab filtering
+document.getElementById('trade-tabs')?.addEventListener('click', e => {
+  const btn = e.target.closest('.td-tab');
+  if (!btn) return;
+  document.querySelectorAll('.td-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.bot;
+  fetchData();
+});
+
+// Initial fetch + auto-refresh
+fetchData();
+setInterval(fetchData, 30000);
+</script>
