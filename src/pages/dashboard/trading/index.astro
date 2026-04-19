@@ -4,7 +4,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const title = "Trading Operations — Greesi";
 const description = "Live paper trading dashboard. A/B testing sniper vs selective strategies.";
-const API_URL = "http://157.230.62.53:8080";
+// API proxied through /api/trading/status to avoid mixed-content
 ---
 
 <BaseLayout title={title} description={description}>
@@ -455,13 +455,13 @@ const API_URL = "http://157.230.62.53:8080";
 }
 </style>
 
-<script define:vars={{ API_URL }}>
-const API = API_URL;
+<script>
+const API = '';
 let currentFilter = 'all';
 
 async function fetchData() {
   try {
-    const res = await fetch(`${API}/api/status`);
+    const res = await fetch(`/api/trading/status`);
     if (!res.ok) throw new Error('API error');
     const data = await res.json();
     render(data);
