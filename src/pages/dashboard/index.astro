@@ -1,850 +1,325 @@
 ---
 export const prerender = false;
-
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { createSupabaseServerClient } from '../../lib/supabase-server';
 
-const title = "Intelligence Dashboard — Greesi";
-const description = "Live market signals, macro indicators, and trend intelligence. Public access — no account required.";
-
-const supabase = createSupabaseServerClient(Astro.cookies);
-
-// Fetch all data in parallel
-const [
-  { data: signals },
-  { data: latestSnapshot },
-  { data: recentRuns },
-  { data: macroLatest },
-  { data: recentArticles },
-] = await Promise.all([
-  supabase.from('signals').select('*').eq('is_active', true).order('created_at', { ascending: false }).limit(20),
-  supabase.from('dataset_snapshots').select('*').order('snapshot_date', { ascending: false }).limit(1).maybeSingle(),
-  supabase.from('pipeline_runs').select('job_name,status,latency_ms,started_at').order('started_at', { ascending: false }).limit(20),
-  supabase.from('macro_data_points').select('series_id,series_name,value,observation_date').in('series_id', ['DFF','T10Y2Y','VIXCLS','CPIAUCSL']).order('observation_date', { ascending: false }).limit(8),
-  supabase.from('rss_articles').select('title,feed_name,published_at,sentiment_label,related_assets,article_url').order('published_at', { ascending: false }).limit(12),
-]);
-
-// Live crypto prices from Binance
-type PriceData = { price: number; change: number; high: number; low: number; volume: number };
-let prices: Record<string, PriceData> = {};
-try {
-  const syms = encodeURIComponent(JSON.stringify(['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','AVAXUSDT']));
-  const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${syms}`);
-  if (res.ok) {
-    const rows: { symbol: string; lastPrice: string; priceChangePercent: string; highPrice: string; lowPrice: string; quoteVolume: string }[] = await res.json();
-    for (const r of rows) {
-      prices[r.symbol] = {
-        price:  parseFloat(r.lastPrice),
-        change: parseFloat(r.priceChangePercent),
-        high:   parseFloat(r.highPrice),
-        low:    parseFloat(r.lowPrice),
-        volume: parseFloat(r.quoteVolume),
-      };
-    }
-  }
-} catch {}
-
-// Pipeline health (last 24h)
-const successCount = recentRuns?.filter(r => r.status === 'success').length ?? 0;
-const totalRuns = recentRuns?.length ?? 0;
-const healthPct = totalRuns > 0 ? Math.round((successCount / totalRuns) * 100) : 100;
-
-// Total data points
-const totalDataPoints = (latestSnapshot?.total_price_ticks ?? 0)
-  + (latestSnapshot?.total_macro_points ?? 0)
-  + (latestSnapshot?.total_rss_articles ?? 0)
-  + (latestSnapshot?.total_social_mentions ?? 0);
-
-const fmt = (n: number) => n >= 1000
-  ? '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 })
-  : '$' + n.toFixed(2);
-const fmtChange = (n: number) => (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
-const fmtNum = (n: number) => n >= 1_000_000
-  ? (n / 1_000_000).toFixed(1) + 'M'
-  : n >= 1_000 ? (n / 1000).toFixed(1) + 'K' : n.toString();
-
-const dirColor = (d: string) =>
-  d === 'bullish' || d === 'up' ? '#39D353' : d === 'bearish' || d === 'down' ? '#F85149' : '#8B949E';
-
-const macroMap: Record<string, { value: number; name: string; date: string }> = {};
-for (const row of macroLatest ?? []) {
-  if (!macroMap[row.series_id]) {
-    macroMap[row.series_id] = { value: row.value, name: row.series_name, date: row.observation_date };
-  }
-}
-
-const ASSETS = [
-  { sym: 'BTCUSDT', label: 'BTC', name: 'Bitcoin',   color: '#F7931A' },
-  { sym: 'ETHUSDT', label: 'ETH', name: 'Ethereum',  color: '#627EEA' },
-  { sym: 'SOLUSDT', label: 'SOL', name: 'Solana',    color: '#9945FF' },
-  { sym: 'BNBUSDT', label: 'BNB', name: 'BNB',       color: '#F3BA2F' },
-  { sym: 'AVAXUSDT',label: 'AVAX',name: 'Avalanche', color: '#E84142' },
-];
+const title = "Dashboard — Greesi";
+const description = "Live dual-screen trading dashboard.";
 ---
 
 <BaseLayout title={title} description={description}>
-<div class="pub-root">
+<div class="dash">
+  <div class="dash-split">
 
-  <!-- ── Stat strip ────────────────────────────────────────── -->
-  <div class="pub-stat-strip">
-    <div class="pub-stat-inner">
-      <div class="pub-stat">
-        <span class="pub-stat-val" id="stat-points" data-target={totalDataPoints}>{fmtNum(totalDataPoints)}</span>
-        <span class="pub-stat-label">Data Points Collected</span>
+    <!-- LEFT — Bots -->
+    <div class="dash-pane">
+      <div class="dash-pane-bar">
+        <span class="dash-pane-title">BOTS</span>
+        <div class="dash-live"><span class="dash-live-dot"></span>LIVE</div>
       </div>
-      <div class="pub-stat-div"></div>
-      <div class="pub-stat">
-        <span class="pub-stat-val">{latestSnapshot?.active_assets_tracked ?? 11}</span>
-        <span class="pub-stat-label">Assets Tracked</span>
-      </div>
-      <div class="pub-stat-div"></div>
-      <div class="pub-stat">
-        <span class="pub-stat-val">{signals?.length ?? 0}+</span>
-        <span class="pub-stat-label">Active Signals</span>
-      </div>
-      <div class="pub-stat-div"></div>
-      <div class="pub-stat">
-        <span class="pub-stat-val" style={`color:${healthPct >= 95 ? '#39D353' : healthPct >= 85 ? '#D29922' : '#F85149'}`}>
-          {healthPct}%
-        </span>
-        <span class="pub-stat-label">Pipeline Uptime</span>
-      </div>
-      <div class="pub-stat-div"></div>
-      <div class="pub-stat">
-        <span class="pub-stat-val">{latestSnapshot?.active_rss_feeds ?? 10}</span>
-        <span class="pub-stat-label">Live Feed Sources</span>
-      </div>
+      <div class="dash-scroll" id="left"></div>
     </div>
-  </div>
 
-  <!-- ── Main layout ───────────────────────────────────────── -->
-  <div class="pub-layout">
-
-    <!-- LEFT: Price grid + charts + signals -->
-    <div class="pub-left">
-
-      <!-- Price Cards -->
-      <div class="pub-section-header">
-        <span class="pub-section-label">Live Markets</span>
-        <span class="pub-live-dot"></span>
-        <span class="pub-section-note" id="prices-updated">Updated just now</span>
+    <!-- RIGHT — Data Feed (placeholder for now) -->
+    <div class="dash-pane">
+      <div class="dash-pane-bar">
+        <span class="dash-pane-title">DATA FEED</span>
+        <span class="dash-pane-meta" id="feed-status">CONNECTING</span>
       </div>
-      <div class="pub-price-grid">
-        {ASSETS.map(a => {
-          const p = prices[a.sym];
-          const change = p?.change ?? 0;
-          const dir = change >= 0.5 ? 'up' : change < -0.5 ? 'down' : 'flat';
-          return (
-            <div class={`pub-price-card ${dir}`} data-sym={a.sym} style={`--asset-color:${a.color}`}>
-              <div class="pub-price-top">
-                <div class="pub-price-sym">{a.label}</div>
-                <div class={`pub-price-badge ${dir}`}>{p ? fmtChange(change) : '—'}</div>
-              </div>
-              <div class="pub-price-val">{p ? fmt(p.price) : '—'}</div>
-              <div class="pub-price-meta">
-                <span>H: {p ? fmt(p.high) : '—'}</span>
-                <span>L: {p ? fmt(p.low) : '—'}</span>
-              </div>
-              <div class="pub-price-vol">Vol {p ? '$' + (p.volume / 1e9).toFixed(1) + 'B' : '—'}</div>
-            </div>
-          );
-        })}
-      </div>
-
-      <!-- Chart section -->
-      <div class="pub-chart-section">
-        <div class="pub-chart-header">
-          <div class="pub-chart-title-row">
-            <span class="pub-section-label">Price Performance</span>
-            <div class="pub-chart-controls">
-              <div class="pub-asset-toggles" id="asset-toggles">
-                {ASSETS.slice(0,3).map((a, i) => (
-                  <button class={`pub-toggle-btn ${i < 3 ? 'active' : ''}`} data-asset={a.label} style={`--tc:${a.color}`}>
-                    <span class="pub-toggle-dot" style={`background:${a.color}`}></span>{a.label}
-                  </button>
-                ))}
-              </div>
-              <div class="pub-range-btns" id="range-btns">
-                {['1H','24H','7D'].map((r, i) => (
-                  <button class={`pub-range-btn ${i === 1 ? 'active' : ''}`} data-range={r}>{r}</button>
-                ))}
-              </div>
-            </div>
-          </div>
+      <div class="dash-scroll" id="right">
+        <div class="dash-feed-placeholder">
+          <div class="dash-feed-line"></div>
+          <div class="dash-feed-line short"></div>
+          <div class="dash-feed-line"></div>
+          <div class="dash-feed-line short"></div>
+          <div class="dash-feed-line"></div>
+          <p class="dash-feed-note">Live data feed coming soon</p>
+          <p class="dash-feed-sub">This panel will stream real-time signals,<br/>trade events, and pipeline activity.</p>
         </div>
-        <div class="pub-chart-wrap">
-          <canvas id="price-chart" height="260"></canvas>
-          <div class="pub-chart-empty" id="chart-empty" style="display:none">
-            <svg width="24" height="24" fill="none" stroke="#8B949E" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
-            <span>Price history builds as data is collected</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Signal feed -->
-      <div class="pub-section-header" style="margin-top:32px">
-        <span class="pub-section-label">Signal Intelligence</span>
-        <div class="pub-domain-filters" id="domain-filters">
-          {['All','Crypto','Macro','Trends','Cross-Domain'].map((d, i) => (
-            <button class={`pub-domain-btn ${i === 0 ? 'active' : ''}`} data-domain={d.toLowerCase().replace('-','_')}>{d}</button>
-          ))}
-        </div>
-      </div>
-
-      <div class="pub-signals-list" id="signals-list">
-        {(signals ?? []).length === 0 ? (
-          <div class="pub-empty-state">
-            <svg width="32" height="32" fill="none" stroke="#8B949E" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-            <p>Signals are generated automatically as the pipeline collects data.</p>
-          </div>
-        ) : (signals ?? []).map(s => (
-          <div class="pub-signal-card" data-domain={s.domain} data-strength={s.strength}>
-            <div class="pub-signal-bar" style={`background:${dirColor(s.direction)}`}></div>
-            <div class="pub-signal-body">
-              <div class="pub-signal-meta">
-                <span class="pub-signal-domain">{s.domain.replace('_',' ')}</span>
-                {s.cross_domain && <span class="pub-signal-cross">CROSS-DOMAIN</span>}
-                <span class="pub-signal-type">{s.signal_type.replace('_',' ')}</span>
-                <span class="pub-signal-time">{new Date(s.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</span>
-              </div>
-              <h3 class="pub-signal-title">{s.title}</h3>
-              <p class="pub-signal-summary">{s.summary}</p>
-              {s.metric_label && (
-                <div class="pub-signal-metric">
-                  <span class="pub-signal-metric-label">{s.metric_label}</span>
-                  <span class="pub-signal-metric-val" style={`color:${dirColor(s.direction)}`}>{s.metric_value}</span>
-                </div>
-              )}
-            </div>
-            <div class="pub-signal-right">
-              <div class="pub-signal-strength">
-                {[1,2,3,4,5].map(i => (
-                  <div class={`pub-str-dot ${i <= s.strength ? 'on' : ''}`} style={i <= s.strength ? `background:${dirColor(s.direction)}` : ''}></div>
-                ))}
-              </div>
-              <span class="pub-signal-dir" style={`color:${dirColor(s.direction)}`}>{s.direction}</span>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
 
-    <!-- RIGHT: Macro + news feed + pipeline -->
-    <div class="pub-right">
-
-      <!-- Macro Gauges -->
-      <div class="pub-widget">
-        <div class="pub-widget-header">
-          <span class="pub-section-label">Macro Indicators</span>
-          <a href="/macro" class="pub-widget-link">Full view →</a>
-        </div>
-        <div class="pub-macro-list">
-          {[
-            { id: 'DFF',     label: 'Fed Funds Rate', unit: '%', icon: '🏦' },
-            { id: 'T10Y2Y',  label: '10Y-2Y Spread',  unit: '%', icon: '📈' },
-            { id: 'VIXCLS',  label: 'VIX',            unit: '',  icon: '⚡' },
-            { id: 'CPIAUCSL',label: 'CPI Index',       unit: '',  icon: '💵' },
-          ].map(m => {
-            const d = macroMap[m.id];
-            const val = d ? (m.unit === '%' ? d.value.toFixed(2) + '%' : d.value.toFixed(2)) : '—';
-            const isRisk = m.id === 'T10Y2Y' && d && d.value < 0;
-            return (
-              <div class="pub-macro-row">
-                <div class="pub-macro-icon">{m.icon}</div>
-                <div class="pub-macro-info">
-                  <span class="pub-macro-label">{m.label}</span>
-                  {d && <span class="pub-macro-date">{new Date(d.date).toLocaleDateString('en-US', { month:'short', day:'numeric' })}</span>}
-                </div>
-                <div class={`pub-macro-val ${isRisk ? 'risk' : ''}`}>{val}</div>
-              </div>
-            );
-          })}
-        </div>
-        {Object.keys(macroMap).length === 0 && (
-          <div class="pub-widget-empty">FRED data ingests daily at 8 AM UTC</div>
-        )}
-      </div>
-
-      <!-- News Feed -->
-      <div class="pub-widget">
-        <div class="pub-widget-header">
-          <span class="pub-section-label">Intelligence Feed</span>
-          <span class="pub-widget-count">{recentArticles?.length ?? 0} new</span>
-        </div>
-        <div class="pub-news-list">
-          {(recentArticles ?? []).length === 0 ? (
-            <div class="pub-widget-empty">RSS ingestion runs every 15 minutes</div>
-          ) : (recentArticles ?? []).slice(0, 8).map(a => (
-            <a href={a.article_url} target="_blank" rel="noopener noreferrer" class="pub-news-item">
-              <div class="pub-news-top">
-                <span class="pub-news-source">{a.feed_name}</span>
-                {a.sentiment_label && (
-                  <span class={`pub-news-sentiment ${a.sentiment_label}`}>{a.sentiment_label}</span>
-                )}
-              </div>
-              <p class="pub-news-title">{a.title}</p>
-              {a.published_at && (
-                <span class="pub-news-time">
-                  {new Date(a.published_at).toLocaleDateString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}
-                </span>
-              )}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <!-- Pipeline Health -->
-      <div class="pub-widget">
-        <div class="pub-widget-header">
-          <span class="pub-section-label">Pipeline Health</span>
-          <span class={`pub-health-badge ${healthPct >= 95 ? 'good' : healthPct >= 85 ? 'warn' : 'bad'}`}>
-            {healthPct >= 95 ? 'Healthy' : healthPct >= 85 ? 'Degraded' : 'Alert'}
-          </span>
-        </div>
-        <div class="pub-pipeline-list">
-          {[
-            { key: 'crypto_prices',  label: 'Crypto Prices',  cadence: 'Every 5m'  },
-            { key: 'rss_aggregator', label: 'RSS Feeds',      cadence: 'Every 15m' },
-            { key: 'macro_fred',     label: 'FRED Macro',     cadence: 'Daily 8AM' },
-            { key: 'daily_snapshot', label: 'Daily Snapshot', cadence: 'Midnight'  },
-          ].map(job => {
-            const runs = (recentRuns ?? []).filter(r => r.job_name === job.key);
-            const lastRun = runs[0];
-            const status = lastRun?.status ?? 'pending';
-            return (
-              <div class="pub-pipeline-row">
-                <div class={`pub-pipeline-dot ${status}`}></div>
-                <div class="pub-pipeline-info">
-                  <span class="pub-pipeline-name">{job.label}</span>
-                  <span class="pub-pipeline-cadence">{job.cadence}</span>
-                </div>
-                <div class="pub-pipeline-right">
-                  {lastRun && <span class="pub-pipeline-latency">{lastRun.latency_ms ? lastRun.latency_ms + 'ms' : '—'}</span>}
-                  <span class={`pub-pipeline-status ${status}`}>{status}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <div class="pub-pipeline-footer">
-          <div class="pub-pipeline-bar-wrap">
-            <div class="pub-pipeline-bar" style={`width:${healthPct}%`}></div>
-          </div>
-          <span class="pub-pipeline-bar-label">{healthPct}% success rate (last 20 runs)</span>
-        </div>
-      </div>
-
-      <!-- Dataset Growth -->
-      <div class="pub-widget pub-widget--glow">
-        <div class="pub-widget-header">
-          <span class="pub-section-label">Dataset Growth</span>
-        </div>
-        <div class="pub-dataset-hero">
-          <div class="pub-dataset-num" id="dataset-counter" data-target={totalDataPoints}>
-            {totalDataPoints > 0 ? fmtNum(totalDataPoints) : '—'}
-          </div>
-          <div class="pub-dataset-sub">total data points collected</div>
-        </div>
-        <div class="pub-dataset-breakdown">
-          {[
-            { label: 'Price Ticks',    val: latestSnapshot?.total_price_ticks    ?? 0, color: '#F7931A' },
-            { label: 'Macro Points',   val: latestSnapshot?.total_macro_points   ?? 0, color: '#D29922' },
-            { label: 'Articles',       val: latestSnapshot?.total_rss_articles   ?? 0, color: '#58A6FF' },
-            { label: 'Signals',        val: latestSnapshot?.total_signals_generated ?? (signals?.length ?? 0), color: '#39D353' },
-          ].map(row => {
-            const total = Math.max(1,
-              (latestSnapshot?.total_price_ticks ?? 0) +
-              (latestSnapshot?.total_macro_points ?? 0) +
-              (latestSnapshot?.total_rss_articles ?? 0) +
-              (latestSnapshot?.total_signals_generated ?? 0)
-            );
-            const pct = Math.round((row.val / total) * 100);
-            return (
-              <div class="pub-dataset-row">
-                <span class="pub-dataset-label">
-                  <span class="pub-dataset-dot" style={`background:${row.color}`}></span>
-                  {row.label}
-                </span>
-                <div class="pub-dataset-bar-wrap">
-                  <div class="pub-dataset-bar-fill" style={`width:${pct}%;background:${row.color}`}></div>
-                </div>
-                <span class="pub-dataset-count">{fmtNum(row.val)}</span>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-    </div>
   </div>
 </div>
 </BaseLayout>
 
 <style>
-:root {
-  --pub-bg:      #080B0F;
-  --pub-surface: #0D1117;
-  --pub-raised:  #161B22;
-  --pub-border:  #21262D;
-  --pub-text:    #F0F6FC;
-  --pub-muted:   #8B949E;
-  --pub-green:   #39D353;
-  --pub-red:     #F85149;
-  --pub-amber:   #D29922;
-  --pub-blue:    #58A6FF;
-  --pub-accent:  #1F6FEB;
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+.dash {
+  background: #050505;
+  min-height: 100vh;
+  padding-top: 64px;
 }
 
-/* Root */
-.pub-root { background: var(--pub-bg); min-height: 100vh; padding-top: 64px; }
-
-/* Stat strip */
-.pub-stat-strip {
-  background: var(--pub-surface);
-  border-bottom: 1px solid var(--pub-border);
-  padding: 0 24px;
-}
-.pub-stat-inner {
-  max-width: 1440px; margin: 0 auto;
-  display: flex; align-items: center;
-  gap: 0; overflow-x: auto;
-}
-.pub-stat {
-  display: flex; flex-direction: column; align-items: center;
-  padding: 14px 32px; flex-shrink: 0; gap: 3px;
-}
-.pub-stat-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.1rem; font-weight: 600; color: var(--pub-text);
-}
-.pub-stat-label { font-size: 0.62rem; color: var(--pub-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
-.pub-stat-div { width: 1px; height: 32px; background: var(--pub-border); flex-shrink: 0; }
-
-/* Layout */
-.pub-layout {
-  max-width: 1440px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 380px;
-  gap: 24px; padding: 24px;
-}
-@media (max-width: 1100px) { .pub-layout { grid-template-columns: 1fr; } }
-
-/* Section headers */
-.pub-section-header {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;
-}
-.pub-section-label {
-  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--pub-muted);
-}
-.pub-live-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: var(--pub-green);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
-.pub-section-note { font-size: 0.68rem; color: var(--pub-muted); margin-left: auto; font-family: 'JetBrains Mono', monospace; }
-
-/* Price grid */
-.pub-price-grid {
+.dash-split {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px; margin-bottom: 24px;
+  grid-template-columns: 1fr 1fr;
+  height: calc(100vh - 64px);
 }
-@media (max-width: 1200px) { .pub-price-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 600px)  { .pub-price-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) {
+  .dash-split { grid-template-columns: 1fr; height: auto; }
+}
 
-.pub-price-card {
-  background: var(--pub-surface);
-  border: 1px solid var(--pub-border);
-  border-radius: 10px; padding: 16px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  position: relative; overflow: hidden;
+.dash-pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
-.pub-price-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: var(--asset-color, var(--pub-border));
-  opacity: 0.7;
+.dash-pane:first-child { border-right: 1px solid #151515; }
+
+.dash-pane-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  border-bottom: 1px solid #151515;
+  flex-shrink: 0;
 }
-.pub-price-card:hover { border-color: #30363D; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
-.pub-price-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.pub-price-sym { font-size: 0.72rem; font-weight: 700; color: var(--pub-muted); letter-spacing: 0.08em; }
-.pub-price-badge {
-  font-size: 0.62rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+.dash-pane-title {
   font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: #444;
 }
-.pub-price-badge.up   { color: var(--pub-green); background: rgba(57,211,83,0.1); }
-.pub-price-badge.down { color: var(--pub-red);   background: rgba(248,81,73,0.1); }
-.pub-price-badge.flat { color: var(--pub-muted); background: rgba(139,148,158,0.1); }
-.pub-price-val {
+.dash-pane-meta {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1rem; font-weight: 600; color: var(--pub-text); margin-bottom: 6px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #333;
 }
-.pub-price-meta { display: flex; gap: 8px; font-size: 0.62rem; color: var(--pub-muted); font-family: 'JetBrains Mono', monospace; margin-bottom: 3px; }
-.pub-price-vol { font-size: 0.6rem; color: #484f58; font-family: 'JetBrains Mono', monospace; }
-
-/* Chart */
-.pub-chart-section {
-  background: var(--pub-surface); border: 1px solid var(--pub-border);
-  border-radius: 12px; padding: 20px;
+.dash-live {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem; font-weight: 700;
+  letter-spacing: 0.2em; color: #22c55e;
 }
-.pub-chart-header { margin-bottom: 16px; }
-.pub-chart-title-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.pub-chart-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.pub-asset-toggles { display: flex; gap: 6px; flex-wrap: wrap; }
-.pub-toggle-btn {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 0.68rem; font-weight: 600; padding: 4px 10px;
-  border-radius: 6px; border: 1px solid var(--pub-border);
-  background: transparent; color: var(--pub-muted); cursor: pointer;
-  transition: all 0.15s;
+.dash-live-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: #22c55e;
+  animation: glow 2s ease-in-out infinite;
 }
-.pub-toggle-btn.active { border-color: var(--tc); color: var(--pub-text); background: rgba(255,255,255,0.04); }
-.pub-toggle-dot { width: 6px; height: 6px; border-radius: 50%; }
-.pub-range-btns { display: flex; gap: 2px; background: var(--pub-bg); border-radius: 6px; padding: 2px; }
-.pub-range-btn {
-  font-size: 0.68rem; font-weight: 600; padding: 4px 10px; border-radius: 4px;
-  border: none; background: transparent; color: var(--pub-muted); cursor: pointer; transition: all 0.15s;
-}
-.pub-range-btn.active { background: var(--pub-raised); color: var(--pub-text); }
-.pub-chart-wrap { position: relative; min-height: 260px; }
-.pub-chart-empty {
-  position: absolute; inset: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 10px;
-  color: var(--pub-muted); font-size: 0.8rem;
+@keyframes glow {
+  0%,100% { box-shadow: 0 0 3px #22c55e; }
+  50% { box-shadow: 0 0 10px #22c55e; opacity: 0.6; }
 }
 
-/* Signals */
-.pub-domain-filters { display: flex; gap: 4px; margin-left: auto; flex-wrap: wrap; }
-.pub-domain-btn {
-  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em;
-  text-transform: uppercase; padding: 4px 10px;
-  border-radius: 5px; border: 1px solid var(--pub-border);
-  background: transparent; color: var(--pub-muted); cursor: pointer; transition: all 0.15s;
+.dash-scroll {
+  flex: 1; overflow-y: auto;
+  padding: 24px 28px;
+  scrollbar-width: none;
 }
-.pub-domain-btn.active { background: var(--pub-accent); color: #fff; border-color: var(--pub-accent); }
+.dash-scroll::-webkit-scrollbar { display: none; }
 
-.pub-signals-list { display: flex; flex-direction: column; gap: 10px; }
-.pub-signal-card {
-  display: flex; gap: 0;
-  background: var(--pub-surface); border: 1px solid var(--pub-border);
-  border-radius: 10px; overflow: hidden;
-  transition: border-color 0.2s, box-shadow 0.15s;
+/* ── Bot Box ──────────────────────────────────────── */
+.dash-bot {
+  border: 1px solid #181818;
+  border-radius: 10px;
+  padding: 28px 28px 24px;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
 }
-.pub-signal-card:hover { border-color: #30363D; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
-.pub-signal-bar { width: 3px; flex-shrink: 0; }
-.pub-signal-body { flex: 1; padding: 16px 18px; min-width: 0; }
-.pub-signal-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
-.pub-signal-domain {
-  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--pub-blue); background: rgba(88,166,255,0.08); padding: 2px 6px; border-radius: 3px;
+.dash-bot:hover { border-color: #252525; }
+
+.dash-bot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
-.pub-signal-cross {
-  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--pub-amber); background: rgba(210,153,34,0.1); padding: 2px 6px; border-radius: 3px;
+.dash-bot-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
 }
-.pub-signal-type { font-size: 0.6rem; color: var(--pub-muted); text-transform: uppercase; letter-spacing: 0.08em; }
-.pub-signal-time { font-size: 0.6rem; color: #484f58; margin-left: auto; font-family: 'JetBrains Mono', monospace; }
-.pub-signal-title { font-size: 0.9rem; font-weight: 600; color: var(--pub-text); margin-bottom: 6px; line-height: 1.4; }
-.pub-signal-summary { font-size: 0.78rem; color: var(--pub-muted); line-height: 1.6; margin-bottom: 10px; }
-.pub-signal-metric { display: flex; align-items: center; gap: 10px; }
-.pub-signal-metric-label { font-size: 0.65rem; color: var(--pub-muted); text-transform: uppercase; letter-spacing: 0.08em; }
-.pub-signal-metric-val { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; }
-.pub-signal-right { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px 16px; gap: 8px; flex-shrink: 0; }
-.pub-signal-strength { display: flex; flex-direction: column; gap: 3px; }
-.pub-str-dot { width: 8px; height: 8px; border-radius: 2px; background: var(--pub-border); }
-.pub-str-dot.on {}
-.pub-signal-dir { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
-.pub-empty-state {
-  display: flex; flex-direction: column; align-items: center; gap: 12px;
-  padding: 48px 24px; color: var(--pub-muted); font-size: 0.82rem; text-align: center;
-  border: 1px dashed var(--pub-border); border-radius: 10px;
+.dash-bot-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #3b82f6;
+  background: rgba(59,130,246,0.06);
+  padding: 3px 8px;
+  border-radius: 4px;
 }
 
-/* Right column widgets */
-.pub-right { display: flex; flex-direction: column; gap: 16px; }
-.pub-widget {
-  background: var(--pub-surface); border: 1px solid var(--pub-border);
-  border-radius: 12px; padding: 18px; position: relative; overflow: hidden;
+/* BIG equity number */
+.dash-bot-equity {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 3.2rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 6px;
 }
-.pub-widget--glow::before {
-  content: ''; position: absolute; width: 200px; height: 200px;
-  top: -60px; right: -60px; border-radius: 50%;
-  background: radial-gradient(circle, rgba(31,111,235,0.1) 0%, transparent 70%);
-  pointer-events: none;
+
+/* P&L — large */
+.dash-bot-pnl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 28px;
 }
-.pub-widget-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.pub-widget-link { font-size: 0.7rem; color: var(--pub-blue); }
-.pub-widget-link:hover { text-decoration: underline; }
-.pub-widget-count { font-size: 0.65rem; color: var(--pub-green); background: rgba(57,211,83,0.1); padding: 2px 7px; border-radius: 4px; font-weight: 700; }
-.pub-widget-empty { font-size: 0.75rem; color: var(--pub-muted); padding: 16px 0; text-align: center; }
+.g { color: #22c55e; }
+.r { color: #ef4444; }
+.n { color: #555; }
 
-/* Macro */
-.pub-macro-list { display: flex; flex-direction: column; gap: 2px; }
-.pub-macro-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; border-radius: 7px; transition: background 0.15s;
+/* Win Rate — BIG */
+.dash-bot-wr {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  margin-bottom: 4px;
 }
-.pub-macro-row:hover { background: rgba(255,255,255,0.03); }
-.pub-macro-icon { font-size: 0.9rem; flex-shrink: 0; }
-.pub-macro-info { flex: 1; min-width: 0; }
-.pub-macro-label { font-size: 0.75rem; color: var(--pub-text); display: block; }
-.pub-macro-date  { font-size: 0.62rem; color: var(--pub-muted); font-family: 'JetBrains Mono', monospace; }
-.pub-macro-val { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: var(--pub-text); }
-.pub-macro-val.risk { color: var(--pub-red); }
-
-/* News */
-.pub-news-list { display: flex; flex-direction: column; gap: 1px; }
-.pub-news-item {
-  display: block; padding: 10px; border-radius: 7px;
-  transition: background 0.15s; text-decoration: none;
+.dash-bot-wr-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: #444;
+  text-transform: uppercase;
+  margin-bottom: 20px;
 }
-.pub-news-item:hover { background: rgba(255,255,255,0.03); }
-.pub-news-top { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-.pub-news-source { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--pub-muted); }
-.pub-news-sentiment { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 5px; border-radius: 3px; }
-.pub-news-sentiment.positive { color: var(--pub-green); background: rgba(57,211,83,0.1); }
-.pub-news-sentiment.negative { color: var(--pub-red);   background: rgba(248,81,73,0.1); }
-.pub-news-sentiment.neutral  { color: var(--pub-muted); background: rgba(139,148,158,0.1); }
-.pub-news-title { font-size: 0.78rem; color: var(--pub-text); line-height: 1.45; margin-bottom: 4px; font-weight: 500; }
-.pub-news-time  { font-size: 0.6rem; color: #484f58; font-family: 'JetBrains Mono', monospace; }
 
-/* Pipeline */
-.pub-pipeline-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-.pub-pipeline-row { display: flex; align-items: center; gap: 10px; }
-.pub-pipeline-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.pub-pipeline-dot.success { background: var(--pub-green); box-shadow: 0 0 6px rgba(57,211,83,0.5); }
-.pub-pipeline-dot.failed  { background: var(--pub-red); }
-.pub-pipeline-dot.partial { background: var(--pub-amber); }
-.pub-pipeline-dot.skipped,
-.pub-pipeline-dot.pending { background: var(--pub-border); }
-.pub-pipeline-info { flex: 1; }
-.pub-pipeline-name   { font-size: 0.78rem; color: var(--pub-text); display: block; font-weight: 500; }
-.pub-pipeline-cadence{ font-size: 0.62rem; color: var(--pub-muted); }
-.pub-pipeline-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
-.pub-pipeline-latency{ font-size: 0.6rem; color: var(--pub-muted); font-family: 'JetBrains Mono', monospace; }
-.pub-pipeline-status { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
-.pub-pipeline-status.success { color: var(--pub-green); }
-.pub-pipeline-status.failed  { color: var(--pub-red); }
-.pub-pipeline-status.partial { color: var(--pub-amber); }
-.pub-pipeline-status.pending,
-.pub-pipeline-status.skipped { color: var(--pub-muted); }
-.pub-pipeline-footer { padding-top: 12px; border-top: 1px solid var(--pub-border); }
-.pub-pipeline-bar-wrap { height: 4px; background: var(--pub-border); border-radius: 2px; margin-bottom: 6px; }
-.pub-pipeline-bar { height: 100%; border-radius: 2px; background: var(--pub-green); transition: width 1s ease; }
-.pub-pipeline-bar-label { font-size: 0.62rem; color: var(--pub-muted); }
-
-/* Health badge */
-.pub-health-badge { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 4px; }
-.pub-health-badge.good { color: var(--pub-green); background: rgba(57,211,83,0.1); }
-.pub-health-badge.warn { color: var(--pub-amber); background: rgba(210,153,34,0.1); }
-.pub-health-badge.bad  { color: var(--pub-red);   background: rgba(248,81,73,0.1); }
-
-/* Dataset */
-.pub-dataset-hero { text-align: center; padding: 16px 0 12px; }
-.pub-dataset-num {
-  font-family: 'JetBrains Mono', monospace; font-size: 2.4rem; font-weight: 600;
-  color: var(--pub-text); line-height: 1;
+/* Trades + W/L — smaller */
+.dash-bot-meta {
+  display: flex;
+  gap: 20px;
 }
-.pub-dataset-sub { font-size: 0.68rem; color: var(--pub-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px; }
-.pub-dataset-breakdown { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--pub-border); }
-.pub-dataset-row { display: flex; align-items: center; gap: 10px; }
-.pub-dataset-label { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: var(--pub-muted); flex-shrink: 0; width: 90px; }
-.pub-dataset-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.pub-dataset-bar-wrap { flex: 1; height: 4px; background: var(--pub-border); border-radius: 2px; overflow: hidden; }
-.pub-dataset-bar-fill { height: 100%; border-radius: 2px; transition: width 1.2s ease; min-width: 2px; }
-.pub-dataset-count { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--pub-muted); flex-shrink: 0; width: 40px; text-align: right; }
+.dash-bot-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.dash-bot-meta-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #999;
+}
+.dash-bot-meta-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.45rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #333;
+  text-transform: uppercase;
+}
+
+/* Position indicator */
+.dash-bot-pos {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #151515;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.dash-pos-dot { width: 5px; height: 5px; border-radius: 50%; }
+.dash-pos-dot.on { background: #22c55e; }
+.dash-pos-dot.off { background: #222; }
+
+/* ── Feed placeholder ─────────────────────────────── */
+.dash-feed-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  padding: 40px 0;
+}
+.dash-feed-line {
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #1a1a1a 30%, #1a1a1a 70%, transparent);
+  animation: feed-pulse 3s ease-in-out infinite;
+}
+.dash-feed-line.short { width: 50%; animation-delay: 0.5s; }
+@keyframes feed-pulse {
+  0%,100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+.dash-feed-note {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #333;
+  margin-top: 20px;
+}
+.dash-feed-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: #222;
+  text-align: center;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+}
 </style>
 
 <script>
-import { animate } from 'animejs';
-import Chart from 'chart.js/auto';
-
-// ── Entrance animations ────────────────────────────────────
-animate('.pub-stat-strip, .pub-price-card, .pub-chart-section, .pub-widget', {
-  opacity: [0, 1], translateY: [16, 0],
-  duration: 500, ease: 'out(3)',
-  delay: (_, i) => i * 40 + 100,
-});
-
-// ── Signal filter ──────────────────────────────────────────
-document.getElementById('domain-filters')?.addEventListener('click', e => {
-  const btn = (e.target as HTMLElement).closest('.pub-domain-btn') as HTMLElement | null;
-  if (!btn) return;
-  document.querySelectorAll('.pub-domain-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const domain = btn.dataset.domain;
-  document.querySelectorAll<HTMLElement>('.pub-signal-card').forEach(card => {
-    const match = domain === 'all' || card.dataset.domain === domain ||
-      (domain === 'cross_domain' && card.dataset.domain === 'cross_domain');
-    card.style.display = match ? '' : 'none';
-  });
-});
-
-// ── Chart.js price chart ───────────────────────────────────
-const COLORS: Record<string, string> = { BTC: '#F7931A', ETH: '#627EEA', SOL: '#9945FF' };
-let chart: Chart | null = null;
-let activeAssets = new Set(['BTC','ETH','SOL']);
-let activeRange = '24H';
-
-async function buildChart() {
-  const ctx = document.getElementById('price-chart') as HTMLCanvasElement | null;
-  if (!ctx) return;
-
-  // Fetch price history from Binance
-  const rangeToInterval: Record<string, [string,string]> = {
-    '1H':  ['1m',  '60'],
-    '24H': ['15m', '96'],
-    '7D':  ['4h',  '42'],
-  };
-  const [interval, limit] = rangeToInterval[activeRange] ?? ['15m','96'];
-  const symMap: Record<string, string> = { BTC:'BTCUSDT', ETH:'ETHUSDT', SOL:'SOLUSDT' };
-
-  const datasets = [];
-  const labels: string[] = [];
-  let hasData = false;
-
-  for (const asset of activeAssets) {
-    const sym = symMap[asset];
-    if (!sym) continue;
-    try {
-      const res = await fetch(`https://api.binance.com/api/v3/klines?symbol=${sym}&interval=${interval}&limit=${limit}`);
-      if (!res.ok) continue;
-      const klines: number[][] = await res.json();
-      if (!klines.length) continue;
-      hasData = true;
-
-      // Only build labels once
-      if (labels.length === 0) {
-        for (const k of klines) {
-          labels.push(new Date(k[0]).toLocaleTimeString('en-US', {
-            hour: '2-digit', minute: '2-digit',
-            ...(activeRange === '7D' ? { month: 'short', day: 'numeric' } : {}),
-          }));
-        }
-      }
-
-      // Normalize to % change from first candle
-      const base = parseFloat(klines[0][1] as unknown as string);
-      const data = klines.map(k => parseFloat(((parseFloat(k[4] as unknown as string) / base - 1) * 100).toFixed(3)));
-
-      datasets.push({
-        label: asset,
-        data,
-        borderColor: COLORS[asset],
-        backgroundColor: 'transparent',
-        borderWidth: 1.8,
-        pointRadius: 0,
-        tension: 0.3,
-      });
-    } catch { continue; }
-  }
-
-  const empty = document.getElementById('chart-empty');
-  if (!hasData) {
-    ctx.style.display = 'none';
-    if (empty) empty.style.display = 'flex';
-    return;
-  }
-  if (empty) empty.style.display = 'none';
-  ctx.style.display = '';
-
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 400 },
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#161B22',
-          borderColor: '#21262D',
-          borderWidth: 1,
-          titleColor: '#8B949E',
-          bodyColor: '#F0F6FC',
-          callbacks: {
-            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y > 0 ? '+' : ''}${ctx.parsed.y.toFixed(2)}%`,
-          },
-        },
-      },
-      scales: {
-        x: {
-          grid: { color: 'rgba(33,38,45,0.5)', lineWidth: 1 },
-          ticks: { color: '#484f58', font: { family: 'JetBrains Mono', size: 10 }, maxTicksLimit: 8 },
-          border: { color: '#21262D' },
-        },
-        y: {
-          grid: { color: 'rgba(33,38,45,0.5)', lineWidth: 1 },
-          ticks: {
-            color: '#484f58', font: { family: 'JetBrains Mono', size: 10 },
-            callback: v => `${Number(v) > 0 ? '+' : ''}${Number(v).toFixed(1)}%`,
-          },
-          border: { color: '#21262D' },
-        },
-      },
-    },
-  });
+function fmt(n: number): string {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-// ── Asset toggles ──────────────────────────────────────────
-document.getElementById('asset-toggles')?.addEventListener('click', e => {
-  const btn = (e.target as HTMLElement).closest('.pub-toggle-btn') as HTMLElement | null;
-  if (!btn) return;
-  const asset = btn.dataset.asset!;
-  if (activeAssets.has(asset)) {
-    if (activeAssets.size === 1) return; // keep at least 1
-    activeAssets.delete(asset);
-    btn.classList.remove('active');
-  } else {
-    activeAssets.add(asset);
-    btn.classList.add('active');
-  }
-  buildChart();
-});
-
-// ── Range buttons ──────────────────────────────────────────
-document.getElementById('range-btns')?.addEventListener('click', e => {
-  const btn = (e.target as HTMLElement).closest('.pub-range-btn') as HTMLElement | null;
-  if (!btn) return;
-  document.querySelectorAll('.pub-range-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  activeRange = btn.dataset.range!;
-  buildChart();
-});
-
-buildChart();
-
-// ── Price refresh every 60s ────────────────────────────────
-async function refreshPrices() {
+async function load() {
   try {
-    const syms = encodeURIComponent(JSON.stringify(['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT','AVAXUSDT']));
-    const res = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbols=${syms}`);
+    const res = await fetch('/api/trading/status');
     if (!res.ok) return;
-    const rows: { symbol: string; lastPrice: string; priceChangePercent: string; highPrice: string; lowPrice: string; quoteVolume: string }[] = await res.json();
-    for (const r of rows) {
-      const card = document.querySelector<HTMLElement>(`.pub-price-card[data-sym="${r.symbol}"]`);
-      if (!card) continue;
-      const price   = parseFloat(r.lastPrice);
-      const change  = parseFloat(r.priceChangePercent);
-      const dir     = change >= 0.5 ? 'up' : change < -0.5 ? 'down' : 'flat';
-      card.className = `pub-price-card ${dir}`;
-      const valEl   = card.querySelector('.pub-price-val');
-      const badgeEl = card.querySelector('.pub-price-badge');
-      if (valEl) valEl.textContent = price >= 1000
-        ? '$' + price.toLocaleString('en-US', { maximumFractionDigits: 0 })
-        : '$' + price.toFixed(2);
-      if (badgeEl) {
-        badgeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(2) + '%';
-        badgeEl.className   = `pub-price-badge ${dir}`;
-      }
-    }
-    const upd = document.getElementById('prices-updated');
-    if (upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' });
+    render(await res.json());
+    const meta = document.getElementById('feed-status');
+    if (meta) { meta.textContent = 'STANDBY'; meta.style.color = '#333'; }
   } catch {}
 }
-setInterval(refreshPrices, 60_000);
+
+function render(data: any) {
+  const left = document.getElementById('left');
+  if (!left || !data.bots) return;
+
+  left.innerHTML = Object.entries(data.bots).map(([id, bot]: [string, any]) => {
+    const pnlCls = bot.pnl > 0.01 ? 'g' : bot.pnl < -0.01 ? 'r' : 'n';
+    const sign = bot.pnl >= 0 ? '+' : '';
+    const pos = bot.has_position;
+    const wrCls = bot.wr >= 55 ? 'g' : bot.wr < 50 ? 'r' : '';
+    const eqCls = bot.pnl > 0.01 ? 'g' : bot.pnl < -0.01 ? 'r' : '';
+
+    return `
+      <div class="dash-bot">
+        <div class="dash-bot-header">
+          <span class="dash-bot-name">${bot.label}</span>
+          <span class="dash-bot-tag">${bot.asset}</span>
+        </div>
+        <div class="dash-bot-equity ${eqCls}">${fmt(bot.equity)}</div>
+        <div class="dash-bot-pnl ${pnlCls}">${sign}${fmt(Math.abs(bot.pnl))} · ${sign}${bot.pnl_pct}%</div>
+        <div class="dash-bot-wr ${wrCls}">${bot.wr}%</div>
+        <div class="dash-bot-wr-label">WIN RATE</div>
+        <div class="dash-bot-meta">
+          <div class="dash-bot-meta-item">
+            <span class="dash-bot-meta-val">${bot.total_trades}</span>
+            <span class="dash-bot-meta-lbl">TRADES</span>
+          </div>
+          <div class="dash-bot-meta-item">
+            <span class="dash-bot-meta-val">${bot.wins}W / ${bot.losses}L</span>
+            <span class="dash-bot-meta-lbl">RECORD</span>
+          </div>
+        </div>
+        <div class="dash-bot-pos">
+          <span class="dash-pos-dot ${pos ? 'on' : 'off'}"></span>
+          <span style="color:${pos ? '#22c55e' : '#222'}">${pos ? 'IN POSITION' : 'WAITING'}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+load();
+setInterval(load, 10000);
 </script>
