@@ -3,484 +3,447 @@ export const prerender = false;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const title = "Pipeline — Greesi";
-const description = "Live trading operations dashboard.";
+const description = "Live trading bots, data pipeline monitoring, and performance metrics.";
 ---
 
 <BaseLayout title={title} description={description}>
-<div class="d">
-
-  <!-- Dual Screen Layout -->
-  <div class="d-split">
-
-    <!-- LEFT PANEL — Trading -->
-    <div class="d-panel d-left">
-      <div class="d-panel-head">
-        <span class="d-panel-label">TRADING</span>
-        <div class="d-live"><span class="d-live-dot"></span>LIVE</div>
+<section class="pipe-hero has-hero">
+  <div class="pipe-hero-bg"></div>
+  <div class="pipe-hero-inner">
+    <span class="pipe-eyebrow reveal-item">LIVE OPERATIONS</span>
+    <h1 class="pipe-h1 reveal-item">Pipeline</h1>
+    <p class="pipe-sub reveal-item">Real-time trading bots · 29 data pipelines · 8.9M+ rows and growing</p>
+    <div class="pipe-hero-stats reveal-item">
+      <div class="pipe-hero-stat">
+        <span class="pipe-hero-num" id="hero-wd-rows">--</span>
+        <span class="pipe-hero-label">Watchdog Rows</span>
       </div>
+      <div class="pipe-hero-div"></div>
+      <div class="pipe-hero-stat">
+        <span class="pipe-hero-num" id="hero-alt-rows">--</span>
+        <span class="pipe-hero-label">AltData Rows</span>
+      </div>
+      <div class="pipe-hero-div"></div>
+      <div class="pipe-hero-stat">
+        <span class="pipe-hero-num" id="hero-services">--</span>
+        <span class="pipe-hero-label">Services Live</span>
+      </div>
+      <div class="pipe-hero-div"></div>
+      <div class="pipe-hero-stat">
+        <span class="pipe-hero-num pipe-green" id="hero-total-pnl">--</span>
+        <span class="pipe-hero-label">Total P&L</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-      <div class="d-panel-scroll" id="left-panel">
-        <!-- Total P&L -->
-        <div class="d-hero-row" id="pnl-hero">
-          <div class="d-hero-block">
-            <span class="d-hero-label">TOTAL P&L</span>
-            <span class="d-hero-val" id="total-pnl">--</span>
-          </div>
-        </div>
+<div class="pipe-body">
+  <div class="pipe-container">
 
-        <!-- Bot cards -->
-        <div id="bots-area"></div>
+    <!-- Bot Cards -->
+    <div class="pipe-section-head reveal-item">
+      <h2 class="pipe-section-title">Trading Bots</h2>
+      <div class="pipe-live-badge"><span class="pipe-live-dot"></span>LIVE</div>
+    </div>
 
-        <!-- Recent trades -->
-        <div class="d-sub-label" style="margin-top:32px">RECENT TRADES</div>
-        <div class="d-trades" id="trades-area">
-          <div class="d-empty">Connecting...</div>
-        </div>
+    <div class="pipe-bots reveal-item" id="bots-grid"></div>
+
+    <!-- Data Pipeline -->
+    <div class="pipe-section-head reveal-item" style="margin-top:48px">
+      <h2 class="pipe-section-title">Data Pipeline</h2>
+      <span class="pipe-row-total" id="pipe-total">--</span>
+    </div>
+
+    <div class="pipe-db-cards reveal-item">
+      <div class="pipe-db-card" id="db-watchdog">
+        <div class="pipe-db-icon">🔍</div>
+        <div class="pipe-db-name">Watchdog DB</div>
+        <div class="pipe-db-rows" id="db-wd-rows">--</div>
+        <div class="pipe-db-sub">Live crypto signals, macro, on-chain</div>
+      </div>
+      <div class="pipe-db-card" id="db-altdata">
+        <div class="pipe-db-icon">📊</div>
+        <div class="pipe-db-name">AltData DB</div>
+        <div class="pipe-db-rows" id="db-alt-rows">--</div>
+        <div class="pipe-db-sub">FRED, equities, CFTC, congressional</div>
       </div>
     </div>
 
-    <!-- RIGHT PANEL — Pipeline -->
-    <div class="d-panel d-right">
-      <div class="d-panel-head">
-        <span class="d-panel-label">PIPELINE</span>
-        <span class="d-panel-count" id="total-rows">--</span>
-      </div>
+    <!-- Services -->
+    <div class="pipe-section-head reveal-item" style="margin-top:48px">
+      <h2 class="pipe-section-title">Services</h2>
+    </div>
+    <div class="pipe-services reveal-item" id="services-grid"></div>
 
-      <div class="d-panel-scroll" id="right-panel">
-        <!-- DB totals -->
-        <div class="d-db-row">
-          <div class="d-db">
-            <span class="d-db-label">WATCHDOG</span>
-            <span class="d-db-val" id="wd-rows">--</span>
-          </div>
-          <div class="d-db">
-            <span class="d-db-label">ALTDATA</span>
-            <span class="d-db-val" id="alt-rows">--</span>
-          </div>
-        </div>
-
-        <!-- Services -->
-        <div class="d-sub-label" style="margin-top:32px">SERVICES</div>
-        <div class="d-services" id="services"></div>
-      </div>
+    <!-- Recent Trades -->
+    <div class="pipe-section-head reveal-item" style="margin-top:48px">
+      <h2 class="pipe-section-title">Recent Trades</h2>
+    </div>
+    <div class="pipe-trades-card reveal-item">
+      <table class="pipe-table">
+        <thead><tr><th>Time</th><th>Bot</th><th>Symbol</th><th>P&L</th><th>Hold</th><th>Exit</th></tr></thead>
+        <tbody id="trades-body"><tr><td colspan="6" class="pipe-empty">Connecting...</td></tr></tbody>
+      </table>
     </div>
 
   </div>
-
 </div>
 </BaseLayout>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
-
-.d {
-  background: #050505;
-  min-height: 100vh;
-  padding-top: 64px;
+/* ── Hero ──────────────────────────────────────────────────── */
+.pipe-hero {
+  position: relative; overflow: hidden;
+  padding: 140px 24px 80px; text-align: center;
+  background: linear-gradient(180deg, #080B0F 0%, #0D1117 100%);
 }
-
-/* ── Split layout ─────────────────────────────────────── */
-.d-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: calc(100vh - 64px);
+.pipe-hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(31,111,235,0.08), transparent);
+  pointer-events: none;
 }
-@media (max-width: 900px) {
-  .d-split { grid-template-columns: 1fr; height: auto; }
+.pipe-hero-inner { position: relative; max-width: 900px; margin: 0 auto; }
+.pipe-eyebrow {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: #58A6FF; margin-bottom: 16px;
 }
-
-.d-panel {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+.pipe-h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(3rem, 8vw, 5rem); font-weight: 400;
+  color: #F0F6FC; margin-bottom: 16px; line-height: 1.1;
 }
-.d-left { border-right: 1px solid #1a1a1a; }
-
-.d-panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 32px;
-  border-bottom: 1px solid #1a1a1a;
-  flex-shrink: 0;
+.pipe-sub {
+  font-size: 1.1rem; color: #8B949E; max-width: 520px;
+  margin: 0 auto 40px; line-height: 1.6;
 }
-.d-panel-label {
+.pipe-hero-stats {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; flex-wrap: wrap;
+  background: rgba(13,17,23,0.6); border: 1px solid #21262D;
+  border-radius: 16px; padding: 20px 0;
+  backdrop-filter: blur(12px);
+}
+.pipe-hero-stat {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 0 32px; gap: 4px;
+}
+.pipe-hero-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: #555;
+  font-size: 1.6rem; font-weight: 600; color: #F0F6FC;
 }
-.d-panel-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #3b82f6;
-  letter-spacing: 0.05em;
+.pipe-hero-label {
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E;
 }
+.pipe-hero-div { width: 1px; height: 36px; background: #21262D; }
+.pipe-green { color: #39D353 !important; }
+.pipe-red { color: #F85149 !important; }
 
-.d-live {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  color: #22c55e;
+/* ── Body ─────────────────────────────────────────────────── */
+.pipe-body {
+  background: #080B0F; padding: 0 24px 80px;
 }
-.d-live-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #22c55e;
-  animation: glow 2s ease-in-out infinite;
-}
-@keyframes glow {
-  0%, 100% { box-shadow: 0 0 4px #22c55e; opacity: 1; }
-  50% { box-shadow: 0 0 12px #22c55e; opacity: 0.7; }
-}
+.pipe-container { max-width: 1200px; margin: 0 auto; }
 
-.d-panel-scroll {
-  flex: 1;
-  overflow-y: auto;
-  padding: 32px;
-  scrollbar-width: none;
-}
-.d-panel-scroll::-webkit-scrollbar { display: none; }
-
-/* ── Hero P&L ─────────────────────────────────────────── */
-.d-hero-row {
-  margin-bottom: 40px;
-}
-.d-hero-block {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.d-hero-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: #555;
-}
-.d-hero-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 4rem;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  transition: color 0.3s;
-}
-.d-hero-val.up { color: #22c55e; }
-.d-hero-val.down { color: #ef4444; }
-
-/* ── Bot cards ────────────────────────────────────────── */
-.d-bot {
-  border: 1px solid #1a1a1a;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 12px;
-  transition: border-color 0.2s;
-}
-.d-bot:hover { border-color: #2a2a2a; }
-
-.d-bot-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-.d-bot-name {
-  font-family: 'Inter', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #fff;
-}
-.d-bot-tag {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  color: #3b82f6;
-  background: rgba(59,130,246,0.08);
-  padding: 3px 8px;
-  border-radius: 4px;
-}
-
-.d-bot-equity {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.d-bot-pnl {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.85rem;
-  font-weight: 600;
+.pipe-section-head {
+  display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 20px;
 }
-.up { color: #22c55e; }
-.down { color: #ef4444; }
+.pipe-section-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.8rem; color: #F0F6FC;
+}
+.pipe-live-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.15em;
+  color: #39D353; background: rgba(57,211,83,0.08);
+  padding: 6px 14px; border-radius: 20px;
+}
+.pipe-live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #39D353;
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot { 0%,100%{box-shadow:0 0 0 0 rgba(57,211,83,0.4)} 50%{box-shadow:0 0 0 6px rgba(57,211,83,0)} }
 
-.d-bot-stats {
-  display: flex;
-  gap: 24px;
-}
-.d-bot-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.d-bot-stat-val {
+.pipe-row-total {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #fff;
-}
-.d-bot-stat-lbl {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.5rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  color: #555;
-  text-transform: uppercase;
+  font-size: 1.1rem; font-weight: 600; color: #58A6FF;
 }
 
-.d-bot-pos {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid #1a1a1a;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
+/* ── Bot Cards ────────────────────────────────────────────── */
+.pipe-bots {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
 }
-.d-pos-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-}
-.d-pos-dot.on { background: #22c55e; }
-.d-pos-dot.off { background: #333; }
+@media (max-width: 900px) { .pipe-bots { grid-template-columns: 1fr; } }
 
-/* ── Sub labels ───────────────────────────────────────── */
-.d-sub-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: #555;
-  margin-bottom: 16px;
+.pipe-bot {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; padding: 28px;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
-
-/* ── Trades ────────────────────────────────────────────── */
-.d-trades { display: flex; flex-direction: column; gap: 2px; }
-.d-trade {
-  display: grid;
-  grid-template-columns: 1fr 0.7fr 0.7fr 0.5fr;
-  gap: 8px;
-  padding: 10px 0;
-  border-bottom: 1px solid #0e0e0e;
+.pipe-bot:hover { border-color: #30363D; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.pipe-bot-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.pipe-bot-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E;
+}
+.pipe-bot-asset {
+  font-size: 0.6rem; font-weight: 600; color: #58A6FF;
+  background: rgba(88,166,255,0.08); padding: 3px 8px; border-radius: 6px;
+}
+.pipe-bot-equity {
   font-family: 'JetBrains Mono', monospace;
+  font-size: 2.6rem; font-weight: 700; color: #F0F6FC;
+  letter-spacing: -0.02em; line-height: 1; margin-bottom: 6px;
+}
+.pipe-bot-pnl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; font-weight: 600; margin-bottom: 24px;
+}
+.pipe-bot-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: #21262D; border-radius: 12px; overflow: hidden;
+}
+.pipe-bot-stat {
+  background: #161B22; padding: 14px 8px; text-align: center;
+}
+.pipe-bot-stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem; font-weight: 600; color: #F0F6FC; display: block;
+}
+.pipe-bot-stat-lbl {
+  font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E; margin-top: 4px; display: block;
+}
+.pipe-bot-footer {
+  margin-top: 16px; padding-top: 14px; border-top: 1px solid #21262D;
+  display: flex; align-items: center; gap: 6px;
   font-size: 0.7rem;
-  color: #888;
-  align-items: center;
 }
-.d-trade-pnl { font-weight: 700; }
-.d-trade-exit {
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 3px;
-  text-align: center;
-}
-.d-exit-target { background: rgba(34,197,94,0.08); color: #22c55e; }
-.d-exit-stop { background: rgba(239,68,68,0.08); color: #ef4444; }
-.d-exit-flip { background: rgba(59,130,246,0.08); color: #3b82f6; }
-.d-exit-trail { background: rgba(245,158,11,0.08); color: #f59e0b; }
-.d-exit-timeout { background: rgba(85,85,85,0.08); color: #555; }
-.d-empty {
-  color: #333;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  padding: 40px 0;
-  text-align: center;
-}
+.pipe-status-dot { width: 6px; height: 6px; border-radius: 50%; }
+.pipe-status-dot.active { background: #39D353; }
+.pipe-status-dot.idle { background: #8B949E; }
 
-/* ── DB row ────────────────────────────────────────────── */
-.d-db-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 12px;
+/* ── DB Cards ─────────────────────────────────────────────── */
+.pipe-db-cards {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  margin-bottom: 20px;
 }
-.d-db {
-  border: 1px solid #1a1a1a;
-  border-radius: 12px;
-  padding: 28px 24px;
-  text-align: center;
+@media (max-width: 700px) { .pipe-db-cards { grid-template-columns: 1fr; } }
+.pipe-db-card {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; padding: 28px; text-align: center;
+  transition: border-color 0.2s;
 }
-.d-db-label {
+.pipe-db-card:hover { border-color: #30363D; }
+.pipe-db-icon { font-size: 2rem; margin-bottom: 8px; }
+.pipe-db-name {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E; margin-bottom: 8px;
+}
+.pipe-db-rows {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: #555;
-  display: block;
-  margin-bottom: 12px;
+  font-size: 2.4rem; font-weight: 700; color: #F0F6FC;
 }
-.d-db-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 2.4rem;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.02em;
-}
+.pipe-db-sub { font-size: 0.75rem; color: #8B949E; margin-top: 8px; }
 
-/* ── Services ─────────────────────────────────────────── */
-.d-services {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+/* ── Services ─────────────────────────────────────────────── */
+.pipe-services {
+  display: flex; flex-wrap: wrap; gap: 6px;
 }
-.d-svc {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 6px 10px;
-  border: 1px solid #1a1a1a;
-  border-radius: 6px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.55rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: #555;
-  text-transform: uppercase;
+.pipe-svc {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; background: #0D1117; border: 1px solid #21262D;
+  border-radius: 8px; font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.06em; color: #8B949E; text-transform: uppercase;
 }
-.d-svc-dot { width: 4px; height: 4px; border-radius: 50%; }
-.d-svc-dot.up { background: #22c55e; }
-.d-svc-dot.down { background: #ef4444; }
-.d-svc-dot.warn { background: #f59e0b; }
+.pipe-svc-dot { width: 5px; height: 5px; border-radius: 50%; }
+.pipe-svc-dot.up { background: #39D353; }
+.pipe-svc-dot.down { background: #F85149; }
+.pipe-svc-dot.warn { background: #D29922; }
+
+/* ── Trades Table ─────────────────────────────────────────── */
+.pipe-trades-card {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; overflow: hidden;
+}
+.pipe-table {
+  width: 100%; border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+}
+.pipe-table th {
+  text-align: left; padding: 12px 16px;
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E;
+  border-bottom: 1px solid #21262D; background: #161B22;
+}
+.pipe-table td {
+  padding: 10px 16px; color: #C9D1D9;
+  border-bottom: 1px solid rgba(33,38,45,0.5);
+}
+.pipe-table tr:nth-child(even) td { background: rgba(13,17,23,0.5); }
+.pipe-empty {
+  text-align: center; padding: 32px !important; color: #8B949E;
+  font-style: italic;
+}
+.pnl-up { color: #39D353; font-weight: 600; }
+.pnl-down { color: #F85149; font-weight: 600; }
+.exit-badge {
+  font-size: 0.58rem; padding: 2px 6px; border-radius: 4px;
+  font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.exit-target { background: rgba(57,211,83,0.1); color: #39D353; }
+.exit-stop { background: rgba(248,81,73,0.1); color: #F85149; }
+.exit-flip { background: rgba(88,166,255,0.1); color: #58A6FF; }
+.exit-trail { background: rgba(210,153,34,0.1); color: #D29922; }
+.exit-timeout { background: rgba(139,148,158,0.1); color: #8B949E; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .pipe-hero { padding: 120px 16px 60px; }
+  .pipe-h1 { font-size: 2.5rem; }
+  .pipe-hero-stats { flex-direction: column; gap: 16px; padding: 20px; }
+  .pipe-hero-div { width: 60%; height: 1px; }
+  .pipe-hero-stat { padding: 0; }
+  .pipe-bot-equity { font-size: 2rem; }
+}
 </style>
 
 <script>
-function fmt(n: number): string {
-  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 function fmtRows(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(0) + 'K';
   return n.toLocaleString();
+}
+
+function fmtMoney(n: number): string {
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 async function load() {
   try {
     const res = await fetch('/api/trading/status');
     if (!res.ok) return;
-    render(await res.json());
+    const data = await res.json();
+    render(data);
   } catch {}
 }
 
 function render(data: any) {
-  const wd = data.pipelines?.totals?.watchdog || 0;
-  const alt = data.pipelines?.totals?.altdata || 0;
+  const wdRows = data.pipelines?.totals?.watchdog || 0;
+  const altRows = data.pipelines?.totals?.altdata || 0;
+  const combined = wdRows + altRows;
   const services = data.services || {};
-  const running = Object.values(services).filter((s: any) => s === 'RUNNING').length;
+  const runningCount = Object.values(services).filter((s: any) => s === 'RUNNING').length;
 
-  // Total P&L
+  // Total P&L across all bots
   let totalPnl = 0;
-  for (const bot of Object.values(data.bots || {}) as any[]) totalPnl += bot.pnl || 0;
-
-  const pnlEl = document.getElementById('total-pnl');
-  if (pnlEl) {
-    pnlEl.textContent = (totalPnl >= 0 ? '+' : '-') + fmt(Math.abs(totalPnl));
-    pnlEl.className = 'd-hero-val ' + (totalPnl >= 0 ? 'up' : 'down');
+  for (const bot of Object.values(data.bots || {}) as any[]) {
+    totalPnl += bot.pnl || 0;
   }
 
-  // Right panel
-  const wdEl = document.getElementById('wd-rows');
-  const altEl = document.getElementById('alt-rows');
-  const totalEl = document.getElementById('total-rows');
-  if (wdEl) wdEl.textContent = fmtRows(wd);
-  if (altEl) altEl.textContent = fmtRows(alt);
-  if (totalEl) totalEl.textContent = fmtRows(wd + alt) + ' rows';
+  // Hero stats
+  const heroWd = document.getElementById('hero-wd-rows');
+  const heroAlt = document.getElementById('hero-alt-rows');
+  const heroSvc = document.getElementById('hero-services');
+  const heroPnl = document.getElementById('hero-total-pnl');
+  if (heroWd) heroWd.textContent = fmtRows(wdRows);
+  if (heroAlt) heroAlt.textContent = fmtRows(altRows);
+  if (heroSvc) heroSvc.textContent = String(runningCount);
+  if (heroPnl) {
+    heroPnl.textContent = (totalPnl >= 0 ? '+' : '') + fmtMoney(Math.abs(totalPnl));
+    heroPnl.className = 'pipe-hero-num ' + (totalPnl >= 0 ? 'pipe-green' : 'pipe-red');
+  }
+
+  // Pipeline total
+  const pipeTotal = document.getElementById('pipe-total');
+  if (pipeTotal) pipeTotal.textContent = combined.toLocaleString() + ' rows';
+
+  // DB cards
+  const dbWd = document.getElementById('db-wd-rows');
+  const dbAlt = document.getElementById('db-alt-rows');
+  if (dbWd) dbWd.textContent = wdRows.toLocaleString();
+  if (dbAlt) dbAlt.textContent = altRows.toLocaleString();
 
   // Bot cards
-  const botsArea = document.getElementById('bots-area');
-  if (botsArea && data.bots) {
-    botsArea.innerHTML = Object.entries(data.bots).map(([id, bot]: [string, any]) => {
-      const pnlCls = bot.pnl > 0 ? 'up' : bot.pnl < 0 ? 'down' : '';
-      const sign = bot.pnl >= 0 ? '+' : '';
-      const pos = bot.has_position;
-      const wrColor = bot.wr >= 55 ? 'up' : bot.wr < 50 ? 'down' : '';
+  const botsGrid = document.getElementById('bots-grid');
+  if (botsGrid && data.bots) {
+    botsGrid.innerHTML = Object.entries(data.bots).map(([id, bot]: [string, any]) => {
+      const pnlClass = bot.pnl > 0 ? 'pipe-green' : bot.pnl < 0 ? 'pipe-red' : '';
+      const pnlSign = bot.pnl >= 0 ? '+' : '';
+      const posActive = bot.has_position;
+      const wrColor = bot.wr >= 55 ? '#39D353' : bot.wr >= 50 ? '#F0F6FC' : '#F85149';
       return `
-        <div class="d-bot">
-          <div class="d-bot-top">
-            <span class="d-bot-name">${bot.label}</span>
-            <span class="d-bot-tag">${bot.asset}</span>
+        <div class="pipe-bot">
+          <div class="pipe-bot-top">
+            <span class="pipe-bot-label">${bot.label}</span>
+            <span class="pipe-bot-asset">${bot.asset}</span>
           </div>
-          <div class="d-bot-equity">${fmt(bot.equity)}</div>
-          <div class="d-bot-pnl ${pnlCls}">${sign}${fmt(Math.abs(bot.pnl))} · ${sign}${bot.pnl_pct}%</div>
-          <div class="d-bot-stats">
-            <div class="d-bot-stat"><span class="d-bot-stat-val">${bot.total_trades}</span><span class="d-bot-stat-lbl">Trades</span></div>
-            <div class="d-bot-stat"><span class="d-bot-stat-val ${wrColor}">${bot.wr}%</span><span class="d-bot-stat-lbl">Win Rate</span></div>
-            <div class="d-bot-stat"><span class="d-bot-stat-val">${bot.wins}W / ${bot.losses}L</span><span class="d-bot-stat-lbl">Record</span></div>
+          <div class="pipe-bot-equity">${fmtMoney(bot.equity)}</div>
+          <div class="pipe-bot-pnl ${pnlClass}">${pnlSign}${fmtMoney(Math.abs(bot.pnl))} · ${pnlSign}${bot.pnl_pct}%</div>
+          <div class="pipe-bot-grid">
+            <div class="pipe-bot-stat"><span class="pipe-bot-stat-val">${bot.total_trades}</span><span class="pipe-bot-stat-lbl">Trades</span></div>
+            <div class="pipe-bot-stat"><span class="pipe-bot-stat-val" style="color:${wrColor}">${bot.wr}%</span><span class="pipe-bot-stat-lbl">Win Rate</span></div>
+            <div class="pipe-bot-stat"><span class="pipe-bot-stat-val">${bot.wins}W / ${bot.losses}L</span><span class="pipe-bot-stat-lbl">Record</span></div>
           </div>
-          <div class="d-bot-pos">
-            <span class="d-pos-dot ${pos ? 'on' : 'off'}"></span>
-            <span style="color:${pos ? '#22c55e' : '#333'}">${pos ? 'IN POSITION' : 'WAITING'}</span>
+          <div class="pipe-bot-footer">
+            <span class="pipe-status-dot ${posActive ? 'active' : 'idle'}"></span>
+            <span style="color:${posActive ? '#39D353' : '#8B949E'}">${posActive ? 'In Position' : 'Waiting'}</span>
           </div>
         </div>`;
     }).join('');
   }
 
   // Services
-  const svcEl = document.getElementById('services');
-  if (svcEl) {
-    svcEl.innerHTML = Object.entries(services).map(([name, status]: [string, any]) => {
-      const dot = status === 'RUNNING' ? 'up' : status === 'FATAL' ? 'down' : 'warn';
+  const svcGrid = document.getElementById('services-grid');
+  if (svcGrid && data.services) {
+    svcGrid.innerHTML = Object.entries(data.services).map(([name, status]: [string, any]) => {
+      const dotClass = status === 'RUNNING' ? 'up' : status === 'FATAL' ? 'down' : 'warn';
       const short = name.replace('pipeline_', '').replace('paper_bot_', 'bot_');
-      return `<div class="d-svc"><span class="d-svc-dot ${dot}"></span>${short}</div>`;
+      return `<div class="pipe-svc"><span class="pipe-svc-dot ${dotClass}"></span>${short}</div>`;
     }).join('');
   }
 
   // Trades
   const allTrades: any[] = [];
-  for (const [id, bot] of Object.entries(data.bots || {}) as any[]) {
-    for (const t of bot.recent_trades || []) allTrades.push({ ...t, bot: bot.label });
+  if (data.bots) {
+    for (const [id, bot] of Object.entries(data.bots) as any[]) {
+      for (const t of bot.recent_trades || []) {
+        allTrades.push({ ...t, bot_label: bot.label });
+      }
+    }
   }
   allTrades.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-  const tradesArea = document.getElementById('trades-area');
-  if (tradesArea) {
+  const tbody = document.getElementById('trades-body');
+  if (tbody) {
     if (allTrades.length === 0) {
-      tradesArea.innerHTML = '<div class="d-empty">AWAITING TRADES</div>';
+      tbody.innerHTML = '<tr><td colspan="6" class="pipe-empty">Awaiting first trades...</td></tr>';
     } else {
-      tradesArea.innerHTML = allTrades.slice(0, 20).map((t: any) => {
+      tbody.innerHTML = allTrades.slice(0, 12).map((t: any) => {
         const pnl = parseFloat(t.pnl_dollar || 0);
-        const cls = pnl >= 0 ? 'up' : 'down';
-        const exitCls = `d-exit-${t.exit_reason || 'flip'}`;
-        const time = new Date(t.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        return `<div class="d-trade">
-          <span>${t.bot} · ${t.symbol || '--'}</span>
-          <span class="d-trade-pnl ${cls}">${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}</span>
-          <span>${time}</span>
-          <span class="d-trade-exit ${exitCls}">${t.exit_reason || '--'}</span>
-        </div>`;
+        const cls = pnl >= 0 ? 'pnl-up' : 'pnl-down';
+        const exitCls = `exit-${t.exit_reason || 'flip'}`;
+        const time = new Date(t.timestamp).toLocaleString('en-US', {
+          month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false,
+        });
+        return `<tr>
+          <td>${time}</td>
+          <td>${t.bot_label}</td>
+          <td>${t.symbol || '—'}</td>
+          <td class="${cls}">${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}</td>
+          <td>${t.hold_min ? parseFloat(t.hold_min).toFixed(0) + 'm' : '—'}</td>
+          <td><span class="exit-badge ${exitCls}">${t.exit_reason || '—'}</span></td>
+        </tr>`;
       }).join('');
     }
   }
 }
 
 load();
-setInterval(load, 10000);
+setInterval(load, 15000);
 </script>
