@@ -2,372 +2,448 @@
 export const prerender = false;
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
-const title = "Command — Greesi";
-const description = "Live trading operations + data pipeline dashboard.";
+const title = "Pipeline — Greesi";
+const description = "Live trading bots, data pipeline monitoring, and performance metrics.";
 ---
 
 <BaseLayout title={title} description={description}>
-<div class="cmd">
-
-  <!-- Header -->
-  <header class="cmd-header">
-    <div class="cmd-header-inner">
-      <div>
-        <h1 class="cmd-title">Command</h1>
-        <span class="cmd-sub">GREESI CAPITAL · LIVE OPERATIONS</span>
+<section class="pipe-hero has-hero">
+  <div class="pipe-hero-bg"></div>
+  <div class="pipe-hero-inner">
+    <span class="pipe-eyebrow reveal-item">LIVE OPERATIONS</span>
+    <h1 class="pipe-h1 reveal-item">Pipeline</h1>
+    <p class="pipe-sub reveal-item">Real-time trading bots · 29 data pipelines · 8.9M+ rows and growing</p>
+    <div class="pipe-hero-stats reveal-item">
+      <div class="pipe-hero-stat">
+        <span class="pipe-hero-num" id="hero-wd-rows">--</span>
+        <span class="pipe-hero-label">Watchdog Rows</span>
       </div>
-      <div class="cmd-header-right">
-        <div class="cmd-pulse" id="pulse"></div>
-        <span class="cmd-clock" id="clock">--:--:--</span>
+      <div class="pipe-hero-div"></div>
+      <div class="pipe-hero-stat">
+        <span class="pipe-hero-num" id="hero-alt-rows">--</span>
+        <span class="pipe-hero-label">AltData Rows</span>
+      </div>
+      <div class="pipe-hero-div"></div>
+      <div class="pipe-hero-stat">
+        <span class="pipe-hero-num" id="hero-services">--</span>
+        <span class="pipe-hero-label">Services Live</span>
+      </div>
+      <div class="pipe-hero-div"></div>
+      <div class="pipe-hero-stat">
+        <span class="pipe-hero-num pipe-green" id="hero-total-pnl">--</span>
+        <span class="pipe-hero-label">Total P&L</span>
       </div>
     </div>
-  </header>
+  </div>
+</section>
 
-  <main class="cmd-main" id="main">
-
-    <!-- Loading -->
-    <div class="cmd-loading" id="loading">
-      <div class="cmd-spin"></div>
-      <p>CONNECTING TO SYSTEMS...</p>
-    </div>
-
-    <!-- Services Status Strip -->
-    <div class="cmd-strip" id="strip" style="display:none"></div>
+<div class="pipe-body">
+  <div class="pipe-container">
 
     <!-- Bot Cards -->
-    <div class="cmd-bots" id="bots" style="display:none"></div>
-
-    <!-- Pipeline Stats -->
-    <div class="cmd-section" id="pipeline-section" style="display:none">
-      <div class="cmd-section-head">
-        <span class="cmd-label">DATA PIPELINE</span>
-        <span class="cmd-total" id="total-rows">--</span>
-      </div>
-      <div class="cmd-pipeline" id="pipeline"></div>
+    <div class="pipe-section-head reveal-item">
+      <h2 class="pipe-section-title">Trading Bots</h2>
+      <div class="pipe-live-badge"><span class="pipe-live-dot"></span>LIVE</div>
     </div>
+
+    <div class="pipe-bots reveal-item" id="bots-grid"></div>
+
+    <!-- Data Pipeline -->
+    <div class="pipe-section-head reveal-item" style="margin-top:48px">
+      <h2 class="pipe-section-title">Data Pipeline</h2>
+      <span class="pipe-row-total" id="pipe-total">--</span>
+    </div>
+
+    <div class="pipe-db-cards reveal-item">
+      <div class="pipe-db-card" id="db-watchdog">
+        <div class="pipe-db-icon">🔍</div>
+        <div class="pipe-db-name">Watchdog DB</div>
+        <div class="pipe-db-rows" id="db-wd-rows">--</div>
+        <div class="pipe-db-sub">Live crypto signals, macro, on-chain</div>
+      </div>
+      <div class="pipe-db-card" id="db-altdata">
+        <div class="pipe-db-icon">📊</div>
+        <div class="pipe-db-name">AltData DB</div>
+        <div class="pipe-db-rows" id="db-alt-rows">--</div>
+        <div class="pipe-db-sub">FRED, equities, CFTC, congressional</div>
+      </div>
+    </div>
+
+    <div class="pipe-grid reveal-item" id="pipe-grid"></div>
+
+    <!-- Services -->
+    <div class="pipe-section-head reveal-item" style="margin-top:48px">
+      <h2 class="pipe-section-title">Services</h2>
+    </div>
+    <div class="pipe-services reveal-item" id="services-grid"></div>
 
     <!-- Recent Trades -->
-    <div class="cmd-section" id="trades-section" style="display:none">
-      <div class="cmd-section-head">
-        <span class="cmd-label">RECENT TRADES</span>
-      </div>
-      <div class="cmd-table-wrap">
-        <table class="cmd-table" id="trades-table">
-          <thead>
-            <tr><th>TIME</th><th>BOT</th><th>SYMBOL</th><th>PRICE</th><th>P&L</th><th>HOLD</th><th>EXIT</th></tr>
-          </thead>
-          <tbody id="trades-body"></tbody>
-        </table>
-      </div>
+    <div class="pipe-section-head reveal-item" style="margin-top:48px">
+      <h2 class="pipe-section-title">Recent Trades</h2>
+    </div>
+    <div class="pipe-trades-card reveal-item">
+      <table class="pipe-table">
+        <thead><tr><th>Time</th><th>Bot</th><th>Symbol</th><th>P&L</th><th>Hold</th><th>Exit</th></tr></thead>
+        <tbody id="trades-body"><tr><td colspan="6" class="pipe-empty">Connecting...</td></tr></tbody>
+      </table>
     </div>
 
-  </main>
+  </div>
 </div>
 </BaseLayout>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
-
-:root {
-  --bg: #0a0a0a;
-  --surface: #111111;
-  --border: #1f1f1f;
-  --text: #d4d4d4;
-  --muted: #737373;
-  --green: #10b981;
-  --red: #ef4444;
-  --amber: #f59e0b;
-  --blue: #3b82f6;
-  --mono: 'JetBrains Mono', 'SF Mono', monospace;
-  --sans: 'Inter', -apple-system, sans-serif;
+/* ── Hero ──────────────────────────────────────────────────── */
+.pipe-hero {
+  position: relative; overflow: hidden;
+  padding: 140px 24px 80px; text-align: center;
+  background: linear-gradient(180deg, #080B0F 0%, #0D1117 100%);
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-.cmd { background: var(--bg); min-height: 100vh; padding-top: 64px; }
-
-/* Header */
-.cmd-header { background: var(--surface); border-bottom: 1px solid var(--border); }
-.cmd-header-inner {
-  max-width: 1400px; margin: 0 auto; padding: 20px 32px;
-  display: flex; align-items: center; justify-content: space-between;
+.pipe-hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(31,111,235,0.08), transparent);
+  pointer-events: none;
 }
-.cmd-title {
-  font-family: var(--sans); font-size: 2.4rem; font-weight: 700;
-  color: #ffffff; letter-spacing: -0.03em;
+.pipe-hero-inner { position: relative; max-width: 900px; margin: 0 auto; }
+.pipe-eyebrow {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: #58A6FF; margin-bottom: 16px;
 }
-.cmd-sub {
-  font-family: var(--mono); font-size: 0.6rem; font-weight: 500;
-  color: var(--muted); letter-spacing: 0.2em; display: block; margin-top: 2px;
+.pipe-h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(3rem, 8vw, 5rem); font-weight: 400;
+  color: #F0F6FC; margin-bottom: 16px; line-height: 1.1;
 }
-.cmd-header-right { display: flex; align-items: center; gap: 12px; }
-.cmd-pulse {
-  width: 8px; height: 8px; border-radius: 50%; background: var(--green);
-  animation: pulse 2s infinite;
+.pipe-sub {
+  font-size: 1.1rem; color: #8B949E; max-width: 520px;
+  margin: 0 auto 40px; line-height: 1.6;
 }
-@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(16,185,129,0.4)} 50%{opacity:0.6;box-shadow:0 0 0 8px rgba(16,185,129,0)} }
-.cmd-clock {
-  font-family: var(--mono); font-size: 0.85rem; color: var(--muted);
-  letter-spacing: 0.05em;
+.pipe-hero-stats {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; flex-wrap: wrap;
+  background: rgba(13,17,23,0.6); border: 1px solid #21262D;
+  border-radius: 16px; padding: 20px 0;
+  backdrop-filter: blur(12px);
 }
-
-/* Main */
-.cmd-main { max-width: 1400px; margin: 0 auto; padding: 16px 32px 64px; }
-
-/* Loading */
-.cmd-loading {
+.pipe-hero-stat {
   display: flex; flex-direction: column; align-items: center;
-  padding: 80px 0; gap: 16px; color: var(--muted);
-  font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.15em;
+  padding: 0 32px; gap: 4px;
 }
-.cmd-spin {
-  width: 24px; height: 24px; border: 2px solid var(--border);
-  border-top-color: var(--green); border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.pipe-hero-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.6rem; font-weight: 600; color: #F0F6FC;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
+.pipe-hero-label {
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E;
+}
+.pipe-hero-div { width: 1px; height: 36px; background: #21262D; }
+.pipe-green { color: #39D353 !important; }
+.pipe-red { color: #F85149 !important; }
 
-/* Service strip */
-.cmd-strip {
-  display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+/* ── Body ─────────────────────────────────────────────────── */
+.pipe-body {
+  background: #080B0F; padding: 0 24px 80px;
 }
-.cmd-chip {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 12px; background: var(--surface); border: 1px solid var(--border);
-  border-radius: 2px; font-family: var(--mono); font-size: 0.6rem;
-  color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase;
-}
-.cmd-dot {
-  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
-}
-.cmd-dot.up { background: var(--green); }
-.cmd-dot.down { background: var(--red); }
-.cmd-dot.warn { background: var(--amber); }
+.pipe-container { max-width: 1200px; margin: 0 auto; }
 
-/* Bot cards */
-.cmd-bots {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 8px; margin-bottom: 16px;
-}
-@media (max-width: 900px) { .cmd-bots { grid-template-columns: 1fr; } }
-
-.cmd-bot {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 2px; padding: 20px 24px;
-}
-.cmd-bot-head {
+.pipe-section-head {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px;
-}
-.cmd-bot-name {
-  font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
-  color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase;
-}
-.cmd-bot-asset {
-  font-family: var(--mono); font-size: 0.55rem; color: var(--muted);
-  background: var(--bg); padding: 2px 6px; border-radius: 2px;
-}
-.cmd-bot-equity {
-  font-family: var(--mono); font-size: 2.8rem; font-weight: 700;
-  color: #ffffff; letter-spacing: -0.02em; line-height: 1;
-  margin-bottom: 4px;
-}
-.cmd-bot-pnl {
-  font-family: var(--mono); font-size: 1.1rem; font-weight: 600;
   margin-bottom: 20px;
 }
-.cmd-bot-pnl.up { color: var(--green); }
-.cmd-bot-pnl.down { color: var(--red); }
-.cmd-bot-pnl.flat { color: var(--muted); }
+.pipe-section-title {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: 1.8rem; color: #F0F6FC;
+}
+.pipe-live-badge {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.15em;
+  color: #39D353; background: rgba(57,211,83,0.08);
+  padding: 6px 14px; border-radius: 20px;
+}
+.pipe-live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #39D353;
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot { 0%,100%{box-shadow:0 0 0 0 rgba(57,211,83,0.4)} 50%{box-shadow:0 0 0 6px rgba(57,211,83,0)} }
 
-.cmd-bot-stats {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 1px; background: var(--border); border-radius: 2px; overflow: hidden;
+.pipe-row-total {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem; font-weight: 600; color: #58A6FF;
 }
-.cmd-stat {
-  background: var(--bg); padding: 10px 8px; text-align: center;
-}
-.cmd-stat-val {
-  font-family: var(--mono); font-size: 1.1rem; font-weight: 600;
-  color: #ffffff; display: block;
-}
-.cmd-stat-lbl {
-  font-family: var(--sans); font-size: 0.5rem; font-weight: 600;
-  color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em;
-  margin-top: 4px; display: block;
-}
-.cmd-bot-pos {
-  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
-  font-family: var(--mono); font-size: 0.65rem; color: var(--muted);
-}
-.cmd-bot-pos.active { color: var(--green); }
 
-/* Section */
-.cmd-section {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 2px; padding: 20px 24px; margin-bottom: 8px;
+/* ── Bot Cards ────────────────────────────────────────────── */
+.pipe-bots {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
 }
-.cmd-section-head {
+@media (max-width: 900px) { .pipe-bots { grid-template-columns: 1fr; } }
+
+.pipe-bot {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; padding: 28px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pipe-bot:hover { border-color: #30363D; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+.pipe-bot-top {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
-.cmd-label {
-  font-family: var(--mono); font-size: 0.6rem; font-weight: 600;
-  color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase;
+.pipe-bot-label {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E;
 }
-.cmd-total {
-  font-family: var(--mono); font-size: 1.8rem; font-weight: 700;
-  color: #ffffff; letter-spacing: -0.02em;
+.pipe-bot-asset {
+  font-size: 0.6rem; font-weight: 600; color: #58A6FF;
+  background: rgba(88,166,255,0.08); padding: 3px 8px; border-radius: 6px;
+}
+.pipe-bot-equity {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.6rem; font-weight: 700; color: #F0F6FC;
+  letter-spacing: -0.02em; line-height: 1; margin-bottom: 6px;
+}
+.pipe-bot-pnl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; font-weight: 600; margin-bottom: 24px;
+}
+.pipe-bot-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 1px; background: #21262D; border-radius: 12px; overflow: hidden;
+}
+.pipe-bot-stat {
+  background: #161B22; padding: 14px 8px; text-align: center;
+}
+.pipe-bot-stat-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.15rem; font-weight: 600; color: #F0F6FC; display: block;
+}
+.pipe-bot-stat-lbl {
+  font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E; margin-top: 4px; display: block;
+}
+.pipe-bot-footer {
+  margin-top: 16px; padding-top: 14px; border-top: 1px solid #21262D;
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.7rem;
+}
+.pipe-status-dot { width: 6px; height: 6px; border-radius: 50%; }
+.pipe-status-dot.active { background: #39D353; }
+.pipe-status-dot.idle { background: #8B949E; }
+
+/* ── DB Cards ─────────────────────────────────────────────── */
+.pipe-db-cards {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+  margin-bottom: 20px;
+}
+@media (max-width: 700px) { .pipe-db-cards { grid-template-columns: 1fr; } }
+.pipe-db-card {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; padding: 28px; text-align: center;
+  transition: border-color 0.2s;
+}
+.pipe-db-card:hover { border-color: #30363D; }
+.pipe-db-icon { font-size: 2rem; margin-bottom: 8px; }
+.pipe-db-name {
+  font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E; margin-bottom: 8px;
+}
+.pipe-db-rows {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.4rem; font-weight: 700; color: #F0F6FC;
+}
+.pipe-db-sub { font-size: 0.75rem; color: #8B949E; margin-top: 8px; }
+
+/* ── Pipeline Grid ────────────────────────────────────────── */
+.pipe-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+}
+.pipe-cell {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 10px; padding: 14px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: border-color 0.15s;
+}
+.pipe-cell:hover { border-color: #30363D; }
+.pipe-cell-name {
+  font-size: 0.72rem; color: #8B949E; font-weight: 500;
+}
+.pipe-cell-rows {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem; font-weight: 600; color: #F0F6FC;
 }
 
-/* Pipeline grid */
-.cmd-pipeline {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 4px;
+/* ── Services ─────────────────────────────────────────────── */
+.pipe-services {
+  display: flex; flex-wrap: wrap; gap: 6px;
 }
-.cmd-pipe {
-  background: var(--bg); padding: 10px 12px; border-radius: 2px;
+.pipe-svc {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; background: #0D1117; border: 1px solid #21262D;
+  border-radius: 8px; font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.06em; color: #8B949E; text-transform: uppercase;
 }
-.cmd-pipe-name {
-  font-family: var(--sans); font-size: 0.6rem; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px;
-}
-.cmd-pipe-rows {
-  font-family: var(--mono); font-size: 1rem; font-weight: 600; color: var(--text);
-}
+.pipe-svc-dot { width: 5px; height: 5px; border-radius: 50%; }
+.pipe-svc-dot.up { background: #39D353; }
+.pipe-svc-dot.down { background: #F85149; }
+.pipe-svc-dot.warn { background: #D29922; }
 
-/* Table */
-.cmd-table-wrap { overflow-x: auto; }
-.cmd-table {
-  width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.7rem;
+/* ── Trades Table ─────────────────────────────────────────── */
+.pipe-trades-card {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; overflow: hidden;
 }
-.cmd-table th {
-  text-align: left; padding: 8px 10px;
-  font-family: var(--mono); font-size: 0.55rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted);
-  border-bottom: 1px solid var(--border);
+.pipe-table {
+  width: 100%; border-collapse: collapse;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
 }
-.cmd-table td {
-  padding: 8px 10px; border-bottom: 1px solid #0d0d0d; color: var(--text);
+.pipe-table th {
+  text-align: left; padding: 12px 16px;
+  font-size: 0.58rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #8B949E;
+  border-bottom: 1px solid #21262D; background: #161B22;
 }
-.cmd-table tr:nth-child(even) td { background: #0d0d0d; }
-.cmd-table .up { color: var(--green); font-weight: 600; }
-.cmd-table .down { color: var(--red); font-weight: 600; }
-.cmd-table .exit-badge {
-  font-size: 0.55rem; padding: 1px 5px; border-radius: 2px;
-  text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+.pipe-table td {
+  padding: 10px 16px; color: #C9D1D9;
+  border-bottom: 1px solid rgba(33,38,45,0.5);
 }
-.cmd-table .exit-target { background: rgba(16,185,129,0.1); color: var(--green); }
-.cmd-table .exit-stop { background: rgba(239,68,68,0.1); color: var(--red); }
-.cmd-table .exit-flip { background: rgba(59,130,246,0.1); color: var(--blue); }
-.cmd-table .exit-trail { background: rgba(245,158,11,0.1); color: var(--amber); }
-.cmd-table .exit-timeout { background: rgba(115,115,115,0.1); color: var(--muted); }
+.pipe-table tr:nth-child(even) td { background: rgba(13,17,23,0.5); }
+.pipe-empty {
+  text-align: center; padding: 32px !important; color: #8B949E;
+  font-style: italic;
+}
+.pnl-up { color: #39D353; font-weight: 600; }
+.pnl-down { color: #F85149; font-weight: 600; }
+.exit-badge {
+  font-size: 0.58rem; padding: 2px 6px; border-radius: 4px;
+  font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.exit-target { background: rgba(57,211,83,0.1); color: #39D353; }
+.exit-stop { background: rgba(248,81,73,0.1); color: #F85149; }
+.exit-flip { background: rgba(88,166,255,0.1); color: #58A6FF; }
+.exit-trail { background: rgba(210,153,34,0.1); color: #D29922; }
+.exit-timeout { background: rgba(139,148,158,0.1); color: #8B949E; }
 
-/* Animated counter */
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .pipe-hero { padding: 120px 16px 60px; }
+  .pipe-h1 { font-size: 2.5rem; }
+  .pipe-hero-stats { flex-direction: column; gap: 16px; padding: 20px; }
+  .pipe-hero-div { width: 60%; height: 1px; }
+  .pipe-hero-stat { padding: 0; }
+  .pipe-bot-equity { font-size: 2rem; }
 }
-.cmd-animate { animation: countUp 0.3s ease-out; }
 </style>
 
 <script>
-async function fetchData() {
-  try {
-    const res = await fetch('/api/trading/status');
-    if (!res.ok) throw new Error('API error');
-    const data = await res.json();
-    render(data);
-
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('strip').style.display = '';
-    document.getElementById('bots').style.display = '';
-    document.getElementById('pipeline-section').style.display = '';
-    document.getElementById('trades-section').style.display = '';
-
-    const pulse = document.getElementById('pulse');
-    if (pulse) { pulse.style.background = '#10b981'; }
-  } catch (e) {
-    const pulse = document.getElementById('pulse');
-    if (pulse) { pulse.style.background = '#ef4444'; }
-  }
+function fmtRows(n: number): string {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(0) + 'K';
+  return n.toLocaleString();
 }
 
-function fmt(n: number) {
+function fmtMoney(n: number): string {
   return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function fmtRows(n: number) {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M';
-  if (n >= 1_000) return (n / 1_000).toFixed(0) + 'K';
-  return n.toString();
+async function load() {
+  try {
+    const res = await fetch('/api/trading/status');
+    if (!res.ok) return;
+    const data = await res.json();
+    render(data);
+  } catch {}
 }
 
 function render(data: any) {
-  // Clock
-  const clock = document.getElementById('clock');
-  if (clock) clock.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
+  const wdRows = data.pipelines?.totals?.watchdog || 0;
+  const altRows = data.pipelines?.totals?.altdata || 0;
+  const combined = wdRows + altRows;
+  const services = data.services || {};
+  const runningCount = Object.values(services).filter((s: any) => s === 'RUNNING').length;
 
-  // Services strip
-  const strip = document.getElementById('strip');
-  if (strip && data.services) {
-    const chips = Object.entries(data.services).map(([name, status]: [string, any]) => {
-      const dotClass = status === 'RUNNING' ? 'up' : status === 'FATAL' ? 'down' : 'warn';
-      const shortName = name.replace('pipeline_', '').replace('paper_bot_', '');
-      return `<div class="cmd-chip"><div class="cmd-dot ${dotClass}"></div>${shortName}</div>`;
-    }).join('');
-    strip.innerHTML = chips;
+  // Total P&L across all bots
+  let totalPnl = 0;
+  for (const bot of Object.values(data.bots || {}) as any[]) {
+    totalPnl += bot.pnl || 0;
   }
 
-  // Bot cards
-  const botsEl = document.getElementById('bots');
-  if (botsEl && data.bots) {
-    botsEl.innerHTML = Object.entries(data.bots).map(([id, bot]: [string, any]) => {
-      const pnlDir = bot.pnl > 0.01 ? 'up' : bot.pnl < -0.01 ? 'down' : 'flat';
-      const pnlSign = bot.pnl >= 0 ? '+' : '';
-      const posText = bot.has_position ? '● IN POSITION' : '○ WAITING';
-      const posClass = bot.has_position ? 'active' : '';
+  // Hero stats
+  const heroWd = document.getElementById('hero-wd-rows');
+  const heroAlt = document.getElementById('hero-alt-rows');
+  const heroSvc = document.getElementById('hero-services');
+  const heroPnl = document.getElementById('hero-total-pnl');
+  if (heroWd) heroWd.textContent = fmtRows(wdRows);
+  if (heroAlt) heroAlt.textContent = fmtRows(altRows);
+  if (heroSvc) heroSvc.textContent = String(runningCount);
+  if (heroPnl) {
+    heroPnl.textContent = (totalPnl >= 0 ? '+' : '') + fmtMoney(Math.abs(totalPnl));
+    heroPnl.className = 'pipe-hero-num ' + (totalPnl >= 0 ? 'pipe-green' : 'pipe-red');
+  }
 
+  // Pipeline total
+  const pipeTotal = document.getElementById('pipe-total');
+  if (pipeTotal) pipeTotal.textContent = combined.toLocaleString() + ' rows';
+
+  // DB cards
+  const dbWd = document.getElementById('db-wd-rows');
+  const dbAlt = document.getElementById('db-alt-rows');
+  if (dbWd) dbWd.textContent = wdRows.toLocaleString();
+  if (dbAlt) dbAlt.textContent = altRows.toLocaleString();
+
+  // Bot cards
+  const botsGrid = document.getElementById('bots-grid');
+  if (botsGrid && data.bots) {
+    botsGrid.innerHTML = Object.entries(data.bots).map(([id, bot]: [string, any]) => {
+      const pnlClass = bot.pnl > 0 ? 'pipe-green' : bot.pnl < 0 ? 'pipe-red' : '';
+      const pnlSign = bot.pnl >= 0 ? '+' : '';
+      const posActive = bot.has_position;
+      const wrColor = bot.wr >= 55 ? '#39D353' : bot.wr >= 50 ? '#F0F6FC' : '#F85149';
       return `
-        <div class="cmd-bot">
-          <div class="cmd-bot-head">
-            <span class="cmd-bot-name">${bot.label}</span>
-            <span class="cmd-bot-asset">${bot.asset}</span>
+        <div class="pipe-bot">
+          <div class="pipe-bot-top">
+            <span class="pipe-bot-label">${bot.label}</span>
+            <span class="pipe-bot-asset">${bot.asset}</span>
           </div>
-          <div class="cmd-bot-equity cmd-animate">${fmt(bot.equity)}</div>
-          <div class="cmd-bot-pnl ${pnlDir}">${pnlSign}${fmt(Math.abs(bot.pnl))} (${pnlSign}${bot.pnl_pct}%)</div>
-          <div class="cmd-bot-stats">
-            <div class="cmd-stat"><span class="cmd-stat-val">${bot.total_trades}</span><span class="cmd-stat-lbl">TRADES</span></div>
-            <div class="cmd-stat"><span class="cmd-stat-val" style="color:${bot.wr >= 55 ? '#10b981' : bot.wr >= 50 ? '#d4d4d4' : '#ef4444'}">${bot.wr}%</span><span class="cmd-stat-lbl">WIN RATE</span></div>
-            <div class="cmd-stat"><span class="cmd-stat-val">${bot.wins}W/${bot.losses}L</span><span class="cmd-stat-lbl">W / L</span></div>
+          <div class="pipe-bot-equity">${fmtMoney(bot.equity)}</div>
+          <div class="pipe-bot-pnl ${pnlClass}">${pnlSign}${fmtMoney(Math.abs(bot.pnl))} · ${pnlSign}${bot.pnl_pct}%</div>
+          <div class="pipe-bot-grid">
+            <div class="pipe-bot-stat"><span class="pipe-bot-stat-val">${bot.total_trades}</span><span class="pipe-bot-stat-lbl">Trades</span></div>
+            <div class="pipe-bot-stat"><span class="pipe-bot-stat-val" style="color:${wrColor}">${bot.wr}%</span><span class="pipe-bot-stat-lbl">Win Rate</span></div>
+            <div class="pipe-bot-stat"><span class="pipe-bot-stat-val">${bot.wins}W / ${bot.losses}L</span><span class="pipe-bot-stat-lbl">Record</span></div>
           </div>
-          <div class="cmd-bot-pos ${posClass}">${posText}</div>
+          <div class="pipe-bot-footer">
+            <span class="pipe-status-dot ${posActive ? 'active' : 'idle'}"></span>
+            <span style="color:${posActive ? '#39D353' : '#8B949E'}">${posActive ? 'In Position' : 'Waiting'}</span>
+          </div>
         </div>`;
     }).join('');
   }
 
-  // Pipeline
-  if (data.pipelines) {
-    const totalEl = document.getElementById('total-rows');
-    if (totalEl) {
-      const total = data.pipelines.totals?.combined || 0;
-      totalEl.textContent = total.toLocaleString() + ' ROWS';
-    }
+  // Pipeline grid
+  const pipeGrid = document.getElementById('pipe-grid');
+  if (pipeGrid && data.pipelines) {
+    const all = [
+      ...Object.values(data.pipelines.watchdog || {}),
+      ...Object.values(data.pipelines.altdata || {}),
+    ].sort((a: any, b: any) => b.rows - a.rows);
 
-    const pipeEl = document.getElementById('pipeline');
-    if (pipeEl) {
-      const all = [
-        ...Object.values(data.pipelines.watchdog || {}),
-        ...Object.values(data.pipelines.altdata || {}),
-      ].sort((a: any, b: any) => b.rows - a.rows);
+    pipeGrid.innerHTML = (all as any[]).map((p: any) =>
+      `<div class="pipe-cell">
+        <span class="pipe-cell-name">${p.label}</span>
+        <span class="pipe-cell-rows">${fmtRows(p.rows)}</span>
+      </div>`
+    ).join('');
+  }
 
-      pipeEl.innerHTML = (all as any[]).map((p: any) =>
-        `<div class="cmd-pipe">
-          <div class="cmd-pipe-name">${p.label}</div>
-          <div class="cmd-pipe-rows">${fmtRows(p.rows)}</div>
-        </div>`
-      ).join('');
-    }
+  // Services
+  const svcGrid = document.getElementById('services-grid');
+  if (svcGrid && data.services) {
+    svcGrid.innerHTML = Object.entries(data.services).map(([name, status]: [string, any]) => {
+      const dotClass = status === 'RUNNING' ? 'up' : status === 'FATAL' ? 'down' : 'warn';
+      const short = name.replace('pipeline_', '').replace('paper_bot_', 'bot_');
+      return `<div class="pipe-svc"><span class="pipe-svc-dot ${dotClass}"></span>${short}</div>`;
+    }).join('');
   }
 
   // Trades
@@ -384,12 +460,12 @@ function render(data: any) {
   const tbody = document.getElementById('trades-body');
   if (tbody) {
     if (allTrades.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#737373;padding:24px;font-family:var(--mono);font-size:0.7rem;">AWAITING TRADES...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="pipe-empty">Awaiting first trades...</td></tr>';
     } else {
-      tbody.innerHTML = allTrades.slice(0, 15).map((t: any) => {
+      tbody.innerHTML = allTrades.slice(0, 12).map((t: any) => {
         const pnl = parseFloat(t.pnl_dollar || 0);
-        const pnlClass = pnl >= 0 ? 'up' : 'down';
-        const exitClass = `exit-${t.exit_reason || 'flip'}`;
+        const cls = pnl >= 0 ? 'pnl-up' : 'pnl-down';
+        const exitCls = `exit-${t.exit_reason || 'flip'}`;
         const time = new Date(t.timestamp).toLocaleString('en-US', {
           month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false,
         });
@@ -397,23 +473,15 @@ function render(data: any) {
           <td>${time}</td>
           <td>${t.bot_label}</td>
           <td>${t.symbol || '—'}</td>
-          <td>${t.price ? '$' + parseFloat(t.price).toLocaleString() : '—'}</td>
-          <td class="${pnlClass}">${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}</td>
+          <td class="${cls}">${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}</td>
           <td>${t.hold_min ? parseFloat(t.hold_min).toFixed(0) + 'm' : '—'}</td>
-          <td><span class="exit-badge ${exitClass}">${t.exit_reason || '—'}</span></td>
+          <td><span class="exit-badge ${exitCls}">${t.exit_reason || '—'}</span></td>
         </tr>`;
       }).join('');
     }
   }
 }
 
-// Clock update
-setInterval(() => {
-  const clock = document.getElementById('clock');
-  if (clock) clock.textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
-}, 1000);
-
-// Fetch + auto-refresh
-fetchData();
-setInterval(fetchData, 15000);
+load();
+setInterval(load, 15000);
 </script>
