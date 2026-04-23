@@ -213,6 +213,38 @@ const description = "Live trading bots and data pipeline monitoring.";
 .p-dot.on { background: #22c55e; }
 .p-dot.off { background: #222; }
 
+/* Health dot */
+.p-health-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  margin-right: 8px; vertical-align: middle;
+}
+.p-health-dot.alive { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.5); }
+.p-health-dot.dead { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.5); }
+
+/* Today box inside bot card */
+.p-bot-today {
+  margin-top: 16px; padding: 12px;
+  background: rgba(255,255,255,0.02); border: 1px solid #1a1a1a;
+  border-radius: 8px;
+}
+.p-today-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.45rem; font-weight: 700; letter-spacing: 0.25em;
+  color: #444; text-transform: uppercase;
+  display: block; margin-bottom: 6px;
+}
+.p-today-row {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+}
+.p-today-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem; font-weight: 700; color: #fff;
+}
+.p-today-detail {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem; font-weight: 500; color: #555;
+}
+
 /* ── DB Row ────────────────────────────────────────── */
 .p-db-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
 @media (max-width: 700px) { .p-db-row { grid-template-columns: 1fr; } }
@@ -323,15 +355,29 @@ function render(d: any) {
       const wc = b.wr >= 55 ? 'p-green' : b.wr < 50 ? 'p-red' : '';
       const ec = b.pnl > 0.01 ? 'p-green' : b.pnl < -0.01 ? 'p-red' : '';
       const pos = b.has_position;
+      const hp = b.healthy;
+      const tpc = b.today_pnl > 0.01 ? 'p-green' : b.today_pnl < -0.01 ? 'p-red' : '';
+      const ts = b.today_pnl >= 0 ? '+' : '';
       return `<div class="p-bot">
-        <div class="p-bot-header"><span class="p-bot-name">${b.label}</span><span class="p-bot-tag">${b.asset}</span></div>
+        <div class="p-bot-header">
+          <span class="p-bot-name"><span class="p-health-dot ${hp?'alive':'dead'}"></span>${b.label}</span>
+          <span class="p-bot-tag">${b.asset}</span>
+        </div>
         <div class="p-bot-eq ${ec}">${fmt(b.equity)}</div>
         <div class="p-bot-pnl ${pc}">${s}${fmt(Math.abs(b.pnl))} · ${s}${b.pnl_pct}%</div>
         <div class="p-bot-wr ${wc}">${b.wr}%</div>
-        <div class="p-bot-wr-lbl">WIN RATE</div>
+        <div class="p-bot-wr-lbl">WIN RATE · LIFETIME</div>
         <div class="p-bot-meta">
           <div class="p-bot-m"><span class="p-bot-mv">${b.total_trades}</span><span class="p-bot-ml">TRADES</span></div>
           <div class="p-bot-m"><span class="p-bot-mv">${b.wins}W / ${b.losses}L</span><span class="p-bot-ml">RECORD</span></div>
+          <div class="p-bot-m"><span class="p-bot-mv">${b.uptime || '--'}</span><span class="p-bot-ml">UPTIME</span></div>
+        </div>
+        <div class="p-bot-today">
+          <span class="p-today-label">TODAY</span>
+          <div class="p-today-row">
+            <span class="p-today-val ${tpc}">${ts}$${Math.abs(b.today_pnl).toFixed(2)}</span>
+            <span class="p-today-detail">${b.today_trades} trades · ${b.today_wr}% WR · ${b.today_wins}W/${b.today_losses}L</span>
+          </div>
         </div>
         <div class="p-bot-pos">
           <span class="p-dot ${pos?'on':'off'}"></span>
