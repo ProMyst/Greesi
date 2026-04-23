@@ -69,8 +69,6 @@ const description = "Live trading bots, data pipeline monitoring, and performanc
       </div>
     </div>
 
-    <div class="pipe-grid reveal-item" id="pipe-grid"></div>
-
     <!-- Services -->
     <div class="pipe-section-head reveal-item" style="margin-top:48px">
       <h2 class="pipe-section-title">Services</h2>
@@ -253,26 +251,6 @@ const description = "Live trading bots, data pipeline monitoring, and performanc
 }
 .pipe-db-sub { font-size: 0.75rem; color: #8B949E; margin-top: 8px; }
 
-/* ── Pipeline Grid ────────────────────────────────────────── */
-.pipe-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 8px;
-}
-.pipe-cell {
-  background: #0D1117; border: 1px solid #21262D;
-  border-radius: 10px; padding: 14px 16px;
-  display: flex; justify-content: space-between; align-items: center;
-  transition: border-color 0.15s;
-}
-.pipe-cell:hover { border-color: #30363D; }
-.pipe-cell-name {
-  font-size: 0.72rem; color: #8B949E; font-weight: 500;
-}
-.pipe-cell-rows {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.9rem; font-weight: 600; color: #F0F6FC;
-}
-
 /* ── Services ─────────────────────────────────────────────── */
 .pipe-services {
   display: flex; flex-wrap: wrap; gap: 6px;
@@ -418,22 +396,6 @@ function render(data: any) {
           </div>
         </div>`;
     }).join('');
-  }
-
-  // Pipeline grid
-  const pipeGrid = document.getElementById('pipe-grid');
-  if (pipeGrid && data.pipelines) {
-    const all = [
-      ...Object.values(data.pipelines.watchdog || {}),
-      ...Object.values(data.pipelines.altdata || {}),
-    ].sort((a: any, b: any) => b.rows - a.rows);
-
-    pipeGrid.innerHTML = (all as any[]).map((p: any) =>
-      `<div class="pipe-cell">
-        <span class="pipe-cell-name">${p.label}</span>
-        <span class="pipe-cell-rows">${fmtRows(p.rows)}</span>
-      </div>`
-    ).join('');
   }
 
   // Services

@@ -15,7 +15,6 @@ const siteUrl = 'https://greesi.com';
 const fullTitle = title.includes('Greesi') ? title : `${title} | Greesi`;
 const canonicalUrl = canonical || new URL(Astro.url.pathname, siteUrl).href;
 const ogImageUrl = ogImage || `${siteUrl}/og-default.png`;
-const isFinancePage = Astro.url.pathname.startsWith('/finance');
 ---
 
 <!doctype html>
@@ -74,17 +73,6 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
   <!-- Reading progress bar -->
   <div id="progress-bar"></div>
 
-  <!-- Finance Hub Banner -->
-  {isFinancePage && (
-    <div class="finance-hub-banner">
-      <div class="finance-hub-inner">
-        <span class="finance-hub-icon">📊</span>
-        <span class="finance-hub-text">You're in the <strong>Greesi Finance Hub</strong> — editorial guides &amp; reviews.</span>
-        <a href="/" class="finance-hub-link">← Back to Intelligence Platform</a>
-      </div>
-    </div>
-  )}
-
   <!-- ── Navigation ─────────────────────────────────────────── -->
   <header id="site-nav" class="nav-root nav-transparent" transition:persist>
     <nav class="nav-inner">
@@ -123,33 +111,6 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
             </div>
           </div>
         </div>
-        <!-- Editorial Finance -->
-        <div class="nav-dropdown">
-          <a href="/finance" class="nav-link nav-dropdown-trigger">Finance ▾</a>
-          <div class="nav-dropdown-menu" data-cols="3">
-            <div class="nav-dropdown-col">
-              <p class="nav-dropdown-heading">Reviews</p>
-              <a href="/finance/banking" class="nav-dropdown-link">Best Banks</a>
-              <a href="/finance/credit-cards" class="nav-dropdown-link">Credit Cards</a>
-              <a href="/finance/investing" class="nav-dropdown-link">Investing</a>
-            </div>
-            <div class="nav-dropdown-col">
-              <p class="nav-dropdown-heading">Best-Of Lists</p>
-              <a href="/finance/banking/best-high-yield" class="nav-dropdown-link">Best High-Yield Savings</a>
-              <a href="/finance/banking/best-for-students" class="nav-dropdown-link">Best Student Banks</a>
-              <a href="/finance/credit-cards/best-for-travel" class="nav-dropdown-link">Best Travel Cards</a>
-              <a href="/finance/credit-cards/best-cash-back" class="nav-dropdown-link">Best Cash Back</a>
-              <a href="/finance/credit-cards/best-no-fee" class="nav-dropdown-link">Best No-Fee Cards</a>
-            </div>
-            <div class="nav-dropdown-col">
-              <p class="nav-dropdown-heading">Tools</p>
-              <a href="/finance/calculators/compound-interest" class="nav-dropdown-link">Compound Interest</a>
-              <a href="/finance/calculators/debt-payoff" class="nav-dropdown-link">Debt Payoff</a>
-              <a href="/tools/rewards-optimizer" class="nav-dropdown-link">Rewards Optimizer</a>
-              <a href="/finance/compare" class="nav-dropdown-link">Compare Products</a>
-            </div>
-          </div>
-        </div>
         <a href="/dashboard/trading" class="nav-link">Pipeline</a>
         <a href="/dashboard" class="nav-link nav-link--cta">Dashboard</a>
       </div>
@@ -184,12 +145,6 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
       <a href="/dashboard/trading" class="nav-mobile-link">Pipeline <span class="nav-mobile-live">LIVE</span></a>
       <a href="/dashboard" class="nav-mobile-link nav-mobile-link--cta">Live Dashboard →</a>
       <a href="/waitlist" class="nav-mobile-link">Join Waitlist</a>
-      <p class="nav-mobile-section">Finance Hub</p>
-      <a href="/finance/banking" class="nav-mobile-link">Best Banks</a>
-      <a href="/finance/credit-cards" class="nav-mobile-link">Credit Cards</a>
-      <a href="/finance/investing" class="nav-mobile-link">Investing</a>
-      <a href="/finance/credit-cards/best-for-travel" class="nav-mobile-link">Best Travel Cards</a>
-      <a href="/tools/rewards-optimizer" class="nav-mobile-link">Rewards Optimizer</a>
       <p class="nav-mobile-section">Company</p>
       <a href="/about" class="nav-mobile-link">About Us</a>
       <a href="/methodology" class="nav-mobile-link">Methodology</a>
@@ -213,8 +168,8 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
   <section class="newsletter-root has-noise">
     <div class="newsletter-inner">
       <span class="newsletter-eyebrow">Stay in the Loop</span>
-      <h2 class="newsletter-title">Better rates. Better trips. Weekly.</h2>
-      <p class="newsletter-sub">The best APYs, travel deals, and card bonuses — straight to your inbox. No spam, ever.</p>
+      <h2 class="newsletter-title">Crypto signals. Macro intel. Weekly.</h2>
+      <p class="newsletter-sub">The latest signals, pipeline updates, and market intelligence — straight to your inbox. No spam, ever.</p>
       <form class="newsletter-form" id="newsletter-form" novalidate>
         <input
           type="email"
@@ -256,39 +211,16 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
       </div>
 
       <div class="footer-col">
-        <h3 class="footer-col-heading">Banking</h3>
-        <a href="/finance/banking" class="footer-link">Best Banks 2026</a>
-        <a href="/finance/banking/best-high-yield" class="footer-link">Best High-Yield Savings</a>
-        <a href="/finance/banking/best-for-students" class="footer-link">Best Student Banks</a>
-        <a href="/finance/review/ally" class="footer-link">Ally Bank Review</a>
-        <a href="/finance/review/sofi" class="footer-link">SoFi Review</a>
-      </div>
-
-      <div class="footer-col">
-        <h3 class="footer-col-heading">Credit Cards</h3>
-        <a href="/finance/credit-cards" class="footer-link">Best Cards 2026</a>
-        <a href="/finance/credit-cards/best-for-travel" class="footer-link">Best Travel Cards</a>
-        <a href="/finance/credit-cards/best-cash-back" class="footer-link">Best Cash Back</a>
-        <a href="/finance/credit-cards/best-for-dining" class="footer-link">Best for Dining</a>
-        <a href="/finance/credit-cards/best-no-fee" class="footer-link">Best No-Fee Cards</a>
-      </div>
-
-      <div class="footer-col">
-        <h3 class="footer-col-heading">Travel</h3>
-        <a href="/travel" class="footer-link">Destinations</a>
-        <a href="/travel/miles-guide" class="footer-link">Miles & Points Guide</a>
-        <a href="/travel/travel-cards" class="footer-link">Best Travel Cards</a>
-        <a href="/finance/points-value" class="footer-link">Points Value Guide</a>
-        <a href="/submit-story" class="footer-link">Submit Your Story</a>
+        <h3 class="footer-col-heading">Platform</h3>
+        <a href="/crypto" class="footer-link">Crypto Signals</a>
+        <a href="/macro" class="footer-link">Macro Intelligence</a>
+        <a href="/dashboard/trading" class="footer-link">Pipeline</a>
+        <a href="/dashboard" class="footer-link">Dashboard</a>
       </div>
 
       <div class="footer-col">
         <h3 class="footer-col-heading">Tools</h3>
-        <a href="/tools/rewards-optimizer" class="footer-link">Rewards Optimizer</a>
-        <a href="/finance/calculators/debt-payoff" class="footer-link">Debt Payoff Calculator</a>
-        <a href="/finance/calculators/budget" class="footer-link">50/30/20 Budget</a>
-        <a href="/finance/calculators/points-transfer" class="footer-link">Points Transfer</a>
-        <a href="/finance/glossary" class="footer-link">Finance Glossary</a>
+        <a href="/tools" class="footer-link">All Tools</a>
       </div>
 
       <div class="footer-col">
@@ -302,8 +234,7 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
 
     <div class="footer-bottom section-container">
       <p class="footer-disclosure">
-        <strong>Affiliate Disclosure:</strong> Some links on this site are affiliate links.
-        We may earn a commission at no extra cost to you. Our editorial opinions are independent.
+        Content is for informational purposes only and does not constitute financial advice.
       </p>
       <p class="footer-copy">&copy; {new Date().getFullYear()} Greesi. All rights reserved.</p>
     </div>
@@ -321,9 +252,9 @@ const isFinancePage = Astro.url.pathname.startsWith('/finance');
     <div class="exit-overlay" id="exit-overlay"></div>
     <div class="exit-box">
       <button class="exit-close" id="exit-close" aria-label="Close">×</button>
-      <div class="exit-emoji">💰</div>
-      <h3 class="exit-heading">Wait — don't miss these rates</h3>
-      <p class="exit-sub">Get the best APYs, card bonuses, and travel deals delivered weekly. No spam. Ever.</p>
+      <div class="exit-emoji">📡</div>
+      <h3 class="exit-heading">Wait — don't miss the signal</h3>
+      <p class="exit-sub">Get crypto signals, macro intelligence, and pipeline updates delivered weekly. No spam. Ever.</p>
       <form class="exit-form" id="exit-form" novalidate>
         <input type="email" class="exit-input" id="exit-email" placeholder="your@email.com" required aria-label="Email address" />
         <button type="submit" class="exit-submit">Get Weekly Picks →</button>
@@ -543,7 +474,7 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile { background: rgba(8,11,15,0.9
 .footer-root { background: #0d1f35; color: rgba(255, 255, 255, 0.55); padding-top: 64px; }
 .footer-grid { display: grid; grid-template-columns: 1fr; gap: 40px; padding-bottom: 48px; }
 @media (min-width: 640px)  { .footer-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; } }
+@media (min-width: 1024px) { .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr; } }
 .footer-brand {}
 .footer-logo { display: inline-flex; align-items: center; gap: 9px; margin-bottom: 12px; text-decoration: none; opacity: 0.9; transition: opacity 0.2s; }
 .footer-logo:hover { opacity: 1; }
@@ -560,27 +491,6 @@ html[data-theme='dark'] .nav-scrolled .nav-mobile { background: rgba(8,11,15,0.9
 @media (min-width: 768px) { .footer-bottom { flex-direction: row; justify-content: space-between; align-items: center; } }
 .footer-disclosure { font-size: 0.75rem; color: rgba(255,255,255,0.3); max-width: 520px; line-height: 1.6; }
 .footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.25); white-space: nowrap; }
-
-/* ── Finance Hub Banner ───────────────────────────────────── */
-.finance-hub-banner {
-  background: #0D1117;
-  border-bottom: 1px solid #21262D;
-  padding: 8px 24px;
-  position: relative;
-  z-index: 99;
-}
-.finance-hub-inner {
-  max-width: 1152px; margin: 0 auto;
-  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-  font-size: 0.78rem; color: #8B949E;
-}
-.finance-hub-icon { font-size: 0.85rem; }
-.finance-hub-text strong { color: #C9D1D9; font-weight: 600; }
-.finance-hub-link {
-  margin-left: auto; color: #58A6FF; text-decoration: none;
-  font-weight: 500; white-space: nowrap; transition: color 0.2s;
-}
-.finance-hub-link:hover { color: #F0F6FC; }
 
 /* ── Reveal items start hidden ────────────────────────────── */
 .reveal-item { opacity: 0; transform: translateY(22px) scale(0.97); }
