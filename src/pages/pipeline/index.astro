@@ -1,0 +1,377 @@
+---
+export const prerender = false;
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const title = "Pipeline — Greesi";
+const description = "Live trading bots and data pipeline monitoring.";
+---
+
+<BaseLayout title={title} description={description}>
+<section class="p-hero has-hero">
+  <div class="p-hero-bg"></div>
+  <div class="p-hero-inner">
+    <span class="p-eyebrow reveal-item">LIVE OPERATIONS</span>
+    <h1 class="p-h1 reveal-item">Pipeline</h1>
+    <p class="p-sub reveal-item">Real-time trading bots · 29 data pipelines · 8.9M+ rows and growing</p>
+    <div class="p-hero-stats reveal-item">
+      <div class="p-hero-stat">
+        <span class="p-hero-num" id="hero-wd">--</span>
+        <span class="p-hero-label">Watchdog Rows</span>
+      </div>
+      <div class="p-hero-div"></div>
+      <div class="p-hero-stat">
+        <span class="p-hero-num" id="hero-alt">--</span>
+        <span class="p-hero-label">AltData Rows</span>
+      </div>
+      <div class="p-hero-div"></div>
+      <div class="p-hero-stat">
+        <span class="p-hero-num" id="hero-svc">--</span>
+        <span class="p-hero-label">Services Live</span>
+      </div>
+      <div class="p-hero-div"></div>
+      <div class="p-hero-stat">
+        <span class="p-hero-num p-green" id="hero-pnl">--</span>
+        <span class="p-hero-label">Total P&L</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="p-body">
+  <div class="p-container">
+
+    <!-- Trading Bots -->
+    <div class="p-head reveal-item">
+      <h2 class="p-title">Trading Bots</h2>
+      <div class="p-live"><span class="p-live-dot"></span>LIVE</div>
+    </div>
+    <div class="p-bots reveal-item" id="bots"></div>
+
+    <!-- Pipeline Health -->
+    <div class="p-head reveal-item" style="margin-top:56px">
+      <h2 class="p-title">Pipeline Health</h2>
+      <span class="p-total-rows" id="total-rows">--</span>
+    </div>
+
+    <div class="p-db-row reveal-item">
+      <div class="p-db-box">
+        <span class="p-db-name">WATCHDOG</span>
+        <span class="p-db-count" id="db-wd">--</span>
+        <span class="p-db-desc">Crypto signals · Macro · On-chain</span>
+      </div>
+      <div class="p-db-box">
+        <span class="p-db-name">ALTDATA</span>
+        <span class="p-db-count" id="db-alt">--</span>
+        <span class="p-db-desc">FRED · Equities · CFTC · Congressional</span>
+      </div>
+    </div>
+
+    <div class="p-services reveal-item" id="services"></div>
+
+    <!-- Recent Trades -->
+    <div class="p-head reveal-item" style="margin-top:56px">
+      <h2 class="p-title">Recent Trades</h2>
+    </div>
+    <div class="p-trades-box reveal-item">
+      <table class="p-table">
+        <thead><tr><th>Time</th><th>Bot</th><th>Symbol</th><th>P&L</th><th>Hold</th><th>Exit</th></tr></thead>
+        <tbody id="trades"><tr><td colspan="6" class="p-empty">Connecting...</td></tr></tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+</BaseLayout>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Hero ──────────────────────────────────────────── */
+.p-hero {
+  position: relative; overflow: hidden;
+  padding: 140px 24px 80px; text-align: center;
+  background: linear-gradient(180deg, #080B0F 0%, #0D1117 100%);
+}
+.p-hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(31,111,235,0.08), transparent);
+  pointer-events: none;
+}
+.p-hero-inner { position: relative; max-width: 900px; margin: 0 auto; }
+.p-eyebrow {
+  display: inline-block; font-size: 0.68rem; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: #58A6FF; margin-bottom: 16px;
+}
+.p-h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-size: clamp(3rem, 8vw, 5rem); font-weight: 400;
+  color: #F0F6FC; margin-bottom: 16px; line-height: 1.1;
+}
+.p-sub {
+  font-size: 1.1rem; color: #8B949E; max-width: 520px;
+  margin: 0 auto 40px; line-height: 1.6;
+}
+.p-hero-stats {
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; background: rgba(13,17,23,0.6);
+  border: 1px solid #21262D; border-radius: 16px;
+  padding: 20px 0; backdrop-filter: blur(12px);
+}
+.p-hero-stat { display: flex; flex-direction: column; align-items: center; padding: 0 32px; gap: 4px; }
+.p-hero-num { font-family: 'JetBrains Mono', monospace; font-size: 1.6rem; font-weight: 600; color: #F0F6FC; }
+.p-hero-label { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: #8B949E; }
+.p-hero-div { width: 1px; height: 36px; background: #21262D; }
+.p-green { color: #22c55e !important; }
+.p-red { color: #ef4444 !important; }
+
+/* ── Body ──────────────────────────────────────────── */
+.p-body { background: #080B0F; padding: 0 24px 80px; }
+.p-container { max-width: 1200px; margin: 0 auto; }
+
+.p-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.p-title { font-family: 'DM Serif Display', Georgia, serif; font-size: 1.8rem; color: #F0F6FC; }
+.p-live {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.15em; color: #22c55e;
+  background: rgba(34,197,94,0.06); padding: 6px 14px; border-radius: 20px;
+}
+.p-live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #22c55e;
+  animation: pdot 2s infinite;
+}
+@keyframes pdot { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)} 50%{box-shadow:0 0 0 6px rgba(34,197,94,0)} }
+.p-total-rows {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem; font-weight: 600; color: #58A6FF;
+}
+
+/* ── Bot Boxes ─────────────────────────────────────── */
+.p-bots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 900px) { .p-bots { grid-template-columns: 1fr; } }
+
+.p-bot {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; padding: 28px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.p-bot:hover { border-color: #30363D; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+
+.p-bot-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.p-bot-name { font-family: 'Inter', sans-serif; font-size: 1rem; font-weight: 600; color: #fff; }
+.p-bot-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; font-weight: 700;
+  letter-spacing: 0.12em; color: #3b82f6;
+  background: rgba(59,130,246,0.06); padding: 3px 8px; border-radius: 4px;
+}
+
+/* BIG equity */
+.p-bot-eq {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.8rem; font-weight: 800; color: #fff;
+  letter-spacing: -0.03em; line-height: 1; margin-bottom: 6px;
+}
+
+/* P&L */
+.p-bot-pnl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem; font-weight: 700; margin-bottom: 24px;
+}
+
+/* Win Rate — BIG */
+.p-bot-wr {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.2rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 4px;
+}
+.p-bot-wr-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem; font-weight: 700; letter-spacing: 0.25em;
+  color: #444; text-transform: uppercase; margin-bottom: 18px;
+}
+
+/* Trades + W/L — smaller */
+.p-bot-meta { display: flex; gap: 20px; }
+.p-bot-m { display: flex; flex-direction: column; gap: 2px; }
+.p-bot-mv {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem; font-weight: 600; color: #888;
+}
+.p-bot-ml {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.45rem; font-weight: 700; letter-spacing: 0.2em; color: #333;
+}
+
+/* Position */
+.p-bot-pos {
+  margin-top: 16px; padding-top: 14px; border-top: 1px solid #1a1a1a;
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem; font-weight: 700; letter-spacing: 0.12em;
+}
+.p-dot { width: 5px; height: 5px; border-radius: 50%; }
+.p-dot.on { background: #22c55e; }
+.p-dot.off { background: #222; }
+
+/* ── DB Row ────────────────────────────────────────── */
+.p-db-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+@media (max-width: 700px) { .p-db-row { grid-template-columns: 1fr; } }
+.p-db-box {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; padding: 28px; text-align: center;
+  transition: border-color 0.2s;
+}
+.p-db-box:hover { border-color: #30363D; }
+.p-db-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem; font-weight: 700; letter-spacing: 0.25em;
+  color: #555; display: block; margin-bottom: 12px;
+}
+.p-db-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.4rem; font-weight: 800; color: #fff; display: block;
+}
+.p-db-desc { font-size: 0.7rem; color: #555; margin-top: 8px; display: block; }
+
+/* ── Services ──────────────────────────────────────── */
+.p-services { display: flex; flex-wrap: wrap; gap: 6px; }
+.p-svc {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; background: #0D1117; border: 1px solid #21262D;
+  border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.58rem; font-weight: 600; letter-spacing: 0.06em;
+  color: #666; text-transform: uppercase;
+}
+.p-svc-dot { width: 5px; height: 5px; border-radius: 50%; }
+.p-svc-dot.up { background: #22c55e; box-shadow: 0 0 4px rgba(34,197,94,0.5); }
+.p-svc-dot.down { background: #ef4444; box-shadow: 0 0 4px rgba(239,68,68,0.5); }
+.p-svc-dot.warn { background: #f59e0b; }
+
+/* ── Trades ────────────────────────────────────────── */
+.p-trades-box {
+  background: #0D1117; border: 1px solid #21262D;
+  border-radius: 16px; overflow: hidden;
+}
+.p-table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; }
+.p-table th {
+  text-align: left; padding: 12px 16px; font-size: 0.55rem; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: #555;
+  border-bottom: 1px solid #21262D; background: #161B22;
+}
+.p-table td { padding: 10px 16px; color: #C9D1D9; border-bottom: 1px solid rgba(33,38,45,0.4); }
+.p-table tr:nth-child(even) td { background: rgba(13,17,23,0.4); }
+.p-empty { text-align: center; padding: 32px !important; color: #555; font-style: italic; }
+.t-up { color: #22c55e; font-weight: 700; }
+.t-dn { color: #ef4444; font-weight: 700; }
+.t-exit {
+  font-size: 0.55rem; padding: 2px 6px; border-radius: 4px;
+  font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+}
+.t-target { background: rgba(34,197,94,0.08); color: #22c55e; }
+.t-stop { background: rgba(239,68,68,0.08); color: #ef4444; }
+.t-flip { background: rgba(59,130,246,0.08); color: #3b82f6; }
+.t-trail { background: rgba(245,158,11,0.08); color: #f59e0b; }
+.t-timeout { background: rgba(85,85,85,0.08); color: #555; }
+
+@media (max-width: 600px) {
+  .p-hero { padding: 120px 16px 60px; }
+  .p-h1 { font-size: 2.5rem; }
+  .p-hero-stats { flex-direction: column; gap: 16px; padding: 20px; }
+  .p-hero-div { width: 60%; height: 1px; }
+  .p-bot-eq { font-size: 2rem; }
+}
+</style>
+
+<script>
+function fmt(n: number) { return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtR(n: number) { return n >= 1e6 ? (n/1e6).toFixed(1)+'M' : n.toLocaleString(); }
+
+async function load() {
+  try {
+    const res = await fetch('/api/trading/status');
+    if (!res.ok) return;
+    render(await res.json());
+  } catch {}
+}
+
+function render(d: any) {
+  const wd = d.pipelines?.totals?.watchdog || 0;
+  const alt = d.pipelines?.totals?.altdata || 0;
+  const svc = d.services || {};
+  const running = Object.values(svc).filter((s: any) => s === 'RUNNING').length;
+  let pnl = 0;
+  for (const b of Object.values(d.bots || {}) as any[]) pnl += b.pnl || 0;
+
+  // Hero
+  const hw = document.getElementById('hero-wd'); if (hw) hw.textContent = fmtR(wd);
+  const ha = document.getElementById('hero-alt'); if (ha) ha.textContent = fmtR(alt);
+  const hs = document.getElementById('hero-svc'); if (hs) hs.textContent = String(running);
+  const hp = document.getElementById('hero-pnl');
+  if (hp) { hp.textContent = (pnl >= 0 ? '+' : '') + fmt(Math.abs(pnl)); hp.className = 'p-hero-num ' + (pnl >= 0 ? 'p-green' : 'p-red'); }
+
+  // DB
+  const dw = document.getElementById('db-wd'); if (dw) dw.textContent = wd.toLocaleString();
+  const da = document.getElementById('db-alt'); if (da) da.textContent = alt.toLocaleString();
+  const tr = document.getElementById('total-rows'); if (tr) tr.textContent = (wd+alt).toLocaleString() + ' rows';
+
+  // Bots
+  const bg = document.getElementById('bots');
+  if (bg && d.bots) {
+    bg.innerHTML = Object.entries(d.bots).map(([id, b]: [string, any]) => {
+      const pc = b.pnl > 0.01 ? 'p-green' : b.pnl < -0.01 ? 'p-red' : '';
+      const s = b.pnl >= 0 ? '+' : '';
+      const wc = b.wr >= 55 ? 'p-green' : b.wr < 50 ? 'p-red' : '';
+      const ec = b.pnl > 0.01 ? 'p-green' : b.pnl < -0.01 ? 'p-red' : '';
+      const pos = b.has_position;
+      return `<div class="p-bot">
+        <div class="p-bot-header"><span class="p-bot-name">${b.label}</span><span class="p-bot-tag">${b.asset}</span></div>
+        <div class="p-bot-eq ${ec}">${fmt(b.equity)}</div>
+        <div class="p-bot-pnl ${pc}">${s}${fmt(Math.abs(b.pnl))} · ${s}${b.pnl_pct}%</div>
+        <div class="p-bot-wr ${wc}">${b.wr}%</div>
+        <div class="p-bot-wr-lbl">WIN RATE</div>
+        <div class="p-bot-meta">
+          <div class="p-bot-m"><span class="p-bot-mv">${b.total_trades}</span><span class="p-bot-ml">TRADES</span></div>
+          <div class="p-bot-m"><span class="p-bot-mv">${b.wins}W / ${b.losses}L</span><span class="p-bot-ml">RECORD</span></div>
+        </div>
+        <div class="p-bot-pos">
+          <span class="p-dot ${pos?'on':'off'}"></span>
+          <span style="color:${pos?'#22c55e':'#222'}">${pos?'IN POSITION':'WAITING'}</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Services with pulsing dots
+  const sg = document.getElementById('services');
+  if (sg) {
+    sg.innerHTML = Object.entries(svc).map(([n, s]: [string, any]) => {
+      const dot = s === 'RUNNING' ? 'up' : s === 'FATAL' ? 'down' : 'warn';
+      const name = n.replace('pipeline_','').replace('paper_bot_','bot_');
+      return `<div class="p-svc"><span class="p-svc-dot ${dot}"></span>${name}</div>`;
+    }).join('');
+  }
+
+  // Trades
+  const allT: any[] = [];
+  for (const [,b] of Object.entries(d.bots || {}) as any[]) {
+    for (const t of b.recent_trades || []) allT.push({...t, bot: b.label});
+  }
+  allT.sort((a,b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const tb = document.getElementById('trades');
+  if (tb) {
+    if (!allT.length) { tb.innerHTML = '<tr><td colspan="6" class="p-empty">Awaiting trades...</td></tr>'; }
+    else {
+      tb.innerHTML = allT.slice(0,15).map((t: any) => {
+        const p = parseFloat(t.pnl_dollar||0);
+        const c = p >= 0 ? 't-up' : 't-dn';
+        const e = `t-${t.exit_reason||'flip'}`;
+        const tm = new Date(t.timestamp).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false});
+        return `<tr><td>${tm}</td><td>${t.bot}</td><td>${t.symbol||'—'}</td><td class="${c}">${p>=0?'+':''}$${p.toFixed(2)}</td><td>${t.hold_min?parseFloat(t.hold_min).toFixed(0)+'m':'—'}</td><td><span class="t-exit ${e}">${t.exit_reason||'—'}</span></td></tr>`;
+      }).join('');
+    }
+  }
+}
+
+load();
+setInterval(load, 10000);
+</script>
